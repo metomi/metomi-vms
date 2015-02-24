@@ -1,0 +1,9 @@
+#!/bin/bash
+if [[ -z ${FCM_HOME:-} ]]; then
+    FCM_HOME_ROOT=${FCM_HOME_ROOT:-/opt}
+    FCM_HOME=$FCM_HOME_ROOT/fcm
+    if [[ -n ${FCM_VERSION:-} && -d $FCM_HOME_ROOT/fcm-$FCM_VERSION ]]; then
+        FCM_HOME=$FCM_HOME_ROOT/fcm-$FCM_VERSION
+    fi
+fi
+exec $FCM_HOME/bin/$(basename $0) "$@"

@@ -1,0 +1,9 @@
+#!/bin/bash
+if [[ -z ${ROSE_HOME:-} ]]; then
+    ROSE_HOME_ROOT=${ROSE_HOME_ROOT:-/opt}
+    ROSE_HOME=$ROSE_HOME_ROOT/rose
+    if [[ -n ${ROSE_VERSION:-} && -d $ROSE_HOME_ROOT/rose-$ROSE_VERSION ]]; then
+        ROSE_HOME=$ROSE_HOME_ROOT/rose-$ROSE_VERSION
+    fi
+fi
+exec $ROSE_HOME/bin/$(basename $0) "$@"
