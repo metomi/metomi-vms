@@ -12,7 +12,7 @@ These applications provide point-and-click installers for Windows, and can usual
 
 ### Setting up the Virtual Machine
 
-Download the setup files from github: https://github.com/dpmatthews/metomi-vms/archive/master.zip.
+Download the setup files from github: https://github.com/metomi/metomi-vms/archive/master.zip.
 Then extract the files and change directory to `metomi-vms/ubuntu-1404`.
 * Windows users can navigate to the directory using Windows Explorer and then use `Shift-> Right Mouse Click -> Open command window here`.
 
