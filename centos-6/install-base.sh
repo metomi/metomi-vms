@@ -53,6 +53,11 @@ cd /opt/cylc-$CYLC_VERSION
 make version
 cd /opt/cylc-master
 make version
+# Configure additional copyable environment variables
+mkdir -p /opt/metomi-site/conf
+dos2unix -n /vagrant/opt/metomi-site/conf/global.rc /opt/metomi-site/conf/global.rc
+ln -sf /opt/metomi-site/conf/global.rc /opt/cylc-$CYLC_VERSION/conf/global.rc
+ln -sf /opt/metomi-site/conf/global.rc /opt/cylc-master/conf/global.rc
 
 #### Install Rose
 yum install -y python-simplejson rsync xterm
@@ -127,5 +132,4 @@ dos2unix -n /vagrant/opt/metomi-site/etc/hooks/pre-commit /opt/metomi-site/etc/h
 ln -sf /opt/metomi-site/etc/hooks/pre-commit /srv/svn/roses-tmp/hooks/pre-commit
 dos2unix -n /vagrant/opt/metomi-site/etc/hooks/post-commit /opt/metomi-site/etc/hooks/post-commit
 ln -sf /opt/metomi-site/etc/hooks/post-commit /srv/svn/roses-tmp/hooks/post-commit
-cd /
 sudo -u apache /opt/rose/sbin/rosa db-create
