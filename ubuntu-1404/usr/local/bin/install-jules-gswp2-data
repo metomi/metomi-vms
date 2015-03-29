@@ -1,0 +1,6 @@
+#!/bin/bash
+set -eux
+
+wget ftp://ftp.nwl.ac.uk/pub/julesftp/benchmark.gswp2-data.tar.gz
+tar -xzf benchmark.gswp2-data.tar.gz -C /jules/benchmarking-data gswp2/drive
+rm -rf benchmark.gswp2-data.tar.gz

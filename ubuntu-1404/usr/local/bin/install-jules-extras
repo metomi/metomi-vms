@@ -1,0 +1,46 @@
+#!/bin/bash
+set -eux
+
+if [[ $USER != root ]]; then
+  echo "Please run this command via sudo"
+  exit 1
+fi
+
+BIGGUS_VERSION=0.7.0
+
+#### Install and configure JULES dependencies
+apt-get install -y libnetcdf-dev libhdf5-serial-dev netcdf-bin nco python-sphinx python-setuptools
+# Download and install nccmp
+mkdir -p /opt/nccmp
+curl -L -s -S http://downloads.sourceforge.net/project/nccmp/nccmp-1.4.0.tgz | tar -C /opt/nccmp -xz
+cd /opt/nccmp/nccmp-1.4.0
+./configure
+make install
+make clean
+# Export the appropriate JULES environment variables on login
+cat >> .profile <<"EOF"
+export JULES_COMPILER=gfortran
+export JULES_BUILD=normal
+export JULES_NETCDF=actual
+export JULES_NETCDF_PATH=/usr
+EOF
+
+#### Install KGO & benchmarking data + dependencies
+apt-get install -y python-numpy python-scipy
+# Install biggus from a release tarball
+mkdir -p /opt/scitools
+curl -L -s -S https://github.com/SciTools/biggus/archive/v$BIGGUS_VERSION.tar.gz | tar -C /opt/scitools -xz
+cd /opt/scitools/biggus-$BIGGUS_VERSION
+python setup.py install
+# Install the python netCDF4 module from its repository
+mkdir -p /opt/unidata
+curl -L -s -S https://pypi.python.org/packages/source/n/netCDF4/netCDF4-1.1.1.tar.gz | tar -C /opt/unidata -xz
+cd /opt/unidata/netCDF4-1.1.1
+python setup.py install
+# Create the data directories
+mkdir -p /jules/rose-stem-kgo
+mkdir -p /jules/benchmarking-data
+# Download the main benchmarking data and unpack it into the benchmarking-data directory
+curl -L -s -S ftp://ftp.nwl.ac.uk/pub/julesftp/benchmark.data.tar.gz | tar -C /jules/benchmarking-data -xz
+# Make sure the vagrant user owns the /jules directory and all its contents
+chown -R vagrant:vagrant /jules
