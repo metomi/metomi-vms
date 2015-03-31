@@ -13,7 +13,7 @@ These applications provide point-and-click installers for Windows, and can usual
 ### Setting up the Virtual Machine
 
 Download the setup files from github: https://github.com/metomi/metomi-vms/archive/master.zip.
-Then extract the files and change directory to `metomi-vms/ubuntu-1404`.
+Then extract the files and change directory to `metomi-vms-master/ubuntu-1404`.
 * Windows users can navigate to the directory using Windows Explorer and then use `Shift-> Right Mouse Click -> Open command window here`.
 
 By default the VM will be built with support for accessing the Met Office Science Repository Service.
@@ -47,7 +47,7 @@ In order to enable GUI programs running on the VM to display correctly, Windows 
 Then, instead of using a Windows command window for launching the VM, you should use a Cygwin-X terminal, which you can find in the Start Menu as `Cygwin-X > XWin Server`.
 In Cygwin-X terminals, you can use many common Unix commands (e.g. cd, ls).
 Firstly run the command  `cd /cygdrive` followed by `ls` and you should see your Windows drives.
-Then use the `cd` command to navigate to the directory where you have extracted the setup files (e.g. `c/Users/User/metomi-vms/centos-6`).
+Then use the `cd` command to navigate to the directory where you have extracted the setup files (e.g. `c/Users/User/metomi-vms-master/centos-6`).
 
 ### Installing and Using the Virtual Machine
 
