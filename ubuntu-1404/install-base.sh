@@ -1,6 +1,6 @@
 # Define software versions
 FCM_VERSION=2015.03.0
-CYLC_VERSION=6.3.1
+CYLC_VERSION=6.4.0
 ROSE_VERSION=2015.03.0
 
 #### Remove some packages we don't need
