@@ -6,7 +6,7 @@ if [[ -z "$GPG_AGENT_INFO" ]]; then
 fi
 export GPG_AGENT_INFO
 if ! gpg-agent 2>/dev/null; then
-  eval "$(gpg-agent --daemon --allow-preset-passphrase --batch --max-cache-ttl 432000 --write-env-file $envfile)"
+  eval "$(gpg-agent --daemon --allow-preset-passphrase --batch --max-cache-ttl 43200 --write-env-file $envfile)"
   mosrs-cache-password
 else
   # Check whether the passphrase is already cached
