@@ -4,6 +4,11 @@ STARTDATE=$(date)
 {
 set -x
 
+TYPES="base"
+
+# Set up system to work with the Met Office Science Repository Service
+TYPES="$TYPES mosrs"
+
 # Add the EPEL repository
 yum install -y epel-release
 
@@ -23,11 +28,6 @@ EOF
 
 # Use dos2unix in case any files have Windows EOL characters
 yum install -y dos2unix
-
-TYPES="base"
-
-# Set up system to work with the Met Office Science Repository Service
-TYPES="$TYPES mosrs"
 
 for TYPE in $TYPES; do
   dos2unix -n /vagrant/install-$TYPE.sh /tmp/install-$TYPE.sh
