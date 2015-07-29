@@ -1,6 +1,6 @@
 # Define software versions
 FCM_VERSION=2015.07.0
-CYLC_VERSION=6.4.1
+CYLC_VERSION=6.5.0
 ROSE_VERSION=2015.06.0
 
 #### Install commonly used editors
