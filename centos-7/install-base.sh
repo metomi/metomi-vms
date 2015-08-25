@@ -1,7 +1,7 @@
 # Define software versions
-FCM_VERSION=2015.07.0
-CYLC_VERSION=6.5.0
-ROSE_VERSION=2015.06.0
+FCM_VERSION=2015.08.0
+CYLC_VERSION=6.6.0
+ROSE_VERSION=2015.08.0
 
 #### Install commonly used editors
 yum install -y gedit gvim emacs
