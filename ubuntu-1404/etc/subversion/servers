@@ -1,5 +1,0 @@
-[groups]
-metofficesharedrepos = code*.metoffice.gov.uk
-
-[metofficesharedrepos]
-store-plaintext-passwords = no

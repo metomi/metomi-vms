@@ -13,11 +13,11 @@ These applications provide point-and-click installers for Windows, and can usual
 ### Setting up the Virtual Machine
 
 Download the setup files from github: https://github.com/metomi/metomi-vms/archive/master.zip.
-Then extract the files and change directory to `metomi-vms-master/ubuntu-1404`.
+Then extract the files and change directory to `metomi-vms-master`.
 * Windows users can navigate to the directory using Windows Explorer and then use `Shift-> Right Mouse Click -> Open command window here`.
 
 By default the VM will be built with support for accessing the Met Office Science Repository Service.
-If you don't want this (or don't have access) then edit the file `install.sh` and comment out the line which says `TYPES="$TYPES mosrs"`.
+If you don't want this (or don't have access) then edit the file `Vagrantfile` and remove `mosrs` from the `args` in the `config.vm.provision` line.
 
 Now run the command `vagrant up` to build and launch the VM.
 This involves downloading a base VM and then installing lots of additional software so it can take a long time (depending on the speed of your internet connection).

@@ -1,2 +1,0 @@
-#!/bin/bash
-exec /opt/rose/sbin/rosa svn-post-commit "$@"

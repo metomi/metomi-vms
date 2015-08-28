@@ -1,3 +1,0 @@
-[hosts]
-    [[localhost]]
-        copyable environment variables = FCM_VERSION, ROSE_VERSION
