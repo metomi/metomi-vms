@@ -20,11 +20,10 @@ cd /opt/nccmp/nccmp-1.4.0
 make install
 make clean
 # Export the appropriate JULES environment variables on login
+cd /home/vagrant
 cat >> .profile <<"EOF"
-export JULES_COMPILER=gfortran
-export JULES_BUILD=normal
-export JULES_NETCDF=actual
-export JULES_NETCDF_PATH=/usr
+export JULES_PLATFORM=vm
+export JULES_NETCDF=netcdf
 EOF
 
 #### Install KGO & benchmarking data + dependencies
