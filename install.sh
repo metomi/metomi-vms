@@ -13,7 +13,7 @@ if [[ $collections =~ desktop ]]; then
   echo "Installation in progress, please wait" > /etc/nologin
 fi
 
-if [[ $dist == ubuntu && $release == 1404 ]]; then
+if [[ $dist == ubuntu ]]; then
   # Address issues some hosts experience with networking (specifically, DNS latency)
   # See https://github.com/mitchellh/vagrant/issues/1172
   if [ ! $(grep single-request-reopen /etc/resolvconf/resolv.conf.d/base) ]; then
@@ -56,7 +56,7 @@ if [[ $dist == ubuntu ]]; then
   apt-get upgrade -y
 elif [[ $dist == centos ]]; then
   # NB: Disabled since /vagrant fails to mount after this is run
-  #yum update -y
+  : #yum update -y
 fi
 
 # Use dos2unix in case any files have Windows EOL characters
@@ -71,11 +71,6 @@ for collection in $collections; do
   . /tmp/install-$collection.sh
   rm /tmp/install-$collection.sh
 done
-
-if [[ $dist == ubuntu ]]; then
-  # Remove any redundant packages
-  apt-get autoremove -y
-fi
 
 set +x
 echo Finished provisioning at $(date) \(started at $STARTDATE\)

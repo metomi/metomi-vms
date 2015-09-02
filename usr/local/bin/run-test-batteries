@@ -1,6 +1,7 @@
 #!/bin/bash
 
 cd ~
+export TMPDIR=${TMPDIR:-/var/tmp}
 
 fcm test-battery 2>&1 | tee test-fcm-default.out.$(date +%Y-%m-%dT%H%M)
 cylc test-battery 2>&1 | tee test-cylc-default.out.$(date +%Y-%m-%dT%H%M)

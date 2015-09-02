@@ -4,8 +4,8 @@
 VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-  config.vm.box = "chef/centos-7.0"
-  config.vm.provision :shell, path: "install.sh", args: "rhel 7 mosrs"
+  config.vm.box = "bento/centos-7.1"
+  config.vm.provision :shell, path: "install.sh", args: "centos 7 mosrs"
   config.ssh.forward_x11 = true
 
   config.vm.provider "virtualbox" do |v|

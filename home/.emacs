@@ -1,4 +1,4 @@
-(add-to-list 'load-path "~/.emacs.d/")
+(add-to-list 'load-path "~/.emacs.d/lisp/")
 
 (require 'cylc-mode)
 (setq auto-mode-alist (append auto-mode-alist 
@@ -11,6 +11,7 @@
 (global-set-key [f5] 'undo)
 (global-set-key [f6] 'shell)
 (global-set-key [C-backspace] 'kill-this-buffer)
+(global-set-key [C-left] 'kill-this-buffer)
 (custom-set-variables
  '(backup-directory-alist (quote ((".*" . "~/.emacs.d/backups"))))
  '(column-number-mode t)

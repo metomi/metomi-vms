@@ -6,8 +6,10 @@ ROSE_VERSION=2015.08.0
 if [[ $dist == ubuntu ]]; then
   #### Remove some packages we don't need
   apt-get remove -y chef puppet
+  apt-get autoremove -y
 elif [[ $dist == centos ]]; then
   #### Disable SELinux to keep things simple
+  yum install -y perl
   setenforce 0
   perl -pi -e 's/^SELINUX=enforcing/SELINUX=disabled/;' /etc/selinux/config
 fi
@@ -25,7 +27,7 @@ elif [[ $dist == centos ]]; then
 fi
 
 #### Install FCM
-if [[ $dist == ubuntu && $release == 1404 ]]; then
+if [[ $dist == ubuntu ]]; then
   apt-get install -y subversion firefox tkcvs tk kdiff3 libxml-parser-perl
   apt-get install -y m4 libconfig-inifiles-perl libdbi-perl g++ libsvn-perl
 elif [[ $dist == centos ]]; then
@@ -53,7 +55,7 @@ ln -sf /opt/metomi-site/etc/fcm/external.cfg /opt/fcm-$FCM_VERSION/etc/fcm/exter
 ln -sf /opt/metomi-site/etc/fcm/external.cfg /opt/fcm-master/etc/fcm/external.cfg
 
 #### Install Cylc
-if [[ $dist == ubuntu && $release == 1404 ]]; then
+if [[ $dist == ubuntu ]]; then
   apt-get install -y graphviz pyro python-jinja2 python-pygraphviz python-gtk2 sqlite3
 elif [[ $dist == centos && $release == 6 ]]; then
   yum install -y graphviz at
@@ -123,15 +125,11 @@ ln -sf /opt/metomi-site/etc/rose.conf /opt/rose-$ROSE_VERSION/etc/rose.conf
 ln -sf /opt/metomi-site/etc/rose.conf /opt/rose-master/etc/rose.conf
 
 #### Configure syntax highlighting & bash completion
-if [[ $dist == ubuntu && $release == 1404 ]]; then
-  sudo -u vagrant mkdir -p /home/vagrant/.local/share/gtksourceview-3.0/language-specs/
-  sudo -u vagrant ln -sf /opt/cylc/conf/cylc.lang /home/vagrant/.local/share/gtksourceview-3.0/language-specs
-  sudo -u vagrant ln -sf /opt/rose/etc/rose-conf.lang /home/vagrant/.local/share/gtksourceview-3.0/language-specs
-elif [[ $dist == centos && $release == 6 ]]; then
+if [[ $dist == centos && $release == 6 ]]; then
   sudo -u vagrant mkdir -p /home/vagrant/.local/share/gtksourceview-2.0/language-specs/
   sudo -u vagrant ln -sf /opt/cylc/conf/cylc.lang /home/vagrant/.local/share/gtksourceview-2.0/language-specs
   sudo -u vagrant ln -sf /opt/rose/etc/rose-conf.lang /home/vagrant/.local/share/gtksourceview-2.0/language-specs
-elif [[ $dist == centos && $release == 7 ]]; then
+else
   sudo -u vagrant mkdir -p /home/vagrant/.local/share/gtksourceview-3.0/language-specs/
   sudo -u vagrant ln -sf /opt/cylc/conf/cylc.lang /home/vagrant/.local/share/gtksourceview-3.0/language-specs
   sudo -u vagrant ln -sf /opt/rose/etc/rose-conf.lang /home/vagrant/.local/share/gtksourceview-3.0/language-specs
@@ -140,9 +138,9 @@ sudo -u vagrant mkdir -p /home/vagrant/.vim/syntax
 sudo -u vagrant ln -sf /opt/cylc/conf/cylc.vim /home/vagrant/.vim/syntax
 sudo -u vagrant ln -sf /opt/rose/etc/rose-conf.vim /home/vagrant/.vim/syntax
 sudo -u vagrant dos2unix -n /vagrant/home/.vimrc /home/vagrant/.vimrc
-sudo -u vagrant mkdir -p /home/vagrant/.emacs.d
-sudo -u vagrant ln -sf /opt/cylc/conf/cylc-mode.el /home/vagrant/.emacs.d
-sudo -u vagrant ln -sf /opt/rose/etc/rose-conf-mode.el /home/vagrant/.emacs.d
+sudo -u vagrant mkdir -p /home/vagrant/.emacs.d/lisp
+sudo -u vagrant ln -sf /opt/cylc/conf/cylc-mode.el /home/vagrant/.emacs.d/lisp
+sudo -u vagrant ln -sf /opt/rose/etc/rose-conf-mode.el /home/vagrant/.emacs.d/lisp
 sudo -u vagrant dos2unix -n /vagrant/home/.emacs /home/vagrant/.emacs
 if [[ $dist == centos ]]; then
   echo '[[ "$-" != *i* ]] && return # Stop here if not running interactively' >>/home/vagrant/.bashrc
@@ -150,7 +148,7 @@ fi
 echo "[[ -f /opt/rose/etc/rose-bash-completion ]] && . /opt/rose/etc/rose-bash-completion" >>/home/vagrant/.bashrc
 
 #### Configure rose bush & rosie web services (with a local rosie repository)
-if [[ $dist == ubuntu && $release == 1404 ]]; then
+if [[ $dist == ubuntu ]]; then
   apt-get install -y apache2 libapache2-mod-wsgi python-cherrypy3 libapache2-svn apache2-utils python-sqlalchemy
 elif [[ $dist == centos && $release == 6 ]]; then
   yum install -y mod_dav_svn mod_wsgi python-cherrypy
@@ -170,7 +168,7 @@ if [[ $dist == ubuntu ]]; then
 elif [[ $dist == centos ]]; then
   dos2unix -n /vagrant/opt/metomi-site/etc/httpd/svn.conf.centos /opt/metomi-site/etc/httpd/svn.conf
 fi
-if [[ $dist == ubuntu && $release == 1404 ]]; then
+if [[ $dist == ubuntu ]]; then
   ln -sf /opt/metomi-site/etc/httpd/rosie-wsgi.conf /etc/apache2/conf-enabled/rosie-wsgi.conf
   ln -sf /opt/metomi-site/etc/httpd/svn.conf /etc/apache2/conf-enabled/svn.conf
   service apache2 restart
@@ -184,7 +182,7 @@ elif [[ $dist == centos ]]; then
 fi
 # Setup the rosie repository
 mkdir /srv/svn
-if [[ $dist == ubuntu && $release == 1404 ]]; then
+if [[ $dist == ubuntu ]]; then
   sudo chown www-data /srv/svn
   sudo -u www-data svnadmin create /srv/svn/roses-tmp
 elif [[ $dist == centos ]]; then
@@ -213,7 +211,7 @@ dos2unix -n /vagrant/opt/metomi-site/etc/hooks/pre-commit /opt/metomi-site/etc/h
 ln -sf /opt/metomi-site/etc/hooks/pre-commit /srv/svn/roses-tmp/hooks/pre-commit
 dos2unix -n /vagrant/opt/metomi-site/etc/hooks/post-commit /opt/metomi-site/etc/hooks/post-commit
 ln -sf /opt/metomi-site/etc/hooks/post-commit /srv/svn/roses-tmp/hooks/post-commit
-if [[ $dist == ubuntu && $release == 1404 ]]; then
+if [[ $dist == ubuntu ]]; then
   sudo -u www-data /opt/rose/sbin/rosa db-create
 elif [[ $dist == centos ]]; then
   sudo -u apache /opt/rose/sbin/rosa db-create

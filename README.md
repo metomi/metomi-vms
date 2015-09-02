@@ -54,7 +54,7 @@ To shutdown the VM you can either run the command `sudo shutdown -h now` from wi
 ## Using other Virtual Machines
 
 Any other VMs provided are primarily for the purpose of testing FCM, Rose & Cylc on other Linux distributions and providing a reference install on these platforms.
-Note that they do not include a desktop environment.
+Note that they may not include a desktop environment.
 
 ### Installing Cygwin (Windows only)
 
