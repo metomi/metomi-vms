@@ -93,8 +93,11 @@ ln -sf /opt/metomi-site/conf/global.rc /opt/cylc-$CYLC_VERSION/conf/global.rc
 ln -sf /opt/metomi-site/conf/global.rc /opt/cylc-master/conf/global.rc
 
 #### Install Rose
-if [[ $dist == ubuntu && $release == 1404 ]]; then
+if [[ $dist == ubuntu ]]; then
   apt-get install -y gfortran # gfortran is used in the brief tour suite
+  if [[ $release == 1504 ]]; then
+    apt-get install -y python-requests
+  fi
 elif [[ $dist == centos ]]; then
   yum install -y python-simplejson rsync xterm
   yum install -y gcc-gfortran # gfortran is used in the brief tour suite
