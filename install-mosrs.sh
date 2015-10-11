@@ -10,6 +10,8 @@ echo ". /usr/local/bin/mosrs-setup-gpg-agent" >>/home/vagrant/.bashrc
 # Start & stop gpg-agent to avoid errors on first use
 sudo -H -u vagrant /usr/bin/gpg-agent --daemon
 sudo -H -u vagrant /usr/bin/pkill gpg-agent
+# Add script to install Rose meta data
+dos2unix -n /vagrant/usr/local/bin/install-rose-meta /usr/local/bin/install-rose-meta
 
 #### Configure FCM
 mkdir -p /etc/subversion

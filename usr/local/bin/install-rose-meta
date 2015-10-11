@@ -1,0 +1,29 @@
+#!/bin/bash
+set -eu
+
+meta_path=/home/vagrant/etc/rose-meta
+meta_file=$meta_path/rose-meta.conf
+
+mkdir -p $meta_path
+cd $meta_path
+if [[ ! -r $meta_file ]]; then
+    cat >> $meta_file <<EOF
+JULES=https://code.metoffice.gov.uk/svn/jules/main/trunk/rose-meta
+OPS=https://code.metoffice.gov.uk/svn/ops/main/trunk/rose-meta
+UM=https://code.metoffice.gov.uk/svn/um/main/trunk/rose-meta
+VAR=https://code.metoffice.gov.uk/svn/var/main/trunk/rose-meta
+EOF
+    echo [info] Please edit $meta_file to change what metadata is installed.
+    echo [info] Current contents of $meta_file:
+    cat $meta_file
+fi
+
+# Checkout a working copy for each metadata configuration directory
+for PROJECT in $(rose config -f $meta_file -k); do
+    echo [info] Installing / updating metadata for $PROJECT ...
+    URL=$(rose config -f $meta_file $PROJECT)
+    for NAME in $(svn ls $URL); do
+        svn checkout -q $URL/$NAME
+    done
+done
+echo [info] Done.
