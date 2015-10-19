@@ -36,7 +36,7 @@ elif [[ $dist == centos ]]; then
   yum install -y gcc-c++  # used by fcm test-battery
   if [[ $release == 6 ]]; then
     yum install -y perl-DBI
-  elif [[ $release == 6 ]]; then
+  elif [[ $release == 7 ]]; then
     yum install -y m4
   fi
 fi
@@ -57,16 +57,14 @@ ln -sf /opt/metomi-site/etc/fcm/external.cfg /opt/fcm-master/etc/fcm/external.cf
 #### Install Cylc
 if [[ $dist == ubuntu ]]; then
   apt-get install -y graphviz pyro python-jinja2 python-pygraphviz python-gtk2 sqlite3
-elif [[ $dist == centos && $release == 6 ]]; then
+elif [[ $dist == centos ]]; then
+  if [[ $release == 6 ]]; then
+    yum install -y python-setuptools gcc
+    easy_install jinja2
+  elif [[ $release == 7 ]]; then
+    yum install -y python-jinja2 pygtk2
+  fi
   yum install -y graphviz at
-  service atd start
-  yum install -y lsof
-  yum install -y python-setuptools graphviz-devel python-devel gcc
-  easy_install pygraphviz
-  easy_install jinja2
-  easy_install pyro==3.16
-elif [[ $dist == centos && $release == 7 ]]; then
-  yum install -y graphviz python-jinja2 pygtk2 at
   service atd start
   yum install -y lsof
   yum install -y graphviz-devel python-devel
