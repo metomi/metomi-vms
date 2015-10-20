@@ -9,6 +9,7 @@ cd $meta_path
 if [[ ! -r $meta_file ]]; then
     cat >> $meta_file <<EOF
 JULES=https://code.metoffice.gov.uk/svn/jules/main/trunk/rose-meta
+MOCI=https://code.metoffice.gov.uk/svn/moci/main/trunk/rose-meta
 OPS=https://code.metoffice.gov.uk/svn/ops/main/trunk/rose-meta
 UM=https://code.metoffice.gov.uk/svn/um/main/trunk/rose-meta
 VAR=https://code.metoffice.gov.uk/svn/var/main/trunk/rose-meta
