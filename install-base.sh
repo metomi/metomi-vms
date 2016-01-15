@@ -1,7 +1,7 @@
 # Define software versions
-FCM_VERSION=2015.11.0
-CYLC_VERSION=6.7.3
-ROSE_VERSION=2015.11.1
+FCM_VERSION=2015.12.0
+CYLC_VERSION=6.8.0
+ROSE_VERSION=2016.01.0
 
 if [[ $dist == ubuntu ]]; then
   #### Remove some packages we don't need
