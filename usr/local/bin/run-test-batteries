@@ -3,10 +3,6 @@
 cd ~
 export TMPDIR=${TMPDIR:-/var/tmp}
 
-fcm test-battery 2>&1 | tee test-fcm-default.out.$(date +%Y-%m-%dT%H%M)
-cylc test-battery 2>&1 | tee test-cylc-default.out.$(date +%Y-%m-%dT%H%M)
-rose test-battery 2>&1 | tee test-rose-default.out.$(date +%Y-%m-%dT%H%M)
-
-FCM_VERSION=master fcm test-battery 2>&1 | tee test-fcm-master.out.$(date +%Y-%m-%dT%H%M)
-CYLC_VERSION=master cylc test-battery 2>&1 | tee test-cylc-master.out.$(date +%Y-%m-%dT%H%M)
-ROSE_VERSION=master rose test-battery 2>&1 | tee test-rose-master.out.$(date +%Y-%m-%dT%H%M)
+FCM_VERSION=${1:-} fcm test-battery 2>&1 | tee test-fcm.out.$(date +%Y-%m-%dT%H%M)
+CYLC_VERSION=${1:-} cylc test-battery 2>&1 | tee test-cylc.out.$(date +%Y-%m-%dT%H%M)
+ROSE_VERSION=${1:-} rose test-battery 2>&1 | tee test-rose.out.$(date +%Y-%m-%dT%H%M)
