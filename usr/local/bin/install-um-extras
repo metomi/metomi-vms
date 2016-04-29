@@ -1,0 +1,12 @@
+#!/bin/bash
+set -eu
+
+if [[ $USER != root ]]; then
+  echo "Please run this command via sudo"
+  exit 1
+fi
+
+set -x
+
+#### Install UM dependencies
+apt-get install -y mpich libnetcdf-dev libhdf5-serial-dev netcdf-bin libnetcdff-dev libnetcdff6 libgrib-api-dev

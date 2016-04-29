@@ -1,0 +1,83 @@
+#!/bin/bash
+
+# Set up additional files for the UM:
+# 1) Check out, build and install GCOM
+# 2) Create keyword.cfg file
+
+if [ "$#" -gt 2 ]; then
+  echo "Usage: $(basename $0) [revision] [source]" 
+  exit 1
+fi
+
+vn=HEAD
+src=fcm:gcom.x/trunk
+if [[ -n "$1" ]]; then
+  vn=$1
+fi
+echo "Installing GCOM from revision $vn"
+
+if [[ -n "$2" ]]; then
+  src=$2
+fi
+echo "Installing GCOM from source $src"
+
+# Check the combined pair is valid
+fcm info $src@$vn > /dev/null 2>&1 || exit "$src@$vn is not a valid URL"
+
+tmpdir=$(mktemp -d)
+cd $tmpdir
+
+echo "Checking out GCOM from $src@$vn"
+fcm co -q $src@$vn
+cd trunk
+echo "Running rose-stem to build GCOM"
+rose stem --group=all --name=gcom_install --new -- --debug
+echo "GCOM suite output at http://localhost/rose-bush/jobs/vagrant/gcom_install"
+
+# copy dirs to right place (remember may have to overwrite...)
+gdir="/home/vagrant/umdir/gcom"
+cdir="/home/vagrant/cylc-run/gcom_install/work"
+
+cd $cdir
+prefix="gcom_rosestem"
+mpichdir="vm_gfortran_mpich3/build"
+serialdir="vm_gfortran_serial/build"
+serial32dir="vm32B_gfortran_serial/build"
+if [ -d "$prefix$mpichdir" ] || [ -d "$prefix$serialdir" ] || [ -d "$prefix$serial32dir"]; then
+  echo "Found one or more GCOM build directories to install"
+else
+  exit 1 "Cannot find a GCOM build directory in $cdir"
+fi
+
+rm -rf $gdir/$vn
+mkdir -p $gdir/$vn/$mpichdir
+mkdir -p $gdir/$vn/$serialdir
+mkdir -p $gdir/$vn/$serial32dir
+cp -r $prefix$mpichdir/* $gdir/$vn/$mpichdir || echo "Failed to install parallel GCOM library"
+cp -r $prefix$serialdir/* $gdir/$vn/$serialdir || echo "Failed to install serial GCOM library"
+cp -r $prefix$serial32dir/* $gdir/$vn/$serial32dir || echo "Failed to install 32-bit serial GCOM library"
+
+# set up symlink 'default'; multiple gcom versions are permitted.
+cd $gdir
+rm -f default
+ln -s $vn default
+
+# Clean up; cylc-run directory is kept in case of problems.
+rm -rf $tmpdir
+
+echo "GCOM library has been installed to /home/vagrant/umdir/gcom/default"
+
+echo "Setting up additional FCM keywords"
+mkdir -p ~/.metomi/fcm
+cat > ~/.metomi/fcm/keyword.cfg <<EOF
+location{primary}[um.xm] = https://code.metoffice.gov.uk/svn/um/main
+location{primary}[jules.xm] = https://code.metoffice.gov.uk/svn/jules/main
+location{primary}[socrates.xm] = https://code.metoffice.gov.uk/svn/socrates/main
+location{primary}[um_aux.xm] = https://code.metoffice.gov.uk/svn/um/AUX
+location{primary}[um_doc.xm] = https://code.metoffice.gov.uk/svn/um/doc
+EOF
+
+echo
+echo "Finished."
+echo "To work offline, check out a working copy of the UM and run:"
+echo "rose stem --group=install_source [--source=<source1> ...]"
