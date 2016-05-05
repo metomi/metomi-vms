@@ -1,7 +1,7 @@
 # Define software versions
-FCM_VERSION=2016.02.0
-CYLC_VERSION=6.9.1
-ROSE_VERSION=2016.03.0
+FCM_VERSION=2016.05.0
+CYLC_VERSION=6.10.0
+ROSE_VERSION=2016.05.0
 
 if [[ $dist == ubuntu ]]; then
   #### Remove some packages we don't need
@@ -56,7 +56,7 @@ ln -sf /opt/metomi-site/etc/fcm/external.cfg /opt/fcm-master/etc/fcm/external.cf
 
 #### Install Cylc
 if [[ $dist == ubuntu ]]; then
-  apt-get install -y graphviz pyro python-jinja2 python-pygraphviz python-gtk2 sqlite3
+  apt-get install -y graphviz python-jinja2 python-pygraphviz python-gtk2 sqlite3
 elif [[ $dist == centos ]]; then
   if [[ $release == 6 ]]; then
     yum install -y python-setuptools gcc
@@ -69,7 +69,6 @@ elif [[ $dist == centos ]]; then
   yum install -y lsof
   yum install -y graphviz-devel python-devel
   easy_install pygraphviz
-  easy_install pyro==3.16
 fi
 # Get Cylc from github
 svn export -q https://github.com/cylc/cylc/tags/$CYLC_VERSION /opt/cylc-$CYLC_VERSION
