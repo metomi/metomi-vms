@@ -57,6 +57,7 @@ ln -sf /opt/metomi-site/etc/fcm/external.cfg /opt/fcm-master/etc/fcm/external.cf
 #### Install Cylc
 if [[ $dist == ubuntu ]]; then
   apt-get install -y graphviz python-jinja2 python-pygraphviz python-gtk2 sqlite3
+  apt-get install -y pep8 # used by test-battery
 elif [[ $dist == centos ]]; then
   if [[ $release == 6 ]]; then
     yum install -y python-setuptools gcc
