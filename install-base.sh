@@ -5,8 +5,7 @@ ROSE_VERSION=2016.05.1
 
 if [[ $dist == ubuntu ]]; then
   #### Remove some packages we don't need
-  apt-get remove -y chef puppet
-  apt-get autoremove -y
+  apt-get remove --auto-remove -y chef puppet
 elif [[ $dist == centos ]]; then
   #### Disable SELinux to keep things simple
   yum install -y perl

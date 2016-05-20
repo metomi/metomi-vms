@@ -4,7 +4,7 @@ if [[ $dist == ubuntu ]]; then
   if [[ $release == 1504 || $release == 1510 ]]; then
     apt-get install -y lxsession-logout
   fi
-  apt-get remove -y xscreensaver xscreensaver-data gnome-keyring
+  apt-get remove --auto-remove -y xscreensaver xscreensaver-data gnome-keyring
   # Set language
   apt-get install -y language-pack-en
   update-locale LANG=en_GB.utf8
