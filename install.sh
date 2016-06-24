@@ -21,7 +21,7 @@ if [[ $dist == ubuntu ]]; then
   fi
 fi
 
-if [[ $dist == centos ]]; then
+if [[ $dist == redhat && $release == centos* ]]; then
   # Add the EPEL repository
   yum install -y epel-release
 fi
@@ -30,7 +30,7 @@ fi
 if [[ $dist == ubuntu && $release == 1404 ]]; then
   add-apt-repository 'deb http://opensource.wandisco.com/ubuntu trusty svn18'
   wget -q http://opensource.wandisco.com/wandisco-debian.gpg -O- | sudo apt-key add -
-elif [[ $dist == centos && $release == 6 ]]; then
+elif [[ $dist == redhat && $release == centos6 ]]; then
   cat  > /etc/yum.repos.d/WANdisco-svn.repo <<EOF
 [WANdisco-svn]
 name=WANdisco SVN Repo
@@ -39,7 +39,7 @@ baseurl=http://opensource.wandisco.com/centos/6/svn-1.8/RPMS/\$basearch/
 gpgcheck=1
 gpgkey=http://opensource.wandisco.com/RPM-GPG-KEY-WANdisco
 EOF
-elif [[ $dist == centos && $release == 7 ]]; then
+elif [[ $dist == redhat && $release == centos7 ]]; then
   cat  > /etc/yum.repos.d/WANdisco-svn.repo <<EOF
 [WANdisco-svn]
 name=WANdisco SVN Repo
@@ -54,7 +54,7 @@ fi
 if [[ $dist == ubuntu ]]; then
   apt-get update -y
   apt-get upgrade -y
-elif [[ $dist == centos ]]; then
+elif [[ $dist == redhat ]]; then
   # NB: Disabled since /vagrant fails to mount after this is run
   : #yum update -y
 fi
@@ -62,7 +62,7 @@ fi
 # Use dos2unix in case any files have Windows EOL characters
 if [[ $dist == ubuntu ]]; then
   apt-get install -y dos2unix
-elif [[ $dist == centos ]]; then
+elif [[ $dist == redhat ]]; then
   yum install -y dos2unix
 fi
 

@@ -6,11 +6,16 @@ ROSE_VERSION=2016.06.0
 if [[ $dist == ubuntu ]]; then
   #### Remove some packages we don't need
   apt-get remove --auto-remove -y chef puppet
-elif [[ $dist == centos ]]; then
+elif [[ $dist == redhat ]]; then
   #### Disable SELinux to keep things simple
   yum install -y perl
   setenforce 0
   perl -pi -e 's/^SELINUX=enforcing/SELINUX=disabled/;' /etc/selinux/config
+fi
+
+if [[ $dist == redhat && $release == fedora23 ]]; then
+  #### Enable X applications to open the display
+  yum install -y xauth
 fi
 
 #### Install commonly used editors
@@ -18,10 +23,16 @@ if [[ $dist == ubuntu ]]; then
   apt-get install -y dictionaries-common # leaving this to be installed automatically results in errors
   apt-get install -y gedit vim-gtk emacs
   # Set the default editor in .profile
+  echo "export SVN_EDITOR='gvim -f'" >>.profile
   echo "export EDITOR=gedit" >>.profile
-elif [[ $dist == centos ]]; then
+elif [[ $dist == redhat ]]; then
+  if [[ $release == fedora23 ]]; then
+    # gvim fails to install unless vim-minimal is updated first
+    yum update -y vim-minimal
+  fi
   yum install -y gedit gvim emacs
   # Set the default editor in .bash_profile
+  echo "export SVN_EDITOR='gvim -f'" >>.bash_profile
   echo "export EDITOR=gedit" >>.bash_profile
 fi
 
@@ -29,14 +40,12 @@ fi
 if [[ $dist == ubuntu ]]; then
   apt-get install -y subversion firefox tkcvs tk kdiff3 libxml-parser-perl
   apt-get install -y m4 libconfig-inifiles-perl libdbi-perl g++ libsvn-perl
-elif [[ $dist == centos ]]; then
+elif [[ $dist == redhat ]]; then
   yum install -y subversion firefox tkcvs kdiff3 perl-core perl-XML-Parser
   yum install -y perl-Config-IniFiles subversion-perl
   yum install -y gcc-c++  # used by fcm test-battery
-  if [[ $release == 6 ]]; then
-    yum install -y perl-DBI
-  elif [[ $release == 7 ]]; then
-    yum install -y m4
+  if [[ $release == fedora23 ]]; then
+    yum install -y m4 perl-DBI
   fi
 fi
 # Get FCM from github
@@ -57,18 +66,21 @@ ln -sf /opt/metomi-site/etc/fcm/external.cfg /opt/fcm-master/etc/fcm/external.cf
 if [[ $dist == ubuntu ]]; then
   apt-get install -y graphviz python-jinja2 python-pygraphviz python-gtk2 sqlite3
   apt-get install -y pep8 # used by test-battery
-elif [[ $dist == centos ]]; then
-  if [[ $release == 6 ]]; then
-    yum install -y python-setuptools gcc
+elif [[ $dist == redhat ]]; then
+  yum install -y python-setuptools graphviz at lsof python-pep8
+  service atd start
+  yum install -y graphviz-devel python-devel
+  if [[ $release == fedora23 ]]; then
+    yum install -y redhat-rpm-config
+  fi
+  easy_install pygraphviz
+  if [[ $release == centos6 ]]; then
     easy_install jinja2
-  elif [[ $release == 7 ]]; then
+  else
     yum install -y python-jinja2 pygtk2
   fi
-  yum install -y graphviz at
-  service atd start
-  yum install -y lsof
-  yum install -y graphviz-devel python-devel
-  easy_install pygraphviz
+  # Ensure "hostname -f" returns the fully qualified name
+  perl -pi -e 's/localhost localhost.localdomain/localhost.localdomain localhost/;' /etc/hosts
 fi
 # Get Cylc from github
 svn export -q https://github.com/cylc/cylc/tags/$CYLC_VERSION /opt/cylc-$CYLC_VERSION
@@ -97,10 +109,14 @@ if [[ $dist == ubuntu ]]; then
   if [[ $release == 1504 ]]; then
     apt-get install -y python-requests
   fi
-elif [[ $dist == centos ]]; then
+elif [[ $dist == redhat ]]; then
   yum install -y python-simplejson rsync xterm
   yum install -y gcc-gfortran # gfortran is used in the brief tour suite
-  easy_install requests
+  if [[ $release == centos6 ]]; then
+    easy_install requests
+  else
+    yum install -y python-requests
+  fi
 fi
 # Get Rose from github
 svn export -q https://github.com/metomi/rose/tags/$ROSE_VERSION /opt/rose-$ROSE_VERSION
@@ -115,14 +131,14 @@ ln -sf rose rosie
 # Configure Rose
 if [[ $dist == ubuntu ]]; then
   dos2unix -n /vagrant/opt/metomi-site/etc/rose.conf /opt/metomi-site/etc/rose.conf
-elif [[ $dist == centos ]]; then
-  dos2unix -n /vagrant/opt/metomi-site/etc/rose.conf.centos /opt/metomi-site/etc/rose.conf
+elif [[ $dist == redhat ]]; then
+  dos2unix -n /vagrant/opt/metomi-site/etc/rose.conf.redhat /opt/metomi-site/etc/rose.conf
 fi
 ln -sf /opt/metomi-site/etc/rose.conf /opt/rose-$ROSE_VERSION/etc/rose.conf
 ln -sf /opt/metomi-site/etc/rose.conf /opt/rose-master/etc/rose.conf
 
 #### Configure syntax highlighting & bash completion
-if [[ $dist == centos && $release == 6 ]]; then
+if [[ $dist == redhat && $release == centos6 ]]; then
   sudo -u vagrant mkdir -p /home/vagrant/.local/share/gtksourceview-2.0/language-specs/
   sudo -u vagrant ln -sf /opt/cylc/conf/cylc.lang /home/vagrant/.local/share/gtksourceview-2.0/language-specs
   sudo -u vagrant ln -sf /opt/rose/etc/rose-conf.lang /home/vagrant/.local/share/gtksourceview-2.0/language-specs
@@ -139,7 +155,7 @@ sudo -u vagrant mkdir -p /home/vagrant/.emacs.d/lisp
 sudo -u vagrant ln -sf /opt/cylc/conf/cylc-mode.el /home/vagrant/.emacs.d/lisp
 sudo -u vagrant ln -sf /opt/rose/etc/rose-conf-mode.el /home/vagrant/.emacs.d/lisp
 sudo -u vagrant dos2unix -n /vagrant/home/.emacs /home/vagrant/.emacs
-if [[ $dist == centos ]]; then
+if [[ $dist == redhat ]]; then
   echo '[[ "$-" != *i* ]] && return # Stop here if not running interactively' >>/home/vagrant/.bashrc
 fi
 echo "[[ -f /opt/rose/etc/rose-bash-completion ]] && . /opt/rose/etc/rose-bash-completion" >>/home/vagrant/.bashrc
@@ -147,31 +163,35 @@ echo "[[ -f /opt/rose/etc/rose-bash-completion ]] && . /opt/rose/etc/rose-bash-c
 #### Configure rose bush & rosie web services (with a local rosie repository)
 if [[ $dist == ubuntu ]]; then
   apt-get install -y apache2 libapache2-mod-wsgi python-cherrypy3 libapache2-svn apache2-utils python-sqlalchemy
-elif [[ $dist == centos && $release == 6 ]]; then
-  yum install -y mod_dav_svn mod_wsgi python-cherrypy
-  easy_install sqlalchemy
-elif [[ $dist == centos && $release == 7 ]]; then
-  yum install -y mod_dav_svn mod_wsgi python-cherrypy python-sqlalchemy
+elif [[ $dist == redhat ]]; then
+  if [[ $release == centos6 ]]; then
+    yum install -y mod_dav_svn mod_wsgi python-cherrypy
+    easy_install sqlalchemy
+  else
+    yum install -y mod_dav_svn mod_wsgi python-cherrypy python-sqlalchemy
+  fi
 fi
 # Configure apache
 mkdir -p /opt/metomi-site/etc/httpd
-if [[ $dist == centos && $release == 6 ]]; then
+if [[ $dist == redhat && $release == centos6 ]]; then
   dos2unix -n /vagrant/opt/metomi-site/etc/httpd/rosie-wsgi.conf.centos-6 /opt/metomi-site/etc/httpd/rosie-wsgi.conf
 else
   dos2unix -n /vagrant/opt/metomi-site/etc/httpd/rosie-wsgi.conf /opt/metomi-site/etc/httpd/rosie-wsgi.conf
 fi
 if [[ $dist == ubuntu ]]; then
   dos2unix -n /vagrant/opt/metomi-site/etc/httpd/svn.conf /opt/metomi-site/etc/httpd/svn.conf
-elif [[ $dist == centos ]]; then
-  dos2unix -n /vagrant/opt/metomi-site/etc/httpd/svn.conf.centos /opt/metomi-site/etc/httpd/svn.conf
+elif [[ $dist == redhat ]]; then
+  dos2unix -n /vagrant/opt/metomi-site/etc/httpd/svn.conf.redhat /opt/metomi-site/etc/httpd/svn.conf
 fi
 if [[ $dist == ubuntu ]]; then
   ln -sf /opt/metomi-site/etc/httpd/rosie-wsgi.conf /etc/apache2/conf-enabled/rosie-wsgi.conf
   ln -sf /opt/metomi-site/etc/httpd/svn.conf /etc/apache2/conf-enabled/svn.conf
   service apache2 restart
-elif [[ $dist == centos ]]; then
+elif [[ $dist == redhat ]]; then
   ln -sf /opt/metomi-site/etc/httpd/rosie-wsgi.conf /etc/httpd/conf.d/rosie-wsgi.conf
-  rm /etc/httpd/conf.d/subversion.conf
+  if [[ $release == centos* ]]; then
+    rm /etc/httpd/conf.d/subversion.conf
+  fi
   ln -sf /opt/metomi-site/etc/httpd/svn.conf /etc/httpd/conf.d/subversion.conf
   service httpd start
   chkconfig --level 345 httpd on
@@ -182,7 +202,7 @@ mkdir /srv/svn
 if [[ $dist == ubuntu ]]; then
   sudo chown www-data /srv/svn
   sudo -u www-data svnadmin create /srv/svn/roses-tmp
-elif [[ $dist == centos ]]; then
+elif [[ $dist == redhat ]]; then
   sudo chown apache /srv/svn
   sudo -u apache svnadmin create /srv/svn/roses-tmp
 fi
@@ -210,7 +230,7 @@ dos2unix -n /vagrant/opt/metomi-site/etc/hooks/post-commit /opt/metomi-site/etc/
 ln -sf /opt/metomi-site/etc/hooks/post-commit /srv/svn/roses-tmp/hooks/post-commit
 if [[ $dist == ubuntu ]]; then
   sudo -u www-data /opt/rose/sbin/rosa db-create
-elif [[ $dist == centos ]]; then
+elif [[ $dist == redhat ]]; then
   sudo -u apache /opt/rose/sbin/rosa db-create
 fi
 
