@@ -240,3 +240,4 @@ dos2unix -n /vagrant/usr/local/bin/install-jules-extras /usr/local/bin/install-j
 dos2unix -n /vagrant/usr/local/bin/install-jules-gswp2-data /usr/local/bin/install-jules-gswp2-data
 dos2unix -n /vagrant/usr/local/bin/install-um-extras /usr/local/bin/install-um-extras
 dos2unix -n /vagrant/usr/local/bin/um-setup /usr/local/bin/um-setup
+dos2unix -n /vagrant/usr/local/bin/install-um-data /usr/local/bin/install-um-data
