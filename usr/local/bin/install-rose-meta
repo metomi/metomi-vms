@@ -1,5 +1,5 @@
 #!/bin/bash
-set -eu
+set -u
 
 meta_path=/home/vagrant/etc/rose-meta
 meta_file=$meta_path/rose-meta.conf
@@ -14,17 +14,31 @@ OPS=https://code.metoffice.gov.uk/svn/ops/main/trunk/rose-meta
 UM=https://code.metoffice.gov.uk/svn/um/main/trunk/rose-meta
 VAR=https://code.metoffice.gov.uk/svn/var/main/trunk/rose-meta
 EOF
-    echo [info] Please edit $meta_file to change what metadata is installed.
-    echo [info] Current contents of $meta_file:
+    echo [info] Setup $meta_file as follows:
     cat $meta_file
+fi
+echo [info] To change what metadata is installed edit: $meta_file
+
+# Check SRS access is working
+svn info --non-interactive https://code.metoffice.gov.uk/svn/test >/dev/null 2>&1
+if [[ $? != 0 ]]; then
+    echo "[ERROR] Unable to access Met Office Science Repository Service"
+    echo "Please ensure you have cached your password before running this command"
+    exit 1
 fi
 
 # Checkout a working copy for each metadata configuration directory
 for PROJECT in $(rose config -f $meta_file -k); do
     echo [info] Installing / updating metadata for $PROJECT ...
     URL=$(rose config -f $meta_file $PROJECT)
-    for NAME in $(svn ls $URL); do
-        svn checkout -q $URL/$NAME
-    done
+    svn info --non-interactive $URL >/dev/null 2>&1
+    if [[ $? != 0 ]]; then
+        echo "[WARN] Unable to access $URL, skipping $PROJECT ..."
+    else
+        for NAME in $(svn ls --non-interactive $URL); do
+            echo "  $NAME"
+            svn checkout --non-interactive -q $URL/$NAME
+        done
+    fi
 done
 echo [info] Done.
