@@ -41,6 +41,7 @@ python setup.py install
 mkdir -p /jules/rose-stem-kgo
 mkdir -p /jules/benchmarking-data
 # Download the main benchmarking data and unpack it into the benchmarking-data directory
-curl -L -s -S ftp://ftp.nwl.ac.uk/pub/julesftp/benchmark.data.tar.gz | tar -C /jules/benchmarking-data -xz
+### Disabled until new location found
+###curl -L -s -S ftp://ftp.nwl.ac.uk/pub/julesftp/benchmark.data.tar.gz | tar -C /jules/benchmarking-data -xz
 # Make sure the vagrant user owns the /jules directory and all its contents
 chown -R vagrant:vagrant /jules
