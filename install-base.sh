@@ -67,17 +67,18 @@ if [[ $dist == ubuntu ]]; then
   apt-get install -y graphviz python-jinja2 python-pygraphviz python-gtk2 sqlite3
   apt-get install -y pep8 # used by test-battery
 elif [[ $dist == redhat ]]; then
-  yum install -y python-setuptools graphviz at lsof python-pep8
+  yum install -y python-pip graphviz at lsof python-pep8
   service atd start
   yum install -y graphviz-devel python-devel
   if [[ $release == fedora23 ]]; then
     yum install -y redhat-rpm-config
   fi
-  easy_install pygraphviz
   if [[ $release == centos6 ]]; then
-    easy_install jinja2
+    pip install jinja2
+    easy_install pygraphviz # pip install fails
   else
     yum install -y python-jinja2 pygtk2
+    pip install pygraphviz
   fi
   # Ensure "hostname -f" returns the fully qualified name
   perl -pi -e 's/localhost localhost.localdomain/localhost.localdomain localhost/;' /etc/hosts
@@ -109,15 +110,17 @@ if [[ $dist == ubuntu ]]; then
   if [[ $release == 1504 ]]; then
     apt-get install -y python-requests
   fi
+  apt-get install -y python-pip
 elif [[ $dist == redhat ]]; then
   yum install -y python-simplejson rsync xterm
   yum install -y gcc-gfortran # gfortran is used in the brief tour suite
   if [[ $release == centos6 ]]; then
-    easy_install requests
+    pip install requests
   else
     yum install -y python-requests
   fi
 fi
+pip install pytest-tap # used by test-battery
 # Get Rose from github
 svn export -q https://github.com/metomi/rose/tags/$ROSE_VERSION /opt/rose-$ROSE_VERSION
 # Create a symlink to make this the default version
@@ -166,7 +169,7 @@ if [[ $dist == ubuntu ]]; then
 elif [[ $dist == redhat ]]; then
   if [[ $release == centos6 ]]; then
     yum install -y mod_dav_svn mod_wsgi python-cherrypy
-    easy_install sqlalchemy
+    pip install sqlalchemy
   else
     yum install -y mod_dav_svn mod_wsgi python-cherrypy python-sqlalchemy
   fi
