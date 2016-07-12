@@ -8,5 +8,5 @@ fi
 
 set -x
 
-#### Install UM dependencies
-apt-get install -y mpich libnetcdf-dev libhdf5-serial-dev netcdf-bin libnetcdff-dev libnetcdff6 libgrib-api-dev
+#### Install UM and mule dependencies
+apt-get install -y mpich libnetcdf-dev libhdf5-serial-dev netcdf-bin libnetcdff-dev libnetcdff6 libgrib-api-dev python-numpy python-dev python-mock
