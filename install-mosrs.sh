@@ -1,6 +1,15 @@
 #### Install and configure gpg-agent
 if [[ $dist == ubuntu ]]; then
   apt-get install -y gnupg-agent
+elif [[ $dist == redhat && $release == fedora23 ]]; then
+  yum install -y zlib-devel libgpg-error-devel libgcrypt-devel libassuan-devel libksba-devel
+  curl -L -s -S https://www.gnupg.org/ftp/gcrypt/gnupg/gnupg-2.0.30.tar.bz2 | tar -xj
+  cd gnupg-2.0.30
+  ./configure
+  make
+  make install
+  cd ..
+  rm -r gnupg-2.0.30
 fi
 # Add script that caches the user's Science Repository Service password for the session
 dos2unix -n /vagrant/usr/local/bin/mosrs-cache-password /usr/local/bin/mosrs-cache-password
