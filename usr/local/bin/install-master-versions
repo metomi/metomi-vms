@@ -1,0 +1,50 @@
+#!/bin/bash
+set -eu
+
+if [[ $USER != root ]]; then
+  echo "Please run this command via sudo"
+  exit 1
+fi
+
+#### Install FCM
+if [[ -d /opt/fcm-master ]]; then
+  echo Updating the master version of FCM
+  svn up /opt/fcm-master
+else
+  echo Installing the master version of FCM
+  # Checkout the latest version of master from github
+  svn co -q https://github.com/metomi/fcm/trunk /opt/fcm-master
+  # Configure FCM diff and merge viewers
+  ln -sf /opt/metomi-site/etc/fcm/external.cfg /opt/fcm-master/etc/fcm/external.cfg
+  # Set up FCM keywords
+  if [[ -r /opt/metomi-site/etc/fcm/keyword.cfg ]]; then
+    ln -sf /opt/metomi-site/etc/fcm/keyword.cfg /opt/fcm-master/etc/fcm/keyword.cfg
+  fi
+fi
+
+#### Install Cylc
+if [[ -d /opt/cylc-master ]]; then
+  echo Updating the master version of Cylc
+  svn up /opt/cylc-master
+else
+  echo Installing the master version of Cylc
+  # Checkout the latest version of master from github
+  svn co -q https://github.com/cylc/cylc/trunk /opt/cylc-master
+  # Create the version file
+  cd /opt/cylc-master
+  make version
+  # Configure additional copyable environment variables
+  ln -sf /opt/metomi-site/conf/global.rc /opt/cylc-master/conf/global.rc
+fi
+
+#### Install Rose
+if [[ -d /opt/rose-master ]]; then
+  echo Updating the master version of Rose
+  svn up /opt/rose-master
+else
+  echo Installing the master version of Rose
+  # Checkout the latest version of master from github
+  svn co -q https://github.com/metomi/rose/trunk /opt/rose-master
+  # Configure Rose
+  ln -sf /opt/metomi-site/etc/rose.conf /opt/rose-master/etc/rose.conf
+fi

@@ -3,6 +3,17 @@
 cd ~
 export TMPDIR=${TMPDIR:-/var/tmp}
 
-FCM_VERSION=${1:-} fcm test-battery 2>&1 | tee test-fcm.out.$(date +%Y-%m-%dT%H%M)
-CYLC_VERSION=${1:-} cylc test-battery 2>&1 | tee test-cylc.out.$(date +%Y-%m-%dT%H%M)
-ROSE_VERSION=${1:-} rose test-battery 2>&1 | tee test-rose.out.$(date +%Y-%m-%dT%H%M)
+if [[ $# != 0 ]]; then
+  if [[ $1 == "-m" || $1 == "--master" ]]; then
+    sudo install-master-versions
+    export FCM_VERSION=master
+    export CYLC_VERSION=master
+    export ROSE_VERSION=master
+  else
+    echo [ERROR] Unexpected argument: $1
+  fi
+fi
+
+fcm test-battery 2>&1 | tee test-fcm.out.$(date +%Y-%m-%dT%H%M)
+cylc test-battery 2>&1 | tee test-cylc.out.$(date +%Y-%m-%dT%H%M)
+rose test-battery 2>&1 | tee test-rose.out.$(date +%Y-%m-%dT%H%M)

@@ -52,15 +52,12 @@ fi
 svn export -q https://github.com/metomi/fcm/tags/$FCM_VERSION /opt/fcm-$FCM_VERSION
 # Create a symlink to make this the default version
 ln -sf /opt/fcm-$FCM_VERSION /opt/fcm
-# Also checkout the latest version of master for test purposes
-svn co -q https://github.com/metomi/fcm/trunk /opt/fcm-master
 # Add the fcm wrapper script
 dos2unix -n /vagrant/usr/local/bin/fcm /usr/local/bin/fcm
 # Configure FCM diff and merge viewers
 mkdir -p /opt/metomi-site/etc/fcm
 dos2unix -n /vagrant/opt/metomi-site/etc/fcm/external.cfg /opt/metomi-site/etc/fcm/external.cfg
 ln -sf /opt/metomi-site/etc/fcm/external.cfg /opt/fcm-$FCM_VERSION/etc/fcm/external.cfg
-ln -sf /opt/metomi-site/etc/fcm/external.cfg /opt/fcm-master/etc/fcm/external.cfg
 
 #### Install Cylc
 if [[ $dist == ubuntu ]]; then
@@ -87,8 +84,6 @@ fi
 svn export -q https://github.com/cylc/cylc/tags/$CYLC_VERSION /opt/cylc-$CYLC_VERSION
 # Create a symlink to make this the default version
 ln -sf /opt/cylc-$CYLC_VERSION /opt/cylc
-# Also checkout the latest version of master for test purposes
-svn co -q https://github.com/cylc/cylc/trunk /opt/cylc-master
 # Add the Cylc wrapper scripts
 dos2unix -n /vagrant/usr/local/bin/cylc /usr/local/bin/cylc
 cd /usr/local/bin
@@ -96,13 +91,10 @@ ln -sf cylc gcylc
 # Create the version file
 cd /opt/cylc-$CYLC_VERSION
 make version
-cd /opt/cylc-master
-make version
 # Configure additional copyable environment variables
 mkdir -p /opt/metomi-site/conf
 dos2unix -n /vagrant/opt/metomi-site/conf/global.rc /opt/metomi-site/conf/global.rc
 ln -sf /opt/metomi-site/conf/global.rc /opt/cylc-$CYLC_VERSION/conf/global.rc
-ln -sf /opt/metomi-site/conf/global.rc /opt/cylc-master/conf/global.rc
 
 #### Install Rose
 if [[ $dist == ubuntu ]]; then
@@ -125,8 +117,6 @@ pip install pytest-tap # used by test-battery
 svn export -q https://github.com/metomi/rose/tags/$ROSE_VERSION /opt/rose-$ROSE_VERSION
 # Create a symlink to make this the default version
 ln -sf /opt/rose-$ROSE_VERSION /opt/rose
-# Also checkout the latest version of master for test purposes
-svn co -q https://github.com/metomi/rose/trunk /opt/rose-master
 # Add the Rose wrapper scripts
 dos2unix -n /vagrant/usr/local/bin/rose /usr/local/bin/rose
 cd /usr/local/bin
@@ -138,7 +128,6 @@ elif [[ $dist == redhat ]]; then
   dos2unix -n /vagrant/opt/metomi-site/etc/rose.conf.redhat /opt/metomi-site/etc/rose.conf
 fi
 ln -sf /opt/metomi-site/etc/rose.conf /opt/rose-$ROSE_VERSION/etc/rose.conf
-ln -sf /opt/metomi-site/etc/rose.conf /opt/rose-master/etc/rose.conf
 
 #### Configure syntax highlighting & bash completion
 if [[ $dist == redhat && $release == centos6 ]]; then
@@ -239,6 +228,7 @@ fi
 
 #### Miscellaneous utilities
 dos2unix -n /vagrant/usr/local/bin/run-test-batteries /usr/local/bin/run-test-batteries
+dos2unix -n /vagrant/usr/local/bin/install-master-versions /usr/local/bin/install-master-versions
 dos2unix -n /vagrant/usr/local/bin/install-jules-extras /usr/local/bin/install-jules-extras
 dos2unix -n /vagrant/usr/local/bin/install-jules-gswp2-data /usr/local/bin/install-jules-gswp2-data
 dos2unix -n /vagrant/usr/local/bin/install-um-extras /usr/local/bin/install-um-extras
