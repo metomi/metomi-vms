@@ -112,7 +112,7 @@ elif [[ $dist == redhat ]]; then
     yum install -y python-requests
   fi
 fi
-pip install pytest-tap # used by test-battery
+pip install mock pytest-tap # used by test-battery
 # Get Rose from github
 svn export -q https://github.com/metomi/rose/tags/$ROSE_VERSION /opt/rose-$ROSE_VERSION
 # Create a symlink to make this the default version
