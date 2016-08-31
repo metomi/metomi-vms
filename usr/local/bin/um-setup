@@ -36,10 +36,10 @@ else
   cp -r $src $tmpdir/gcom_wc
 fi
 
-echo "Installing GCOM from $src"
+echo "Installing GCOM from: $src"
 
 cd $tmpdir/gcom_wc
-echo "Running rose-stem to build GCOM"
+echo "Running rose-stem to build GCOM..."
 rose stem --group=all --name=gcom_install --new -- --debug
 echo "GCOM suite output at http://localhost/rose-bush/jobs/$USER/gcom_install"
 
@@ -76,7 +76,7 @@ rm -rf $tmpdir
 
 echo "GCOM library has been installed to $HOME/umdir/gcom/default"
 
-echo "Setting up additional FCM keywords"
+echo "Setting up additional FCM keywords..."
 mkdir -p $HOME/.metomi/fcm
 echo "location{primary}[um.xm] = https://code.metoffice.gov.uk/svn/um/main
 location{primary}[jules.xm] = https://code.metoffice.gov.uk/svn/jules/main
@@ -85,12 +85,15 @@ location{primary}[um_aux.xm] = https://code.metoffice.gov.uk/svn/um/aux
 location{primary}[um_doc.xm] = https://code.metoffice.gov.uk/svn/um/doc
 location{primary}[mule.xm] = https://code.metoffice.gov.uk/svn/um/mule
 
-location{prinary}[um.offline] = file://$HOME/source/um/offline
-location{prinary}[jules.offline] = file://$HOME/source/jules/offline
-location{prinary}[socrates.offline] = file://$HOME/source/socrates/offline
-location{prinary}[um_aux.offline] = file://$HOME/source/um_aux/offline
-location{prinary}[mule.offline] = file://$HOME/source/mule/offline" > $HOME/.metomi/fcm/keyword.cfg
+location{primary}[um.offline] = file://$HOME/source/um/offline
+location{primary}[jules.offline] = file://$HOME/source/jules/offline
+location{primary}[socrates.offline] = file://$HOME/source/socrates/offline
+location{primary}[um_aux.offline] = file://$HOME/source/um_aux/offline
+location{primary}[mule.offline] = file://$HOME/source/mule/offline" > $HOME/.metomi/fcm/keyword.cfg
 
 echo "Local FCM keywords created."
+echo 'Setting $UMDIR...'
+sed -i "/# If not running interactively/c# Set UMDIR\nexport UMDIR=\$HOME/umdir\n\n# If not running interactively, don't do anything else" $HOME/.bashrc
+echo "UMDIR set (open a new terminal to pick this up)."
 echo
 echo "Finished."

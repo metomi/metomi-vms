@@ -10,3 +10,6 @@ set -x
 
 #### Install UM and mule dependencies
 apt-get install -y mpich libnetcdf-dev libhdf5-serial-dev netcdf-bin libnetcdff-dev libnetcdff6 libgrib-api-dev python-numpy python-dev python-mock
+
+#### Add mule to the python packages
+echo "$HOME/umdir/mule/lib" > /usr/lib/python2.7/dist-packages/mule.pth
