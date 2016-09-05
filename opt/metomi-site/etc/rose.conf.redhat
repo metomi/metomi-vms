@@ -7,6 +7,11 @@ image_viewer=firefox
 [rose-config-edit]
 icon-path-scheduler=/opt/cylc/images/icon.png
 
+[rose-mpi-launch]
+launcher-fileopts.mpiexec=-file $ROSE_COMMAND_FILE
+launcher-list=mpiexec
+launcher-preopts.mpiexec=-n $NPROC
+
 [rose-stem]
 automatic-options=SITE=vm
 
