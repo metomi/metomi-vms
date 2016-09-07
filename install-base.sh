@@ -152,6 +152,11 @@ if [[ $dist == redhat ]]; then
 fi
 echo "[[ -f /opt/rose/etc/rose-bash-completion ]] && . /opt/rose/etc/rose-bash-completion" >>/home/vagrant/.bashrc
 
+# Configure firefox as the default PDF viewer
+sudo -u vagrant mkdir -p /home/vagrant/.local/share/applications
+sudo -u vagrant bash -c 'echo "[Added Associations]" >/home/vagrant/.local/share/applications/mimeapps.list'
+sudo -u vagrant bash -c 'echo "application/pdf=firefox.desktop;" >>/home/vagrant/.local/share/applications/mimeapps.list'
+
 #### Configure rose bush & rosie web services (with a local rosie repository)
 if [[ $dist == ubuntu ]]; then
   apt-get install -y apache2 libapache2-mod-wsgi python-cherrypy3 libapache2-svn apache2-utils python-sqlalchemy
