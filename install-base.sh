@@ -49,7 +49,7 @@ elif [[ $dist == redhat ]]; then
   fi
 fi
 # Get FCM from github
-svn export -q https://github.com/metomi/fcm/tags/$FCM_VERSION /opt/fcm-$FCM_VERSION
+curl -L -s -S https://github.com/metomi/fcm/archive/$FCM_VERSION.tar.gz | tar -xz -C /opt
 # Create a symlink to make this the default version
 ln -sf /opt/fcm-$FCM_VERSION /opt/fcm
 # Add the fcm wrapper script
@@ -81,7 +81,7 @@ elif [[ $dist == redhat ]]; then
   perl -pi -e 's/localhost localhost.localdomain/localhost.localdomain localhost/;' /etc/hosts
 fi
 # Get Cylc from github
-svn export -q https://github.com/cylc/cylc/tags/$CYLC_VERSION /opt/cylc-$CYLC_VERSION
+curl -L -s -S https://github.com/cylc/cylc/archive/$CYLC_VERSION.tar.gz | tar -xz -C /opt
 # Create a symlink to make this the default version
 ln -sf /opt/cylc-$CYLC_VERSION /opt/cylc
 # Add the Cylc wrapper scripts
@@ -114,7 +114,7 @@ elif [[ $dist == redhat ]]; then
 fi
 pip install mock pytest-tap # used by test-battery
 # Get Rose from github
-svn export -q https://github.com/metomi/rose/tags/$ROSE_VERSION /opt/rose-$ROSE_VERSION
+curl -L -s -S https://github.com/metomi/rose/archive/$ROSE_VERSION.tar.gz | tar -xz -C /opt
 # Create a symlink to make this the default version
 ln -sf /opt/rose-$ROSE_VERSION /opt/rose
 # Add the Rose wrapper scripts
