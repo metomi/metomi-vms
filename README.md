@@ -15,14 +15,12 @@ Table of contents:
 ## Software Requirements
 
 In order to use a virtual machine (VM), you must first install [VirtualBox](https://www.virtualbox.org/) and [Vagrant](https://www.vagrantup.com/).
-
-These applications provide point-and-click installers for Windows, and can usually be installed via the package manager on Linux systems (although make sure to check that the Vagrant version is at least 1.5 using `vagrant --version`).
+These applications provide point-and-click installers for Windows and can usually be installed via the package manager on Linux systems.
 
 ## Setting up the Default Virtual Machine
 
 Download the setup files from github: https://github.com/metomi/metomi-vms/archive/master.zip.
-Then extract the files and change directory to `metomi-vms-master`.
-* Windows users can navigate to the directory using Windows Explorer and then use `Shift-> Right Mouse Click -> Open command window here`.
+Then extract the files which will be put into a directory called `metomi-vms-master`.
 
 The default VM uses Ubuntu 14.04.
 If necessary you can customise the VM by editing the file `Vagrantfile` as follows:
@@ -35,9 +33,12 @@ If necessary you can customise the VM by editing the file `Vagrantfile` as follo
 
 See the [Vagrant documentation](https://docs.vagrantup.com/v2/virtualbox/configuration.html) for more details on configuration options.
 
+Before proceeding you need to be running a terminal with your current directory set to `metomi-vms-master`.
+* Windows users can navigate to the directory using Windows File Explorer and then use `Shift-> Right Mouse Click -> Open command window here`.
+
 Now run the command `vagrant up` to build and launch the VM.
 This involves downloading a base VM and then installing lots of additional software so it can take a long time (depending on the speed of your internet connection).
-Note that, although a login screen will appear in a separate window, you will not be able to login.
+Note that, although a login screen will appear in a separate window, you will not be able to login at this stage.
 Once the installation is complete the VM will shutdown.
 
 ## Using the Default Virtual Machine
