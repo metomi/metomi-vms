@@ -14,12 +14,17 @@ Table of contents:
 
 ## Software Requirements
 
-In order to use a virtual machine (VM), you must first install [VirtualBox](https://www.virtualbox.org/) and [Vagrant](https://www.vagrantup.com/).
+In order to use a virtual machine (VM), you must first install:
+ * [VirtualBox](https://www.virtualbox.org/), software that enables running of virtual machines
+ * [Vagrant](https://www.vagrantup.com/), software that allows easy configuration of virtual machines.
+
 These applications provide point-and-click installers for Windows and can usually be installed via the package manager on Linux systems.
 
 ## Setting up the Default Virtual Machine
 
-Download the setup files from github: https://github.com/metomi/metomi-vms/archive/master.zip.
+After you have installed VirtualBox and Vagrant, download the metomi VM setup files from github:
+ * https://github.com/metomi/metomi-vms/archive/master.zip.
+
 Then extract the files which will be put into a directory called `metomi-vms-master`.
 
 The default VM uses Ubuntu 14.04.
