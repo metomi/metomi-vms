@@ -4,8 +4,10 @@ CYLC_VERSION=6.11.2
 ROSE_VERSION=2016.11.1
 
 if [[ $dist == ubuntu ]]; then
-  #### Remove some packages we don't need
-  apt-get remove --auto-remove -y chef puppet
+  if [[ $release == 1404 || $release == 1510 ]]; then
+    #### Remove some packages we don't need
+    apt-get remove -q -y --auto-remove chef puppet
+  fi
 elif [[ $dist == redhat ]]; then
   #### Disable SELinux to keep things simple
   yum install -y perl
@@ -13,20 +15,20 @@ elif [[ $dist == redhat ]]; then
   perl -pi -e 's/^SELINUX=enforcing/SELINUX=disabled/;' /etc/selinux/config
 fi
 
-if [[ $dist == redhat && $release == fedora23 ]]; then
+if [[ $dist == redhat && $release == fedora* ]]; then
   #### Enable X applications to open the display
   yum install -y xauth
 fi
 
 #### Install commonly used editors
 if [[ $dist == ubuntu ]]; then
-  apt-get install -y dictionaries-common # leaving this to be installed automatically results in errors
-  apt-get install -y gedit vim-gtk emacs
+  apt-get install -q -y dictionaries-common # leaving this to be installed automatically results in errors
+  apt-get install -q -y gedit vim-gtk emacs
   # Set the default editor in .profile
   echo "export SVN_EDITOR='gvim -f'" >>.profile
   echo "export EDITOR=gedit" >>.profile
 elif [[ $dist == redhat ]]; then
-  if [[ $release == fedora23 ]]; then
+  if [[ $release == fedora* ]]; then
     # gvim fails to install unless vim-minimal is updated first
     yum update -y vim-minimal
   fi
@@ -38,13 +40,13 @@ fi
 
 #### Install FCM
 if [[ $dist == ubuntu ]]; then
-  apt-get install -y subversion firefox tkcvs tk kdiff3 libxml-parser-perl
-  apt-get install -y m4 libconfig-inifiles-perl libdbi-perl g++ libsvn-perl
+  apt-get install -q -y subversion firefox tkcvs tk kdiff3 libxml-parser-perl
+  apt-get install -q -y m4 libconfig-inifiles-perl libdbi-perl g++ libsvn-perl
 elif [[ $dist == redhat ]]; then
   yum install -y subversion firefox tkcvs kdiff3 perl-core perl-XML-Parser
   yum install -y perl-Config-IniFiles subversion-perl
   yum install -y gcc-c++  # used by fcm test-battery
-  if [[ $release == fedora23 ]]; then
+  if [[ $release == fedora* ]]; then
     yum install -y m4 perl-DBI
   fi
 fi
@@ -61,13 +63,13 @@ ln -sf /opt/metomi-site/etc/fcm/external.cfg /opt/fcm-$FCM_VERSION/etc/fcm/exter
 
 #### Install Cylc
 if [[ $dist == ubuntu ]]; then
-  apt-get install -y graphviz python-jinja2 python-pygraphviz python-gtk2 sqlite3
-  apt-get install -y pep8 # used by test-battery
+  apt-get install -q -y graphviz python-jinja2 python-pygraphviz python-gtk2 sqlite3
+  apt-get install -q -y pep8 # used by test-battery
 elif [[ $dist == redhat ]]; then
   yum install -y python-pip graphviz at lsof python-pep8
   service atd start
   yum install -y graphviz-devel python-devel
-  if [[ $release == fedora23 ]]; then
+  if [[ $release == fedora* ]]; then
     yum install -y redhat-rpm-config
   fi
   if [[ $release == centos6 ]]; then
@@ -98,18 +100,22 @@ ln -sf /opt/metomi-site/conf/global.rc /opt/cylc-$CYLC_VERSION/conf/global.rc
 
 #### Install Rose
 if [[ $dist == ubuntu ]]; then
-  apt-get install -y gfortran # gfortran is used in the brief tour suite
-  if [[ $release == 1504 ]]; then
-    apt-get install -y python-requests
+  apt-get install -q -y gfortran # gfortran is used in the brief tour suite
+  apt-get install -q -y python-pip pcregrep
+  if [[ $release == 1510 || $release == 16* ]]; then
+    apt-get install -q -y tidy
   fi
-  apt-get install -y python-pip pcregrep
+  if [[ $release == 16* ]]; then
+    apt-get install -q -y python-requests python-simplejson
+  fi
 elif [[ $dist == redhat ]]; then
   yum install -y python-simplejson rsync xterm
-  yum install -y gcc-gfortran pcre # gfortran is used in the brief tour suite
+  yum install -y gcc-gfortran # gfortran is used in the brief tour suite
   if [[ $release == centos6 ]]; then
     pip install requests
   else
     yum install -y python-requests
+    yum install -y pcre-tools
   fi
 fi
 pip install mock pytest-tap # used by test-battery
@@ -159,7 +165,12 @@ sudo -u vagrant bash -c 'echo "application/pdf=firefox.desktop;" >>/home/vagrant
 
 #### Configure rose bush & rosie web services (with a local rosie repository)
 if [[ $dist == ubuntu ]]; then
-  apt-get install -y apache2 libapache2-mod-wsgi python-cherrypy3 libapache2-svn apache2-utils python-sqlalchemy
+  apt-get install -q -y apache2 libapache2-mod-wsgi python-cherrypy3 apache2-utils python-sqlalchemy
+  if [[ $release == 1404 || $release == 1510 ]]; then
+    apt-get install -q -y libapache2-svn
+  else
+    apt-get install -q -y libapache2-mod-svn
+  fi
 elif [[ $dist == redhat ]]; then
   if [[ $release == centos6 ]]; then
     yum install -y mod_dav_svn mod_wsgi python-cherrypy

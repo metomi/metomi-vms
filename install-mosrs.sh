@@ -1,8 +1,12 @@
 #### Install and configure gpg-agent
-if [[ $dist == ubuntu ]]; then
-  apt-get install -y gnupg-agent
-elif [[ $dist == redhat && $release == fedora23 ]]; then
-  yum install -y zlib-devel libgpg-error-devel libgcrypt-devel libassuan-devel libksba-devel
+if [[ $dist == ubuntu && ($release == 1404 || $release == 1510) ]]; then
+  apt-get install -q -y gnupg-agent
+elif [[ $dist == ubuntu || ($dist == redhat && $release == fedora*) ]]; then
+  if [[ $dist == ubuntu ]]; then
+    apt-get install -q -y libgpg-error-dev libgcrypt20-dev libassuan-dev libksba-dev libpth-dev
+  else
+    yum install -y zlib-devel libgpg-error-devel libgcrypt-devel libassuan-devel libksba-devel
+  fi
   curl -L -s -S https://www.gnupg.org/ftp/gcrypt/gnupg/gnupg-2.0.30.tar.bz2 | tar -xj
   cd gnupg-2.0.30
   ./configure
