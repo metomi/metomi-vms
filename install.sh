@@ -52,6 +52,7 @@ fi
 
 # Get the latest package info and install any updates
 if [[ $dist == ubuntu ]]; then
+  export DEBIAN_FRONTEND=noninteractive  # Disable user interaction
   apt-get update -y
   apt-get upgrade -y
 elif [[ $dist == redhat ]]; then
