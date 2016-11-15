@@ -37,11 +37,7 @@ mkdir -p /opt/unidata
 curl -L -s -S https://pypi.python.org/packages/source/n/netCDF4/netCDF4-1.1.1.tar.gz | tar -C /opt/unidata -xz
 cd /opt/unidata/netCDF4-1.1.1
 python setup.py install
-# Create the data directories
+# Create the kgo directory
 mkdir -p /jules/rose-stem-kgo
-mkdir -p /jules/benchmarking-data
-# Download the main benchmarking data and unpack it into the benchmarking-data directory
-### Disabled until new location found
-###curl -L -s -S ftp://ftp.nwl.ac.uk/pub/julesftp/benchmark.data.tar.gz | tar -C /jules/benchmarking-data -xz
 # Make sure the vagrant user owns the /jules directory and all its contents
 chown -R vagrant:vagrant /jules
