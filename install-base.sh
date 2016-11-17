@@ -102,10 +102,10 @@ if [[ $dist == ubuntu ]]; then
   if [[ $release == 1504 ]]; then
     apt-get install -y python-requests
   fi
-  apt-get install -y python-pip
+  apt-get install -y python-pip pcregrep
 elif [[ $dist == redhat ]]; then
   yum install -y python-simplejson rsync xterm
-  yum install -y gcc-gfortran # gfortran is used in the brief tour suite
+  yum install -y gcc-gfortran pcre # gfortran is used in the brief tour suite
   if [[ $release == centos6 ]]; then
     pip install requests
   else
@@ -152,7 +152,7 @@ if [[ $dist == redhat ]]; then
 fi
 echo "[[ -f /opt/rose/etc/rose-bash-completion ]] && . /opt/rose/etc/rose-bash-completion" >>/home/vagrant/.bashrc
 
-# Configure firefox as the default PDF viewer
+#### Configure firefox as the default PDF viewer
 sudo -u vagrant mkdir -p /home/vagrant/.local/share/applications
 sudo -u vagrant bash -c 'echo "[Added Associations]" >/home/vagrant/.local/share/applications/mimeapps.list'
 sudo -u vagrant bash -c 'echo "application/pdf=firefox.desktop;" >>/home/vagrant/.local/share/applications/mimeapps.list'
