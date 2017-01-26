@@ -1,0 +1,67 @@
+#!/bin/bash
+
+# Install UKCA input data:
+# 1) wget tar file from JASMIN
+# 2) Extract input files from tar file
+# 3) Run md5sum on files to check for data corruption
+# 4) Copy to umdir
+# 5) Clean-up
+
+if [ "$#" -gt 1 ]; then
+  echo "Usage: $(basename $0) [version]"
+  exit 1
+fi
+
+ver=CUR
+if [[ -n "$1" ]]; then
+  ver=$1
+fi
+
+tmpdir=$(mktemp -d)
+cd $tmpdir
+
+tarfile=ukca_ancils
+
+echo "Extracting input data archive from JASMIN UKCA GWS"
+wget -q --show-progress http://gws-access.ceda.ac.uk/public/ukca/${tarfile}_v${ver}.tgz
+if [ $? -ne 0 ]; then
+  echo "Error downloading UKCA data"
+  exit 1
+fi
+
+tar -xzf ${tarfile}_v${ver}.tgz
+
+# now md5 sum the files to make sure there has been no corruption
+echo "Checking files..."
+md5sum --status -c ukca_ancils.md5
+if [ $? -ne 0 ]; then
+  echo "Error extracting UKCA files"
+  exit 1
+fi
+
+# If a central install (using rose-stem) has been attempted before the ancils
+# have been set up, this could have left a dead symlink which needs removing:
+if [[ -h "$HOME/umdir/ancil" ]]; then
+  rm -f $HOME/umdir/ancil
+fi
+
+mkdir -p $HOME/umdir
+cp -r $tarfile/* $HOME/umdir
+
+# Clean up
+rm -rf $tmpdir
+
+echo
+echo "UKCA Inputs have been installed to $HOME/umdir/ancil"
+echo "and $HOME/umdir/standard_jobs"
+
+# Information on UKCA-specific files provided:
+# --------------------------------------------
+# These are N48L38 NetCDF UKCA (and 2-D ozone) ancillaries regridded 
+# from N48L85 and written out in NetCDF3-CLASSIC format (anc format 
+# for ozone).
+# 
+# The "ga7_chem_N48eL38.astart" for initialisation has been generated 
+# by reconfiguring a standard vn10.5 GA7-Strattrop N96eL85 start dump.
+# The N96 start dump itself combines spun-up dumps for UM/GLOMAP
+# (u-ab357) as well as Chemical species (u-aa165).
