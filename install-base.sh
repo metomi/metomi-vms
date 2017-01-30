@@ -252,3 +252,4 @@ dos2unix -n /vagrant/usr/local/bin/install-um-extras /usr/local/bin/install-um-e
 dos2unix -n /vagrant/usr/local/bin/um-setup /usr/local/bin/um-setup
 dos2unix -n /vagrant/usr/local/bin/install-um-data /usr/local/bin/install-um-data
 dos2unix -n /vagrant/usr/local/bin/install-iris /usr/local/bin/install-iris
+dos2unix -n /vagrant/usr/local/bin/install-ukca-data /usr/local/bin/install-ukca-data
