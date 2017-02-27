@@ -1,0 +1,33 @@
+#!/bin/bash
+set -eu
+
+if [[ $USER != root ]]; then
+  echo "Please run this command via sudo"
+  exit 1
+fi
+
+CYLC_VERSION=6.11.4
+ROSE_VERSION=2016.11.1
+
+#### Install Cylc
+echo Installing Cylc version $CYLC_VERSION ...
+# Get Cylc from github
+curl -L -s -S https://github.com/cylc/cylc/archive/$CYLC_VERSION.tar.gz | tar -xz -C /opt
+# Create a symlink to make this the default version
+rm /opt/cylc
+ln -sf /opt/cylc-$CYLC_VERSION /opt/cylc
+# Create the version file
+cd /opt/cylc-$CYLC_VERSION
+make version
+# Configure additional copyable environment variables
+ln -sf /opt/metomi-site/conf/global.rc /opt/cylc-$CYLC_VERSION/conf/global.rc
+
+#### Install Rose
+echo Installing Rose version $ROSE_VERSION ...
+# Get Rose from github
+curl -L -s -S https://github.com/metomi/rose/archive/$ROSE_VERSION.tar.gz | tar -xz -C /opt
+# Create a symlink to make this the default version
+rm /opt/rose
+ln -sf /opt/rose-$ROSE_VERSION /opt/rose
+# Configure Rose
+ln -sf /opt/metomi-site/etc/rose.conf /opt/rose-$ROSE_VERSION/etc/rose.conf

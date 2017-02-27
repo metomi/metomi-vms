@@ -15,8 +15,8 @@ Table of contents:
 ## Software Requirements
 
 In order to use a virtual machine (VM), you must first install:
- * [VirtualBox](https://www.virtualbox.org/), software that enables running of virtual machines
- * [Vagrant](https://www.vagrantup.com/), software that allows easy configuration of virtual machines.
+ * [VirtualBox](https://www.virtualbox.org/), software that enables running of virtual machines (version 5.1.6 or later required).
+ * [Vagrant](https://www.vagrantup.com/), software that allows easy configuration of virtual machines (version 1.9.1 or later required).
 
 These applications provide point-and-click installers for Windows and can usually be installed via the package manager on Linux systems.
 
@@ -27,7 +27,7 @@ After you have installed VirtualBox and Vagrant, download the metomi VM setup fi
 
 Then extract the files which will be put into a directory called `metomi-vms-master`.
 
-The default VM uses Ubuntu 14.04.
+The default VM uses Ubuntu 16.04.
 If necessary you can customise the VM by editing the file `Vagrantfile` as follows:
 * By default the VM will be built with support for accessing the Met Office Science Repository Service.
   If you don't want this (or don't have access) then remove `mosrs` from the `args` in the `config.vm.provision` line.
@@ -58,7 +58,7 @@ The VM is configured with a local [Rose suite repository](http://metomi.github.i
 To try this out, you can follow the [Rose Brief Tour](http://metomi.github.io/rose/doc/rose-rug-brief-tour.html).
 You can also try out all the other tutorials in the [Rose User Guide](http://metomi.github.io/rose/doc/rose.html).
 
-To shutdown the VM you can either use the menu item available in the top right hand corner of the Linux desktop or you can issue the command `vagrant halt` from the command window where you launched the VM.
+To shutdown the VM you can either use the menu item available in the bottom right hand corner of the Linux desktop or you can issue the command `vagrant halt` from the command window where you launched the VM.
 
 Note that the desktop environment is configured to use a UK keyboard.
 If you need to change this, take a look at how this is configured in the file `install-desktop.sh`.
@@ -83,7 +83,7 @@ Note that they are not as well tested as the default VM and may not include a de
 To use a different VM, replace the default `Vagrantfile` with the appropriate file (`cp Vagrantfile.<distribution> Vagrantfile`) before running `vagrant up`.
 Alternatively you can set the environment variable `VAGRANT_VAGRANTFILE`, for example:
 ```
-export VAGRANT_VAGRANTFILE=Vagrantfile.ubuntu-1510
+export VAGRANT_VAGRANTFILE=Vagrantfile.ubuntu-1404
 ```
 (use `set` in place of `export` when using the command window on Windows).
 

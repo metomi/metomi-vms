@@ -5,7 +5,7 @@ if [[ $dist == ubuntu ]]; then
   else
     apt-get install -q -y lightdm-gtk-greeter xorg lxde
   fi
-  if [[ $release == 1510 || $release == 16* ]]; then
+  if [[ $release == 16* ]]; then
     apt-get install -q -y lxsession-logout
   fi
   apt-get remove -q -y --auto-remove xscreensaver xscreensaver-data gnome-keyring
@@ -14,7 +14,7 @@ if [[ $dist == ubuntu ]]; then
   update-locale LANG=en_GB.utf8
   # Set UK keyboard
   perl -pi -e 's/XKBLAYOUT="us"/XKBLAYOUT="gb"/;' /etc/default/keyboard
-  if [[ $release == 1404 || $release == 1510 ]]; then
+  if [[ $release == 1404 ]]; then
     # Move panel to top (works better when resizing the screen)
     perl -pi -e 's/edge=bottom/edge=top/;' /usr/share/lxpanel/profile/LXDE/panels/panel
   fi

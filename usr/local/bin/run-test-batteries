@@ -14,6 +14,6 @@ if [[ $# != 0 ]]; then
   fi
 fi
 
-fcm test-battery 2>&1 | tee test-fcm.out.$(date +%Y-%m-%dT%H%M)
-cylc test-battery 2>&1 | tee test-cylc.out.$(date +%Y-%m-%dT%H%M)
-rose test-battery 2>&1 | tee test-rose.out.$(date +%Y-%m-%dT%H%M)
+fcm test-battery -j4 2>&1 | tee test-fcm.out.$(date +%Y-%m-%dT%H%M)
+cylc test-battery -j4 2>&1 | tee test-cylc.out.$(date +%Y-%m-%dT%H%M)
+rose test-battery -j4 2>&1 | tee test-rose.out.$(date +%Y-%m-%dT%H%M)

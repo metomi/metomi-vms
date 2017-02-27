@@ -1,10 +1,10 @@
 # Define software versions
-FCM_VERSION=2016.12.0
-CYLC_VERSION=6.11.4
-ROSE_VERSION=2016.11.1
+FCM_VERSION=2017.02.0
+CYLC_VERSION=7.1.1
+ROSE_VERSION=2017.02.0
 
 if [[ $dist == ubuntu ]]; then
-  if [[ $release == 1404 || $release == 1510 ]]; then
+  if [[ $release == 1404 ]]; then
     #### Remove some packages we don't need
     apt-get remove -q -y --auto-remove chef puppet
   fi
@@ -102,7 +102,7 @@ ln -sf /opt/metomi-site/conf/global.rc /opt/cylc-$CYLC_VERSION/conf/global.rc
 if [[ $dist == ubuntu ]]; then
   apt-get install -q -y gfortran # gfortran is used in the brief tour suite
   apt-get install -q -y python-pip pcregrep
-  if [[ $release == 1510 || $release == 16* ]]; then
+  if [[ $release == 16* ]]; then
     apt-get install -q -y tidy
   fi
   if [[ $release == 16* ]]; then
@@ -166,7 +166,7 @@ sudo -u vagrant bash -c 'echo "application/pdf=firefox.desktop;" >>/home/vagrant
 #### Configure rose bush & rosie web services (with a local rosie repository)
 if [[ $dist == ubuntu ]]; then
   apt-get install -q -y apache2 libapache2-mod-wsgi python-cherrypy3 apache2-utils python-sqlalchemy
-  if [[ $release == 1404 || $release == 1510 ]]; then
+  if [[ $release == 1404 ]]; then
     apt-get install -q -y libapache2-svn
   else
     apt-get install -q -y libapache2-mod-svn
@@ -243,13 +243,14 @@ elif [[ $dist == redhat ]]; then
 fi
 
 #### Miscellaneous utilities
-dos2unix -n /vagrant/usr/local/bin/run-test-batteries /usr/local/bin/run-test-batteries
-dos2unix -n /vagrant/usr/local/bin/install-master-versions /usr/local/bin/install-master-versions
-dos2unix -n /vagrant/usr/local/bin/install-jules-extras /usr/local/bin/install-jules-extras
-dos2unix -n /vagrant/usr/local/bin/install-jules-benchmark-data /usr/local/bin/install-jules-benchmark-data
-dos2unix -n /vagrant/usr/local/bin/install-jules-gswp2-data /usr/local/bin/install-jules-gswp2-data
-dos2unix -n /vagrant/usr/local/bin/install-um-extras /usr/local/bin/install-um-extras
-dos2unix -n /vagrant/usr/local/bin/um-setup /usr/local/bin/um-setup
-dos2unix -n /vagrant/usr/local/bin/install-um-data /usr/local/bin/install-um-data
+dos2unix -n /vagrant/usr/local/bin/install-cylc-6 /usr/local/bin/install-cylc-6
 dos2unix -n /vagrant/usr/local/bin/install-iris /usr/local/bin/install-iris
+dos2unix -n /vagrant/usr/local/bin/install-jules-benchmark-data /usr/local/bin/install-jules-benchmark-data
+dos2unix -n /vagrant/usr/local/bin/install-jules-extras /usr/local/bin/install-jules-extras
+dos2unix -n /vagrant/usr/local/bin/install-jules-gswp2-data /usr/local/bin/install-jules-gswp2-data
+dos2unix -n /vagrant/usr/local/bin/install-master-versions /usr/local/bin/install-master-versions
 dos2unix -n /vagrant/usr/local/bin/install-ukca-data /usr/local/bin/install-ukca-data
+dos2unix -n /vagrant/usr/local/bin/install-um-data /usr/local/bin/install-um-data
+dos2unix -n /vagrant/usr/local/bin/install-um-extras /usr/local/bin/install-um-extras
+dos2unix -n /vagrant/usr/local/bin/run-test-batteries /usr/local/bin/run-test-batteries
+dos2unix -n /vagrant/usr/local/bin/um-setup /usr/local/bin/um-setup

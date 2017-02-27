@@ -1,5 +1,5 @@
 #### Install and configure gpg-agent
-if [[ $dist == ubuntu && ($release == 1404 || $release == 1510) ]]; then
+if [[ $dist == ubuntu && $release == 1404 ]]; then
   apt-get install -q -y gnupg-agent
 elif [[ $dist == ubuntu || ($dist == redhat && $release == fedora*) ]]; then
   if [[ $dist == ubuntu ]]; then
@@ -20,9 +20,6 @@ dos2unix -n /vagrant/usr/local/bin/mosrs-cache-password /usr/local/bin/mosrs-cac
 # Add script to start gpg-agent and cache the password when needed and source it in .bashrc
 dos2unix -n /vagrant/usr/local/bin/mosrs-setup-gpg-agent /usr/local/bin/mosrs-setup-gpg-agent
 echo ". /usr/local/bin/mosrs-setup-gpg-agent" >>/home/vagrant/.bashrc
-# Start & stop gpg-agent to avoid errors on first use
-sudo -H -u vagrant /usr/bin/gpg-agent --daemon
-sudo -H -u vagrant /usr/bin/pkill gpg-agent
 # Add script to install Rose meta data
 dos2unix -n /vagrant/usr/local/bin/install-rose-meta /usr/local/bin/install-rose-meta
 
