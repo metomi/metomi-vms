@@ -70,7 +70,7 @@ elif [[ $dist == redhat ]]; then
   service atd start
   yum install -y graphviz-devel python-devel
   if [[ $release == fedora* ]]; then
-    yum install -y redhat-rpm-config
+    yum install -y redhat-rpm-config sqlite pyOpenSSL
   fi
   if [[ $release == centos6 ]]; then
     pip install jinja2
@@ -254,3 +254,8 @@ dos2unix -n /vagrant/usr/local/bin/install-um-data /usr/local/bin/install-um-dat
 dos2unix -n /vagrant/usr/local/bin/install-um-extras /usr/local/bin/install-um-extras
 dos2unix -n /vagrant/usr/local/bin/run-test-batteries /usr/local/bin/run-test-batteries
 dos2unix -n /vagrant/usr/local/bin/um-setup /usr/local/bin/um-setup
+
+if [[ $dist == redhat && $release == fedora* ]]; then
+  # Allow these commands to be found via sudo
+  echo "Defaults:vagrant secure_path = /sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin" >/etc/sudoers.d/vagrant-path
+fi

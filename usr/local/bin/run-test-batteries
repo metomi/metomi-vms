@@ -11,9 +11,11 @@ if [[ $# != 0 ]]; then
     export ROSE_VERSION=master
   else
     echo [ERROR] Unexpected argument: $1
+    exit 1
   fi
 fi
 
+cylc check-software
 fcm test-battery -j4 2>&1 | tee test-fcm.out.$(date +%Y-%m-%dT%H%M)
 cylc test-battery -j4 2>&1 | tee test-cylc.out.$(date +%Y-%m-%dT%H%M)
 rose test-battery -j4 2>&1 | tee test-rose.out.$(date +%Y-%m-%dT%H%M)

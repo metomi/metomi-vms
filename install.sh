@@ -1,6 +1,6 @@
 #!/bin/bash
 
-STARTDATE=$(date)
+STARTDATE=$(date +"%Y-%m-%dT%H%M")
 {
 set -x
 
@@ -68,13 +68,14 @@ elif [[ $dist == redhat ]]; then
 fi
 
 for collection in $collections; do
+  echo $(date +"%Y-%m-%dT%H%M") - Installing $collection collection ...
   dos2unix -n /vagrant/install-$collection.sh /tmp/install-$collection.sh
   . /tmp/install-$collection.sh
   rm /tmp/install-$collection.sh
 done
 
 set +x
-echo Finished provisioning at $(date) \(started at $STARTDATE\)
+echo Finished provisioning at $(date +"%Y-%m-%dT%H%M") \(started at $STARTDATE\)
 echo
 
 if [[ $collections =~ desktop ]]; then
