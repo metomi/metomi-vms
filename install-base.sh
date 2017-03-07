@@ -1,6 +1,6 @@
 # Define software versions
 FCM_VERSION=2017.02.0
-CYLC_VERSION=7.1.1
+CYLC_VERSION=7.2.0
 ROSE_VERSION=2017.02.0
 
 if [[ $dist == ubuntu ]]; then
