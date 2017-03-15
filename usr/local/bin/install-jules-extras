@@ -8,14 +8,14 @@ fi
 
 set -x
 
-BIGGUS_VERSION=0.7.0
+BIGGUS_VERSION=0.14.0
 
 #### Install and configure JULES dependencies
-apt-get install -y libnetcdf-dev libhdf5-serial-dev netcdf-bin nco python-sphinx python-setuptools
+apt-get install -y libnetcdf-dev libnetcdff-dev libhdf5-serial-dev netcdf-bin nco python-sphinx python-setuptools
 # Download and install nccmp
 mkdir -p /opt/nccmp
-curl -L -s -S http://downloads.sourceforge.net/project/nccmp/nccmp-1.4.0.tgz | tar -C /opt/nccmp -xz
-cd /opt/nccmp/nccmp-1.4.0
+curl -L -s -S http://downloads.sourceforge.net/project/nccmp/nccmp-1.8.2.1.tar.gz | tar -C /opt/nccmp -xz
+cd /opt/nccmp/nccmp-1.8.2.1
 ./configure
 make install
 make clean
@@ -34,8 +34,8 @@ cd /opt/scitools/biggus-$BIGGUS_VERSION
 python setup.py install
 # Install the python netCDF4 module from its repository
 mkdir -p /opt/unidata
-curl -L -s -S https://pypi.python.org/packages/source/n/netCDF4/netCDF4-1.1.1.tar.gz | tar -C /opt/unidata -xz
-cd /opt/unidata/netCDF4-1.1.1
+curl -L -s -S https://pypi.python.org/packages/d8/22/8c3a488af29aa387e5fde0d677a8c3808cad46d3cd59b8160bdab6249edd/netCDF4-1.2.7.tar.gz#md5=77b357d78f9658dd973dee901f6d86f8 | tar -C /opt/unidata -xz
+cd /opt/unidata/netCDF4-1.2.7
 python setup.py install
 # Create the kgo directory
 mkdir -p /jules/rose-stem-kgo

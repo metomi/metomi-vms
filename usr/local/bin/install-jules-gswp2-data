@@ -1,9 +1,9 @@
 #!/bin/bash
 set -eu
 
-mkdir -p /jules/benchmarking-data/gswp2
+mkdir -p /jules/benchmarking-data
 read -p "FTP password (see JULES documentation): " -s password; echo
 wget --user=ext_jules --password=$password ftp://ftp.metoffice.gov.uk/benchmarking/benchmark_gswp2_data.tar.xz
 set -x
-tar -xvJf benchmark_gswp2_data.tar.xz -C /jules/benchmarking-data/gswp2
+tar -xvJf benchmark_gswp2_data.tar.xz -C /jules/benchmarking-data
 rm benchmark_gswp2_data.tar.xz
