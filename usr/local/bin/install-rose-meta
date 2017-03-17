@@ -8,11 +8,14 @@ mkdir -p $meta_path
 cd $meta_path
 if [[ ! -r $meta_file ]]; then
     cat >> $meta_file <<EOF
+ANCIL=https://code.metoffice.gov.uk/svn/ancil/main/trunk/rose-meta
 JULES=https://code.metoffice.gov.uk/svn/jules/main/trunk/rose-meta
 MOCI=https://code.metoffice.gov.uk/svn/moci/main/trunk/rose-meta
 OPS=https://code.metoffice.gov.uk/svn/ops/main/trunk/rose-meta
+ROSES-U=https://code.metoffice.gov.uk/svn/roses-u/R/O/S/I/E/trunk/rose-meta
 UM=https://code.metoffice.gov.uk/svn/um/main/trunk/rose-meta
 VAR=https://code.metoffice.gov.uk/svn/var/main/trunk/rose-meta
+VER=https://code.metoffice.gov.uk/svn/ver/main/trunk/rose-meta
 EOF
     echo [info] Setup $meta_file as follows:
     cat $meta_file
