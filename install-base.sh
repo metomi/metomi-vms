@@ -1,8 +1,3 @@
-# Define software versions
-FCM_VERSION=2017.02.0
-CYLC_VERSION=7.2.0
-ROSE_VERSION=2017.02.0
-
 if [[ $dist == ubuntu ]]; then
   if [[ $release == 1404 ]]; then
     #### Remove some packages we don't need
@@ -38,7 +33,7 @@ elif [[ $dist == redhat ]]; then
   echo "export EDITOR=gedit" >>.bash_profile
 fi
 
-#### Install FCM
+#### Install FCM dependencies & configuration
 if [[ $dist == ubuntu ]]; then
   apt-get install -q -y subversion firefox tkcvs tk kdiff3 libxml-parser-perl
   apt-get install -q -y m4 libconfig-inifiles-perl libdbi-perl g++ libsvn-perl
@@ -50,18 +45,13 @@ elif [[ $dist == redhat ]]; then
     yum install -y m4 perl-DBI
   fi
 fi
-# Get FCM from github
-curl -L -s -S https://github.com/metomi/fcm/archive/$FCM_VERSION.tar.gz | tar -xz -C /opt
-# Create a symlink to make this the default version
-ln -sf /opt/fcm-$FCM_VERSION /opt/fcm
 # Add the fcm wrapper script
 dos2unix -n /vagrant/usr/local/bin/fcm /usr/local/bin/fcm
 # Configure FCM diff and merge viewers
 mkdir -p /opt/metomi-site/etc/fcm
 dos2unix -n /vagrant/opt/metomi-site/etc/fcm/external.cfg /opt/metomi-site/etc/fcm/external.cfg
-ln -sf /opt/metomi-site/etc/fcm/external.cfg /opt/fcm-$FCM_VERSION/etc/fcm/external.cfg
 
-#### Install Cylc
+#### Install Cylc dependencies & configuration
 if [[ $dist == ubuntu ]]; then
   apt-get install -q -y graphviz python-jinja2 python-pygraphviz python-gtk2 sqlite3
   apt-get install -q -y pep8 # used by test-battery
@@ -82,23 +72,15 @@ elif [[ $dist == redhat ]]; then
   # Ensure "hostname -f" returns the fully qualified name
   perl -pi -e 's/localhost localhost.localdomain/localhost.localdomain localhost/;' /etc/hosts
 fi
-# Get Cylc from github
-curl -L -s -S https://github.com/cylc/cylc/archive/$CYLC_VERSION.tar.gz | tar -xz -C /opt
-# Create a symlink to make this the default version
-ln -sf /opt/cylc-$CYLC_VERSION /opt/cylc
 # Add the Cylc wrapper scripts
 dos2unix -n /vagrant/usr/local/bin/cylc /usr/local/bin/cylc
 cd /usr/local/bin
 ln -sf cylc gcylc
-# Create the version file
-cd /opt/cylc-$CYLC_VERSION
-make version
 # Configure additional copyable environment variables
 mkdir -p /opt/metomi-site/conf
 dos2unix -n /vagrant/opt/metomi-site/conf/global.rc /opt/metomi-site/conf/global.rc
-ln -sf /opt/metomi-site/conf/global.rc /opt/cylc-$CYLC_VERSION/conf/global.rc
 
-#### Install Rose
+#### Install Rose dependencies & configuration
 if [[ $dist == ubuntu ]]; then
   apt-get install -q -y gfortran # gfortran is used in the brief tour suite
   apt-get install -q -y python-pip pcregrep
@@ -119,10 +101,6 @@ elif [[ $dist == redhat ]]; then
   fi
 fi
 pip install mock pytest-tap # used by test-battery
-# Get Rose from github
-curl -L -s -S https://github.com/metomi/rose/archive/$ROSE_VERSION.tar.gz | tar -xz -C /opt
-# Create a symlink to make this the default version
-ln -sf /opt/rose-$ROSE_VERSION /opt/rose
 # Add the Rose wrapper scripts
 dos2unix -n /vagrant/usr/local/bin/rose /usr/local/bin/rose
 cd /usr/local/bin
@@ -133,7 +111,10 @@ if [[ $dist == ubuntu ]]; then
 elif [[ $dist == redhat ]]; then
   dos2unix -n /vagrant/opt/metomi-site/etc/rose.conf.redhat /opt/metomi-site/etc/rose.conf
 fi
-ln -sf /opt/metomi-site/etc/rose.conf /opt/rose-$ROSE_VERSION/etc/rose.conf
+
+#### Install latest versions of FCM, Cylc & Rose 
+dos2unix -n /vagrant/usr/local/bin/install-latest-versions /usr/local/bin/install-latest-versions
+/usr/local/bin/install-latest-versions
 
 #### Configure syntax highlighting & bash completion
 if [[ $dist == redhat && $release == centos6 ]]; then

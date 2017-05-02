@@ -31,4 +31,4 @@ dos2unix -n /vagrant/etc/subversion/servers /etc/subversion/servers
 dos2unix -n /vagrant/etc/subversion/config /etc/subversion/config
 # Set up FCM keywords
 dos2unix -n /vagrant/opt/metomi-site/etc/fcm/keyword.cfg /opt/metomi-site/etc/fcm/keyword.cfg
-ln -sf /opt/metomi-site/etc/fcm/keyword.cfg /opt/fcm-$FCM_VERSION/etc/fcm/keyword.cfg
+ln -sf /opt/metomi-site/etc/fcm/keyword.cfg /opt/fcm/etc/fcm/keyword.cfg

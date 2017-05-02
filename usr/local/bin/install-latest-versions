@@ -1,0 +1,61 @@
+#!/bin/bash
+set -eu
+
+if [[ $USER != root ]]; then
+  echo "Please run this command via sudo"
+  exit 1
+fi
+
+# Define software versions
+FCM_VERSION=$(curl -s https://api.github.com/repos/metomi/fcm/releases|\
+  grep tag_name|sort|tail -1|sed -e 's/^.*: "//' -e 's/".*$//')
+CYLC_VERSION=$(curl -s https://api.github.com/repos/cylc/cylc/releases|\
+  grep tag_name|sort|tail -1|sed -e 's/^.*: "//' -e 's/".*$//')
+ROSE_VERSION=$(curl -s https://api.github.com/repos/metomi/rose/releases|\
+  grep tag_name|sort|tail -1|sed -e 's/^.*: "//' -e 's/".*$//')
+
+#### Install FCM
+if [[ -e /opt/fcm-$FCM_VERSION ]]; then
+  echo FCM version $FCM_VERSION already installed
+else
+  echo Installing FCM version $FCM_VERSION
+  # Get FCM from github
+  curl -L -s -S https://github.com/metomi/fcm/archive/$FCM_VERSION.tar.gz | tar -xz -C /opt
+  # Create a symlink to make this the default version
+  ln -sf /opt/fcm-$FCM_VERSION /opt/fcm
+  # Configure FCM diff and merge viewers
+  ln -sf /opt/metomi-site/etc/fcm/external.cfg /opt/fcm-$FCM_VERSION/etc/fcm/external.cfg
+  # Set up FCM keywords
+  if [[ -r /opt/metomi-site/etc/fcm/keyword.cfg ]]; then
+    ln -sf /opt/metomi-site/etc/fcm/keyword.cfg /opt/fcm-$FCM_VERSION/etc/fcm/keyword.cfg
+  fi
+fi
+
+#### Install Cylc
+if [[ -e /opt/cylc-$CYLC_VERSION ]]; then
+  echo Cylc version $CYLC_VERSION already installed
+else
+  echo Installing Cylc version $CYLC_VERSION
+  # Get Cylc from github
+  curl -L -s -S https://github.com/cylc/cylc/archive/$CYLC_VERSION.tar.gz | tar -xz -C /opt
+  # Create a symlink to make this the default version
+  ln -sf /opt/cylc-$CYLC_VERSION /opt/cylc
+  # Create the version file
+  cd /opt/cylc-$CYLC_VERSION
+  make version
+  # Configure additional copyable environment variables
+ ln -sf /opt/metomi-site/conf/global.rc /opt/cylc-$CYLC_VERSION/conf/global.rc
+fi
+
+#### Install Rose
+if [[ -e /opt/rose-$ROSE_VERSION ]]; then
+  echo Rose version $ROSE_VERSION already installed
+else
+  echo Installing Rose version $ROSE_VERSION
+  # Get Rose from github
+  curl -L -s -S https://github.com/metomi/rose/archive/$ROSE_VERSION.tar.gz | tar -xz -C /opt
+  # Create a symlink to make this the default version
+  ln -sf /opt/rose-$ROSE_VERSION /opt/rose
+  # Configure Rose
+  ln -sf /opt/metomi-site/etc/rose.conf /opt/rose-$ROSE_VERSION/etc/rose.conf
+fi

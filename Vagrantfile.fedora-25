@@ -4,15 +4,15 @@
 VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-  config.vm.define "metomi-vm-fedora-24"
-  config.vm.box = "bento/fedora-24"
+  config.vm.define "metomi-vm-fedora-25"
+  config.vm.box = "bento/fedora-25"
   # Remove "desktop" from the args below if only accessing via SSH
   # Remove "mosrs" from the args below if not accessing the Met Office Science Repository Service
-  config.vm.provision :shell, path: "install.sh", args: "redhat fedora24 desktop mosrs"
+  config.vm.provision :shell, path: "install.sh", args: "redhat fedora25 desktop mosrs"
   config.ssh.forward_x11 = true
 
   config.vm.provider "virtualbox" do |v|
-    v.name = "metomi-vm-fedora-24"
+    v.name = "metomi-vm-fedora-25"
     # Comment out the line below if only accessing via SSH
     v.gui = true
     # Modify the line below if you need more than 1GB RAM
