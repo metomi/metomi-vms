@@ -81,14 +81,17 @@ mkdir -p $HOME/.metomi/fcm
 echo "location{primary}[um.xm] = https://code.metoffice.gov.uk/svn/um/main
 location{primary}[jules.xm] = https://code.metoffice.gov.uk/svn/jules/main
 location{primary}[socrates.xm] = https://code.metoffice.gov.uk/svn/socrates/main
+location{primary}[casim.xm] = https://code.metoffice.gov.uk/svn/monc/casim
 location{primary}[um_aux.xm] = https://code.metoffice.gov.uk/svn/um/aux
 location{primary}[um_doc.xm] = https://code.metoffice.gov.uk/svn/um/doc
 location{primary}[mule.xm] = https://code.metoffice.gov.uk/svn/um/mule
 location{primary}[moci.xm] = https://code.metoffice.gov.uk/svn/moci/main
+location{primary}[shumlib.xm] = https://code.metoffice.gov.uk/svn/utils/shumlib
 
 location{primary}[um.offline] = file://$HOME/source/um/offline
 location{primary}[jules.offline] = file://$HOME/source/jules/offline
 location{primary}[socrates.offline] = file://$HOME/source/socrates/offline
+location{primary}[casim.offline] = file://$HOME/source/casim/offline
 location{primary}[um_aux.offline] = file://$HOME/source/um_aux/offline
 location{primary}[mule.offline] = file://$HOME/source/mule/offline" > $HOME/.metomi/fcm/keyword.cfg
 
