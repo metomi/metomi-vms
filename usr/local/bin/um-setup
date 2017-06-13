@@ -3,6 +3,7 @@
 # Set up additional files for the UM:
 # 1) Check out/copy, build and install GCOM
 # 2) Create keyword.cfg file for offline working
+# 3) Add the kgo-database rose-ana setting to rose.conf
 
 if [ "$#" -gt 1 ]; then
   echo "Usage: $(basename $0) [GCOM source tree]"
@@ -96,6 +97,35 @@ location{primary}[um_aux.offline] = file://$HOME/source/um_aux/offline
 location{primary}[mule.offline] = file://$HOME/source/mule/offline" > $HOME/.metomi/fcm/keyword.cfg
 
 echo "Local FCM keywords created."
+
+echo 'Adding rose-ana settings to ~/.metomi/rose.conf for KGO auto-generation...'
+metomi_dir=$HOME/.metomi
+conf_file=$metomi_dir/rose.conf
+
+if [ ! -f $conf_file  ]; then
+  # rose.conf file doesn't exist; create and populate it:
+  mkdir -p $metomi_dir
+  echo "[rose-ana]
+kgo-database=.true." > $conf_file
+
+else
+  # rose.conf exists; determine what we need to add/change.
+  if grep -q '^\s*\[rose-ana\]' $conf_file; then
+    if grep -q '^\s*kgo-database' $conf_file ; then
+      # The setting is already there; ensure it's set to true:
+      sed -i 's/kgo-database=.*/kgo-database=\.true\./' $conf_file
+    else
+      # Add the database setting:
+      sed -i "/\[rose-ana\]/c\[rose-ana\]\nkgo-database=\.true\." $conf_file
+    fi
+  else
+    # Add the entire rose-ana section:
+    sed -i "\$a\[rose-ana\]\nkgo-database=\.true\." $conf_file
+  fi
+
+fi
+echo '~/.metomi/rose.conf settings updated.'
+
 echo 'Setting $UMDIR...'
 sed -i "/# If not running interactively/c# Set UMDIR\nexport UMDIR=\$HOME/umdir\n\n# If not running interactively, don't do anything else" $HOME/.bashrc
 echo "UMDIR set (open a new terminal to pick this up)."
