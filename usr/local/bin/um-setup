@@ -180,7 +180,7 @@ fi
 
 # Copy the library to UMDIR and set the symlink:
 mkdir -p $HOME/umdir/shumlib/$vn
-cp -r $tmpdir/wc/build/* $HOME/umdir/shumlib/$vn
+cp -r $tmpdir/wc/build/* $HOME/umdir/shumlib/$vn || echo "Failed to install shumlib library"
 cd $HOME/umdir/shumlib
 rm -f default
 ln -s $vn default
