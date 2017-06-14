@@ -3,8 +3,9 @@
 # Set up additional files for the UM:
 # 1) Check out/copy, build and install GCOM
 # 2) Check out/copy, build and install the necessary parts of shumlib
-# 3) Create keyword.cfg file for offline working
+# 3) Create keyword.cfg file containing mirror and offline keywords
 # 4) Add the kgo-database rose-ana setting to rose.conf
+# 5) Define $UMDIR
 
 function usage {
   # Print command line options
