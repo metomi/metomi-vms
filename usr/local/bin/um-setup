@@ -6,6 +6,49 @@
 # 3) Create keyword.cfg file for offline working
 # 4) Add the kgo-database rose-ana setting to rose.conf
 
+function usage {
+  echo 'Usage: um-setup [-g gcom_path] [-s shumlib_path]'
+}
+
+function ereport {
+  echo ${1:-"Unknown error"}
+  usage
+  exit 2
+}
+
+function process_args
+{
+  if [ $# -gt 4 ]; then
+    ereport "Too many arguments"
+    exit 1
+  fi
+
+  while [ $# -ge 1 ] ; do
+    case "$1" in
+      -g) shift
+          if [ -n "$1" ]; then
+            gcom_src=$1
+          else
+            ereport "GCOM source not provided"
+          fi
+          ;;
+      -s) shift
+          if [ -n "$1" ]; then
+            shumlib_src=$1
+          else
+            ereport "shumlib source not provided"
+          fi
+          ;;
+      -h) usage
+          exit 0
+          ;;
+       *) ereport "Unrecognised argument: $1"
+          ;;
+      esac
+      shift
+  done
+}
+
 function get_source_tree {
 
   src=$1
@@ -36,20 +79,10 @@ function get_source_tree {
 ###############
 # Begin script:
 
-if [ "$#" -gt 1 ]; then
-  echo "Usage: $(basename $0) [GCOM source tree [shumlib source tree]]"
-  exit 1
-fi
+process_args $@
 
-gcom_src=fcm:gcom.x/trunk@head
-if [[ -n "$1" ]]; then
-  gcom_src=$1
-fi
-
-shumlib_src=fcm:shumlib.x/trunk@head
-if [[ -n "$2" ]]; then
-  shumlib_src=$2
-fi
+gcom_src=${gcom_src:-'fcm:gcom.x/trunk@head'}
+shumlib_src=${shumlib_src:-'fcm:shumlib.x/trunk@head'}
 
 ##### Install GCOM #####
 
