@@ -7,17 +7,19 @@
 # 4) Add the kgo-database rose-ana setting to rose.conf
 
 function usage {
+  # Print command line options
   echo 'Usage: um-setup [-g gcom_path] [-s shumlib_path]'
 }
 
 function ereport {
+  # Print an error message, print usage, then exit (non-zero)
   echo ${1:-"Unknown error"}
   usage
-  exit 2
+  exit 1
 }
 
-function process_args
-{
+function process_args {
+  # Parse and process the command line arguments
   if [ $# -gt 4 ]; then
     ereport "Too many arguments"
     exit 1
@@ -50,7 +52,10 @@ function process_args
 }
 
 function get_source_tree {
-
+  # Put a copy of the src $1 in tmpdir $2,
+  # whether a working copy or repository location,
+  # and return either the revision for a repos, or 'wc' for a working copy.
+  # This is because no check is made whether the wc contains local changes.
   src=$1
   tmpdir=$2
 
@@ -77,11 +82,12 @@ function get_source_tree {
 }
 
 function create_keyword {
-  key=$1
+  # Create a (primary) keyword in keyword.cfg if it doesn't exist.
+  keyword=$1
   keypath=$2
   keyfile=$HOME/.metomi/fcm/keyword.cfg
-  if grep -qv "$1" testfile; then
-    echo "$1 = $2" >> testfile
+  if ! grep -qL "location{primary}\[$keyword\]" $keyfile; then
+    echo "location{primary}[$keyword] = $keypath" >> $keyfile
   fi
 }
 
@@ -189,21 +195,21 @@ echo
 echo "Setting up additional FCM keywords..."
 mkdir -p $HOME/.metomi/fcm
 touch $HOME/.metomi/fcm/keyword.cfg
-create_keyword 'location{primary}[um.xm]' 'https://code.metoffice.gov.uk/svn/um/main'
-create_keyword 'location{primary}[jules.xm]' 'https://code.metoffice.gov.uk/svn/jules/main'
-create_keyword 'location{primary}[socrates.xm]' 'https://code.metoffice.gov.uk/svn/socrates/main'
-create_keyword 'location{primary}[casim.xm]' 'https://code.metoffice.gov.uk/svn/monc/casim'
-create_keyword 'location{primary}[um_aux.xm]' 'https://code.metoffice.gov.uk/svn/um/aux'
-create_keyword 'location{primary}[um_doc.xm]' 'https://code.metoffice.gov.uk/svn/um/doc'
-create_keyword 'location{primary}[mule.xm]' 'https://code.metoffice.gov.uk/svn/um/mule'
-create_keyword 'location{primary}[moci.xm]' 'https://code.metoffice.gov.uk/svn/moci/main'
-create_keyword 'location{primary}[shumlib.xm]' 'https://code.metoffice.gov.uk/svn/utils/shumlib'
-create_keyword 'location{primary}[um.offline]' 'file://$HOME/source/um/offline'
-create_keyword 'location{primary}[jules.offline]' 'file://$HOME/source/jules/offline'
-create_keyword 'location{primary}[socrates.offline]' 'file://$HOME/source/socrates/offline'
-create_keyword 'location{primary}[casim.offline]' 'file://$HOME/source/casim/offline'
-create_keyword 'location{primary}[um_aux.offline]' 'file://$HOME/source/um_aux/offline'
-create_keyword 'location{primary}[mule.offline]' 'file://$HOME/source/mule/offline'
+create_keyword 'um.xm' 'https://code.metoffice.gov.uk/svn/um/main'
+create_keyword 'jules.xm' 'https://code.metoffice.gov.uk/svn/jules/main'
+create_keyword 'socrates.xm' 'https://code.metoffice.gov.uk/svn/socrates/main'
+create_keyword 'casim.xm' 'https://code.metoffice.gov.uk/svn/monc/casim'
+create_keyword 'um_aux.xm' 'https://code.metoffice.gov.uk/svn/um/aux'
+create_keyword 'um_doc.xm' 'https://code.metoffice.gov.uk/svn/um/doc'
+create_keyword 'mule.xm' 'https://code.metoffice.gov.uk/svn/um/mule'
+create_keyword 'moci.xm' 'https://code.metoffice.gov.uk/svn/moci/main'
+create_keyword 'shumlib.xm' 'https://code.metoffice.gov.uk/svn/utils/shumlib'
+create_keyword 'um.offline' 'file://$HOME/source/um/offline'
+create_keyword 'jules.offline' 'file://$HOME/source/jules/offline'
+create_keyword 'socrates.offline' 'file://$HOME/source/socrates/offline'
+create_keyword 'casim.offline' 'file://$HOME/source/casim/offline'
+create_keyword 'um_aux.offline' 'file://$HOME/source/um_aux/offline'
+create_keyword 'mule.offline' 'file://$HOME/source/mule/offline'
 
 echo "Local FCM keywords created."
 echo
