@@ -76,6 +76,15 @@ function get_source_tree {
   echo $vn
 }
 
+function create_keyword {
+  key=$1
+  keypath=$2
+  keyfile=$HOME/.metomi/fcm/keyword.cfg
+  if grep -qv "$1" testfile; then
+    echo "$1 = $2" >> testfile
+  fi
+}
+
 ###############
 # Begin script:
 
@@ -179,22 +188,22 @@ echo "shumlib dependencies have been installed to $HOME/umdir/shumlib/default"
 echo
 echo "Setting up additional FCM keywords..."
 mkdir -p $HOME/.metomi/fcm
-echo "location{primary}[um.xm] = https://code.metoffice.gov.uk/svn/um/main
-location{primary}[jules.xm] = https://code.metoffice.gov.uk/svn/jules/main
-location{primary}[socrates.xm] = https://code.metoffice.gov.uk/svn/socrates/main
-location{primary}[casim.xm] = https://code.metoffice.gov.uk/svn/monc/casim
-location{primary}[um_aux.xm] = https://code.metoffice.gov.uk/svn/um/aux
-location{primary}[um_doc.xm] = https://code.metoffice.gov.uk/svn/um/doc
-location{primary}[mule.xm] = https://code.metoffice.gov.uk/svn/um/mule
-location{primary}[moci.xm] = https://code.metoffice.gov.uk/svn/moci/main
-location{primary}[shumlib.xm] = https://code.metoffice.gov.uk/svn/utils/shumlib
-
-location{primary}[um.offline] = file://$HOME/source/um/offline
-location{primary}[jules.offline] = file://$HOME/source/jules/offline
-location{primary}[socrates.offline] = file://$HOME/source/socrates/offline
-location{primary}[casim.offline] = file://$HOME/source/casim/offline
-location{primary}[um_aux.offline] = file://$HOME/source/um_aux/offline
-location{primary}[mule.offline] = file://$HOME/source/mule/offline" > $HOME/.metomi/fcm/keyword.cfg
+touch $HOME/.metomi/fcm/keyword.cfg
+create_keyword 'location{primary}[um.xm]' 'https://code.metoffice.gov.uk/svn/um/main'
+create_keyword 'location{primary}[jules.xm]' 'https://code.metoffice.gov.uk/svn/jules/main'
+create_keyword 'location{primary}[socrates.xm]' 'https://code.metoffice.gov.uk/svn/socrates/main'
+create_keyword 'location{primary}[casim.xm]' 'https://code.metoffice.gov.uk/svn/monc/casim'
+create_keyword 'location{primary}[um_aux.xm]' 'https://code.metoffice.gov.uk/svn/um/aux'
+create_keyword 'location{primary}[um_doc.xm]' 'https://code.metoffice.gov.uk/svn/um/doc'
+create_keyword 'location{primary}[mule.xm]' 'https://code.metoffice.gov.uk/svn/um/mule'
+create_keyword 'location{primary}[moci.xm]' 'https://code.metoffice.gov.uk/svn/moci/main'
+create_keyword 'location{primary}[shumlib.xm]' 'https://code.metoffice.gov.uk/svn/utils/shumlib'
+create_keyword 'location{primary}[um.offline]' 'file://$HOME/source/um/offline'
+create_keyword 'location{primary}[jules.offline]' 'file://$HOME/source/jules/offline'
+create_keyword 'location{primary}[socrates.offline]' 'file://$HOME/source/socrates/offline'
+create_keyword 'location{primary}[casim.offline]' 'file://$HOME/source/casim/offline'
+create_keyword 'location{primary}[um_aux.offline]' 'file://$HOME/source/um_aux/offline'
+create_keyword 'location{primary}[mule.offline]' 'file://$HOME/source/mule/offline'
 
 echo "Local FCM keywords created."
 echo
