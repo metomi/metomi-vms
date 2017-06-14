@@ -2,46 +2,67 @@
 
 # Set up additional files for the UM:
 # 1) Check out/copy, build and install GCOM
-# 2) Create keyword.cfg file for offline working
-# 3) Add the kgo-database rose-ana setting to rose.conf
+# 2) Check out/copy, build and install the necessary parts of shumlib
+# 3) Create keyword.cfg file for offline working
+# 4) Add the kgo-database rose-ana setting to rose.conf
+
+function get_source_tree {
+
+  src=$1
+  tmpdir=$2
+
+  if [[ $src =~ ^fcm:|^svn:|file: ]]; then
+    # A URL of some kind
+    # Check the location is valid and get the Last Changed Rev
+    rev=$(fcm info $src | awk '/Last Changed Rev/ {print $NF}')
+    if [[ -z $rev ]]; then
+      echo "Failed to find a source tree at $src"
+      exit 1
+    fi
+    vn="r$rev"
+    fcm co -q $src $tmpdir/wc
+  else
+    # Assume working copy
+    if [[ ! -d $src ]]; then
+      echo "$src is not a recognised repository location or a valid directory"
+      exit 1
+    fi
+    vn=wc
+    cp -r $src $tmpdir/wc
+  fi
+  echo $vn
+}
+
+###############
+# Begin script:
 
 if [ "$#" -gt 1 ]; then
-  echo "Usage: $(basename $0) [GCOM source tree]"
+  echo "Usage: $(basename $0) [GCOM source tree [shumlib source tree]]"
   exit 1
 fi
 
-src=fcm:gcom.x/trunk@head
+gcom_src=fcm:gcom.x/trunk@head
 if [[ -n "$1" ]]; then
-  src=$1
+  gcom_src=$1
 fi
+
+shumlib_src=fcm:shumlib.x/trunk@head
+if [[ -n "$2" ]]; then
+  shumlib_src=$2
+fi
+
+##### Install GCOM #####
 
 tmpdir=$(mktemp -d)
 
-if [[ $src =~ ^fcm:|^svn:|file: ]]; then
-  # A URL of some kind
-  # Check the location is valid and get the Last Changed Rev
-  rev=$(fcm info $src | awk '/Last Changed Rev/ {print $NF}')
-  if [[ -z $rev ]]; then
-    echo "Failed to find a source tree at $src"
-    exit 1
-  fi
-  vn="r$rev"
-  fcm co -q $src $tmpdir/gcom_wc
-else
-  # Assume working copy
-  if [[ ! -d $src ]]; then
-    echo "$src is not a recognised repository location or a valid directory"
-    exit 1
-  fi
-  vn=wc
-  cp -r $src $tmpdir/gcom_wc
-fi
+echo "Finding GCOM source..."
+vn=$(get_source_tree $gcom_src $tmpdir)
 
-echo "Installing GCOM from: $src"
+echo "Installing GCOM from: $gcom_src"
 
-cd $tmpdir/gcom_wc
+cd $tmpdir/wc
 echo "Running rose-stem to build GCOM..."
-rose stem --group=all --name=gcom_install --new -- --debug
+rose stem --quiet --group=all --name=gcom_install --new -- --debug
 echo "GCOM suite output at http://localhost/rose-bush/jobs/$USER/gcom_install"
 
 # copy dirs to right place (remember may have to overwrite...)
@@ -77,6 +98,52 @@ rm -rf $tmpdir
 
 echo "GCOM library has been installed to $HOME/umdir/gcom/default"
 
+##### Install shumlib #####
+
+tmpdir=$(mktemp -d)
+
+echo
+echo "Finding shumlib source..."
+vn=$(get_source_tree $shumlib_src $tmpdir)
+
+echo "Installing shumlib from: $shumlib_src"
+
+mkdir -p $HOME/umdir/shumlib
+
+cd $tmpdir/wc
+vm_config='vm-x86-gfortran-gcc'
+echo "Building shumlib dependencies... (see $HOME/umdir/shumlib/make.log)"
+make -f make/${vm_config}.mk shum_wgdos_packing &> $HOME/umdir/shumlib/make.log
+if [ $? -ne 0 ]; then
+  echo "Shumlib build failed."
+  exit 1
+else
+  echo "Shumlib build completed successfully."
+fi
+echo "Testing shumlib library... (see $HOME/umdir/shumlib/test.log)"
+make -f make/${vm_config}.mk test &> $HOME/umdir/shumlib/test.log
+if [ $? -ne 0 ]; then
+  echo "Shumlib tests failed."
+  exit 1
+else
+  echo "Shumlib built-in tests passed."
+fi
+
+# Copy the library to UMDIR and set the symlink:
+mkdir -p $HOME/umdir/shumlib/$vn
+cp -r $tmpdir/wc/build/* $HOME/umdir/shumlib/$vn
+cd $HOME/umdir/shumlib
+rm -f default
+ln -s $vn default
+
+# Clean up
+rm -rf $tmpdir
+
+echo "shumlib dependencies have been installed to $HOME/umdir/shumlib/default"
+
+##### .metomi setup #####
+
+echo
 echo "Setting up additional FCM keywords..."
 mkdir -p $HOME/.metomi/fcm
 echo "location{primary}[um.xm] = https://code.metoffice.gov.uk/svn/um/main
@@ -97,14 +164,12 @@ location{primary}[um_aux.offline] = file://$HOME/source/um_aux/offline
 location{primary}[mule.offline] = file://$HOME/source/mule/offline" > $HOME/.metomi/fcm/keyword.cfg
 
 echo "Local FCM keywords created."
-
+echo
 echo 'Adding rose-ana settings to ~/.metomi/rose.conf for KGO auto-generation...'
-metomi_dir=$HOME/.metomi
-conf_file=$metomi_dir/rose.conf
+conf_file=$HOME/.metomi/rose.conf
 
 if [ ! -f $conf_file  ]; then
   # rose.conf file doesn't exist; create and populate it:
-  mkdir -p $metomi_dir
   echo "[rose-ana]
 kgo-database=.true." > $conf_file
 
@@ -125,7 +190,7 @@ else
 
 fi
 echo '~/.metomi/rose.conf settings updated.'
-
+echo
 echo 'Setting $UMDIR...'
 sed -i "/# If not running interactively/c# Set UMDIR\nexport UMDIR=\$HOME/umdir\n\n# If not running interactively, don't do anything else" $HOME/.bashrc
 echo "UMDIR set (open a new terminal to pick this up)."
