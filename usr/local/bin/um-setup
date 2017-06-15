@@ -164,18 +164,18 @@ vm_config='vm-x86-gfortran-gcc'
 echo "Building shumlib dependencies... (see $HOME/umdir/shumlib/make.log)"
 make -f make/${vm_config}.mk shum_wgdos_packing &> $HOME/umdir/shumlib/make.log
 if [ $? -ne 0 ]; then
-  echo "Shumlib build failed."
+  echo "shumlib build failed."
   exit 1
 else
-  echo "Shumlib build completed successfully."
+  echo "shumlib build completed successfully."
 fi
 echo "Testing shumlib library... (see $HOME/umdir/shumlib/test.log)"
 make -f make/${vm_config}.mk test &> $HOME/umdir/shumlib/test.log
 if [ $? -ne 0 ]; then
-  echo "Shumlib tests failed."
+  echo "shumlib tests failed."
   exit 1
 else
-  echo "Shumlib built-in tests passed."
+  echo "shumlib built-in tests passed."
 fi
 
 # Copy the library to UMDIR and set the symlink:
@@ -234,7 +234,7 @@ else
     fi
   else
     # Add the entire rose-ana section:
-    sed -i "\$a\[rose-ana\]\nkgo-database=\.true\." $conf_file
+    sed -i "\$a\\\n\[rose-ana\]\nkgo-database=\.true\." $conf_file
   fi
 
 fi
