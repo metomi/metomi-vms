@@ -10,6 +10,11 @@
 function usage {
   # Print command line options
   echo 'Usage: um-setup [-g gcom_path] [-s shumlib_path]'
+  echo
+  echo 'Options:'
+  echo '  -g path    GCOM source location (working copy or repository location)'
+  echo '  -h         Show this help and exit'
+  echo '  -s path    shumlib source location (working copy or repository location)'
 }
 
 function ereport {
