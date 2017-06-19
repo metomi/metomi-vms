@@ -105,6 +105,9 @@ process_args $@
 gcom_src=${gcom_src:-'fcm:gcom.x/trunk@head'}
 shumlib_src=${shumlib_src:-'fcm:shumlib.x/trunk@head'}
 
+echo "Preparing the VM for running the Unified Model"
+echo
+
 ##### Install GCOM #####
 
 tmpdir=$(mktemp -d)
@@ -157,35 +160,61 @@ echo "GCOM library has been installed to $HOME/umdir/gcom/default"
 tmpdir=$(mktemp -d)
 
 echo
-echo "Finding shumlib source..."
+echo "Finding Shumlib source..."
 vn=$(get_source_tree $shumlib_src $tmpdir)
 
-echo "Installing shumlib from: $shumlib_src"
+echo "Installing Shumlib from: $shumlib_src"
 
 mkdir -p $HOME/umdir/shumlib
 
 cd $tmpdir/wc
 vm_config='vm-x86-gfortran-gcc'
-echo "Building shumlib dependencies... (see $HOME/umdir/shumlib/make.log)"
-make -f make/${vm_config}.mk shum_wgdos_packing &> $HOME/umdir/shumlib/make.log
-if [ $? -ne 0 ]; then
-  echo "shumlib build failed."
-  exit 1
-else
-  echo "shumlib build completed successfully."
-fi
-echo "Testing shumlib library... (see $HOME/umdir/shumlib/test.log)"
-make -f make/${vm_config}.mk test &> $HOME/umdir/shumlib/test.log
-if [ $? -ne 0 ]; then
-  echo "shumlib tests failed."
-  exit 1
-else
-  echo "shumlib built-in tests passed."
-fi
+echo "Building Shumlib dependencies"
 
-# Copy the library to UMDIR and set the symlink:
-mkdir -p $HOME/umdir/shumlib/$vn
-cp -r $tmpdir/wc/build/* $HOME/umdir/shumlib/$vn || echo "Failed to install shumlib library"
+# shumlib is built twice, with and without OpenMP:
+for shum_omp in true false; do
+
+  if $shum_omp; then
+    omp=openmp
+  else
+    omp=no-openmp
+  fi
+
+  install_dir=$HOME/umdir/shumlib/$vn/$vm_config/$omp
+  mkdir -p $install_dir
+
+
+  # Remove any previous builds
+  make -f make/${vm_config}.mk clean > /dev/null 2>&1 
+
+  # Build the library
+  echo
+  echo "Building Shumlib $omp library..."
+  echo "Make output at $install_dir/make.log"
+  SHUM_OPENMP=$shum_omp make -f make/${vm_config}.mk shum_wgdos_packing &> $install_dir/make.log
+  if [ $? -ne 0 ]; then
+    echo "Shumlib $omp build failed."
+    exit 1
+  else
+    echo "Shumlib $omp build completed successfully."
+  fi
+
+  # Test the library
+  echo "Testing Shumlib $omp library..."
+  echo "Test output at $install_dir/test.log"
+  make -f make/${vm_config}.mk test &> $install_dir/test.log
+  if [ $? -ne 0 ]; then
+    echo "Shumlib $omp tests failed."
+    exit 1
+  else
+    echo "Shumlib $omp built-in tests passed."
+  fi
+
+  # Copy the library to UMDIR
+  cp -r $tmpdir/wc/build/$vm_config/* $install_dir || echo "Failed to install Shumlib $omp library"
+done
+
+# Set the symlink
 cd $HOME/umdir/shumlib
 rm -f default
 ln -s $vn default
@@ -193,7 +222,8 @@ ln -s $vn default
 # Clean up
 rm -rf $tmpdir
 
-echo "shumlib dependencies have been installed to $HOME/umdir/shumlib/default"
+echo
+echo "Shumlib dependencies have been installed to $HOME/umdir/shumlib/default"
 
 ##### .metomi setup #####
 
