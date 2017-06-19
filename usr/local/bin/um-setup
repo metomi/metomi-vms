@@ -131,7 +131,7 @@ prefix="gcom_rosestem"
 mpichdir="vm_gfortran_mpich3/build"
 serialdir="vm_gfortran_serial/build"
 serial32dir="vm32B_gfortran_serial/build"
-if [ -d "$prefix$mpichdir" ] || [ -d "$prefix$serialdir" ] || [ -d "$prefix$serial32dir"]; then
+if [ -d "$prefix$mpichdir" ] || [ -d "$prefix$serialdir" ] || [ -d "$prefix$serial32dir" ]; then
   echo "Found one or more GCOM build directories to install"
 else
   exit 1 "Cannot find a GCOM build in $cdir"
