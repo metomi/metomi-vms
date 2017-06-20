@@ -74,7 +74,7 @@ function get_source_tree {
       exit 1
     fi
     vn="r$rev"
-    fcm co -q $src $tmpdir/wc
+    fcm co -q $src $tmpdir/wc || { echo "Failed to checkout $src"; exit 1; }
   else
     # Assume working copy
     if [[ ! -d $src ]]; then
@@ -82,9 +82,8 @@ function get_source_tree {
       exit 1
     fi
     vn=wc
-    cp -r $src $tmpdir/wc
+    cp -r $src $tmpdir/wc || { echo "Copy of $src to $tmpdir failed."; exit 1; }
   fi
-  echo $vn
 }
 
 function create_keyword {
@@ -111,15 +110,24 @@ echo
 ##### Install GCOM #####
 
 tmpdir=$(mktemp -d)
+if [ ! -d "$tmpdir" ]; then
+  echo "Unable to create temporary directory"
+  exit 1
+fi
 
 echo "Finding GCOM source..."
-vn=$(get_source_tree $gcom_src $tmpdir)
+get_source_tree "$gcom_src" "$tmpdir"        # Sets global $vn
 
 echo "Installing GCOM from: $gcom_src"
 
 cd $tmpdir/wc
-echo "Running rose-stem to build GCOM..."
+echo "Running rose stem to build GCOM..."
+
 rose stem --quiet --group=all --name=gcom_install --new -- --debug
+if [ $? -ne 0 ]; then
+  echo "Failed to launch GCOM rose stem suite."
+  exit 1
+fi
 echo "GCOM suite output at http://localhost/rose-bush/jobs/$USER/gcom_install"
 
 # copy dirs to right place (remember may have to overwrite...)
@@ -134,7 +142,8 @@ serial32dir="vm32B_gfortran_serial/build"
 if [ -d "$prefix$mpichdir" ] || [ -d "$prefix$serialdir" ] || [ -d "$prefix$serial32dir" ]; then
   echo "Found one or more GCOM build directories to install"
 else
-  exit 1 "Cannot find a GCOM build in $cdir"
+  echo "Cannot find a GCOM build in $cdir"
+  exit 1
 fi
 
 rm -rf $gdir/$vn  # Remove any existing installation
@@ -158,10 +167,14 @@ echo "GCOM library has been installed to $HOME/umdir/gcom/default"
 ##### Install shumlib #####
 
 tmpdir=$(mktemp -d)
+if [ ! -d "$tmpdir" ]; then
+  echo "Unable to create temporary directory"
+  exit 1
+fi
 
 echo
 echo "Finding Shumlib source..."
-vn=$(get_source_tree $shumlib_src $tmpdir)
+get_source_tree "$shumlib_src" "$tmpdir"     # Sets global $vn
 
 echo "Installing Shumlib from: $shumlib_src"
 
@@ -180,8 +193,8 @@ for shum_omp in true false; do
     omp=no-openmp
   fi
 
-  install_dir=$HOME/umdir/shumlib/$vn/$vm_config/$omp
-  mkdir -p $install_dir
+  install_dir="$HOME/umdir/shumlib/$vn/$vm_config/$omp"
+  mkdir -p "$install_dir"
 
 
   # Remove any previous builds
@@ -191,7 +204,7 @@ for shum_omp in true false; do
   echo
   echo "Building Shumlib $omp library..."
   echo "Make output at $install_dir/make.log"
-  SHUM_OPENMP=$shum_omp make -f make/${vm_config}.mk shum_wgdos_packing &> $install_dir/make.log
+  SHUM_OPENMP=$shum_omp make -f make/${vm_config}.mk shum_wgdos_packing &> "$install_dir/make.log"
   if [ $? -ne 0 ]; then
     echo "Shumlib $omp build failed."
     exit 1
@@ -202,7 +215,7 @@ for shum_omp in true false; do
   # Test the library
   echo "Testing Shumlib $omp library..."
   echo "Test output at $install_dir/test.log"
-  make -f make/${vm_config}.mk test &> $install_dir/test.log
+  make -f make/${vm_config}.mk test &> "$install_dir/test.log"
   if [ $? -ne 0 ]; then
     echo "Shumlib $omp tests failed."
     exit 1
@@ -231,36 +244,36 @@ echo
 echo "Setting up additional FCM keywords..."
 mkdir -p $HOME/.metomi/fcm
 touch $HOME/.metomi/fcm/keyword.cfg
-create_keyword 'um.xm' 'https://code.metoffice.gov.uk/svn/um/main'
-create_keyword 'jules.xm' 'https://code.metoffice.gov.uk/svn/jules/main'
-create_keyword 'socrates.xm' 'https://code.metoffice.gov.uk/svn/socrates/main'
-create_keyword 'casim.xm' 'https://code.metoffice.gov.uk/svn/monc/casim'
-create_keyword 'um_aux.xm' 'https://code.metoffice.gov.uk/svn/um/aux'
-create_keyword 'um_doc.xm' 'https://code.metoffice.gov.uk/svn/um/doc'
-create_keyword 'mule.xm' 'https://code.metoffice.gov.uk/svn/um/mule'
-create_keyword 'moci.xm' 'https://code.metoffice.gov.uk/svn/moci/main'
-create_keyword 'shumlib.xm' 'https://code.metoffice.gov.uk/svn/utils/shumlib'
-create_keyword 'um.offline' 'file://$HOME/source/um/offline'
-create_keyword 'jules.offline' 'file://$HOME/source/jules/offline'
-create_keyword 'socrates.offline' 'file://$HOME/source/socrates/offline'
-create_keyword 'casim.offline' 'file://$HOME/source/casim/offline'
-create_keyword 'um_aux.offline' 'file://$HOME/source/um_aux/offline'
-create_keyword 'mule.offline' 'file://$HOME/source/mule/offline'
+create_keyword 'um.xm' "https://code.metoffice.gov.uk/svn/um/main"
+create_keyword 'jules.xm' "https://code.metoffice.gov.uk/svn/jules/main"
+create_keyword 'socrates.xm' "https://code.metoffice.gov.uk/svn/socrates/main"
+create_keyword 'casim.xm' "https://code.metoffice.gov.uk/svn/monc/casim"
+create_keyword 'um_aux.xm' "https://code.metoffice.gov.uk/svn/um/aux"
+create_keyword 'um_doc.xm' "https://code.metoffice.gov.uk/svn/um/doc"
+create_keyword 'mule.xm' "https://code.metoffice.gov.uk/svn/um/mule"
+create_keyword 'moci.xm' "https://code.metoffice.gov.uk/svn/moci/main"
+create_keyword 'shumlib.xm' "https://code.metoffice.gov.uk/svn/utils/shumlib"
+create_keyword 'um.offline' "file://$HOME/source/um/offline"
+create_keyword 'jules.offline' "file://$HOME/source/jules/offline"
+create_keyword 'socrates.offline' "file://$HOME/source/socrates/offline"
+create_keyword 'casim.offline' "file://$HOME/source/casim/offline"
+create_keyword 'um_aux.offline' "file://$HOME/source/um_aux/offline"
+create_keyword 'mule.offline' "file://$HOME/source/mule/offline"
 
 echo "Local FCM keywords created."
 echo
 echo 'Adding rose-ana settings to ~/.metomi/rose.conf for KGO auto-generation...'
-conf_file=$HOME/.metomi/rose.conf
+conf_file="$HOME/.metomi/rose.conf"
 
-if [ ! -f $conf_file  ]; then
+if [ ! -f "$conf_file"  ]; then
   # rose.conf file doesn't exist; create and populate it:
   echo "[rose-ana]
-kgo-database=.true." > $conf_file
+kgo-database=.true." > "$conf_file"
 
 else
   # rose.conf exists; determine what we need to add/change.
   if grep -q '^\s*\[rose-ana\]' $conf_file; then
-    if grep -q '^\s*kgo-database' $conf_file ; then
+    if grep -q '^\s*kgo-database' $conf_file; then
       # The setting is already there; ensure it's set to true:
       sed -i 's/kgo-database=.*/kgo-database=\.true\./' $conf_file
     else
