@@ -87,12 +87,21 @@ function get_source_tree {
 }
 
 function create_keyword {
-  # Create a (primary) keyword in keyword.cfg if it doesn't exist.
+  # Create a (primary) keyword in keyword.cfg if it doesn't exist,
+  # and abort if it exists but is set to something unexpected.
   keyword=$1
   keypath=$2
   keyfile=$HOME/.metomi/fcm/keyword.cfg
   if ! grep -qL "location{primary}\[$keyword\]" $keyfile; then
+    # Keyword isn't present; add it.
     echo "location{primary}[$keyword] = $keypath" >> $keyfile
+  else
+    if ! grep -q "location{primary}\[$keyword\]\s*=\s*$keypath" $keyfile; then
+      # Keyword is not set to $keypath; abort.
+      echo "Error: FCM keyword $keyword exists and is not set to"
+      echo "$keypath"
+      ereport "Update or delete $keyfile before re-running this script."
+    fi
   fi
 }
 
@@ -244,6 +253,7 @@ echo
 echo "Setting up additional FCM keywords..."
 mkdir -p $HOME/.metomi/fcm
 touch $HOME/.metomi/fcm/keyword.cfg
+
 create_keyword 'um.xm' "https://code.metoffice.gov.uk/svn/um/main"
 create_keyword 'jules.xm' "https://code.metoffice.gov.uk/svn/jules/main"
 create_keyword 'socrates.xm' "https://code.metoffice.gov.uk/svn/socrates/main"
