@@ -116,6 +116,57 @@ shumlib_src=${shumlib_src:-'fcm:shumlib.x/trunk@head'}
 echo "Preparing the VM for running the Unified Model"
 echo
 
+##### .metomi setup #####
+
+echo "Setting up FCM keywords..."
+mkdir -p $HOME/.metomi/fcm
+touch $HOME/.metomi/fcm/keyword.cfg
+
+create_keyword 'um.xm' "https://code.metoffice.gov.uk/svn/um/main"
+create_keyword 'jules.xm' "https://code.metoffice.gov.uk/svn/jules/main"
+create_keyword 'socrates.xm' "https://code.metoffice.gov.uk/svn/socrates/main"
+create_keyword 'casim.xm' "https://code.metoffice.gov.uk/svn/monc/casim"
+create_keyword 'um_aux.xm' "https://code.metoffice.gov.uk/svn/um/aux"
+create_keyword 'um_doc.xm' "https://code.metoffice.gov.uk/svn/um/doc"
+create_keyword 'mule.xm' "https://code.metoffice.gov.uk/svn/um/mule"
+create_keyword 'moci.xm' "https://code.metoffice.gov.uk/svn/moci/main"
+create_keyword 'shumlib.xm' "https://code.metoffice.gov.uk/svn/utils/shumlib"
+create_keyword 'um.offline' "file://$HOME/source/um/offline"
+create_keyword 'jules.offline' "file://$HOME/source/jules/offline"
+create_keyword 'socrates.offline' "file://$HOME/source/socrates/offline"
+create_keyword 'casim.offline' "file://$HOME/source/casim/offline"
+create_keyword 'um_aux.offline' "file://$HOME/source/um_aux/offline"
+create_keyword 'mule.offline' "file://$HOME/source/mule/offline"
+
+echo "Local FCM keywords created."
+echo
+echo 'Adding rose-ana settings to ~/.metomi/rose.conf for KGO auto-generation...'
+conf_file="$HOME/.metomi/rose.conf"
+
+if [ ! -f "$conf_file"  ]; then
+  # rose.conf file doesn't exist; create and populate it:
+  echo "[rose-ana]
+kgo-database=.true." > "$conf_file"
+
+else
+  # rose.conf exists; determine what we need to add/change.
+  if grep -q '^\s*\[rose-ana\]' $conf_file; then
+    if grep -q '^\s*kgo-database' $conf_file; then
+      # The setting is already there; ensure it's set to true:
+      sed -i 's/kgo-database=.*/kgo-database=\.true\./' $conf_file
+    else
+      # Add the database setting:
+      sed -i "/\[rose-ana\]/c\[rose-ana\]\nkgo-database=\.true\." $conf_file
+    fi
+  else
+    # Add the entire rose-ana section:
+    sed -i "\$a\\\n\[rose-ana\]\nkgo-database=\.true\." $conf_file
+  fi
+
+fi
+echo '~/.metomi/rose.conf settings updated.'
+echo
+
 ##### Install GCOM #####
 
 tmpdir=$(mktemp -d)
@@ -247,56 +298,8 @@ rm -rf $tmpdir
 echo
 echo "Shumlib dependencies have been installed to $HOME/umdir/shumlib/default"
 
-##### .metomi setup #####
+##### Set $UMDIR #####
 
-echo
-echo "Setting up additional FCM keywords..."
-mkdir -p $HOME/.metomi/fcm
-touch $HOME/.metomi/fcm/keyword.cfg
-
-create_keyword 'um.xm' "https://code.metoffice.gov.uk/svn/um/main"
-create_keyword 'jules.xm' "https://code.metoffice.gov.uk/svn/jules/main"
-create_keyword 'socrates.xm' "https://code.metoffice.gov.uk/svn/socrates/main"
-create_keyword 'casim.xm' "https://code.metoffice.gov.uk/svn/monc/casim"
-create_keyword 'um_aux.xm' "https://code.metoffice.gov.uk/svn/um/aux"
-create_keyword 'um_doc.xm' "https://code.metoffice.gov.uk/svn/um/doc"
-create_keyword 'mule.xm' "https://code.metoffice.gov.uk/svn/um/mule"
-create_keyword 'moci.xm' "https://code.metoffice.gov.uk/svn/moci/main"
-create_keyword 'shumlib.xm' "https://code.metoffice.gov.uk/svn/utils/shumlib"
-create_keyword 'um.offline' "file://$HOME/source/um/offline"
-create_keyword 'jules.offline' "file://$HOME/source/jules/offline"
-create_keyword 'socrates.offline' "file://$HOME/source/socrates/offline"
-create_keyword 'casim.offline' "file://$HOME/source/casim/offline"
-create_keyword 'um_aux.offline' "file://$HOME/source/um_aux/offline"
-create_keyword 'mule.offline' "file://$HOME/source/mule/offline"
-
-echo "Local FCM keywords created."
-echo
-echo 'Adding rose-ana settings to ~/.metomi/rose.conf for KGO auto-generation...'
-conf_file="$HOME/.metomi/rose.conf"
-
-if [ ! -f "$conf_file"  ]; then
-  # rose.conf file doesn't exist; create and populate it:
-  echo "[rose-ana]
-kgo-database=.true." > "$conf_file"
-
-else
-  # rose.conf exists; determine what we need to add/change.
-  if grep -q '^\s*\[rose-ana\]' $conf_file; then
-    if grep -q '^\s*kgo-database' $conf_file; then
-      # The setting is already there; ensure it's set to true:
-      sed -i 's/kgo-database=.*/kgo-database=\.true\./' $conf_file
-    else
-      # Add the database setting:
-      sed -i "/\[rose-ana\]/c\[rose-ana\]\nkgo-database=\.true\." $conf_file
-    fi
-  else
-    # Add the entire rose-ana section:
-    sed -i "\$a\\\n\[rose-ana\]\nkgo-database=\.true\." $conf_file
-  fi
-
-fi
-echo '~/.metomi/rose.conf settings updated.'
 echo
 echo 'Setting $UMDIR...'
 sed -i "/# If not running interactively/c# Set UMDIR\nexport UMDIR=\$HOME/umdir\n\n# If not running interactively, don't do anything else" $HOME/.bashrc
