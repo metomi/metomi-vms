@@ -2,45 +2,192 @@
 
 # Set up additional files for the UM:
 # 1) Check out/copy, build and install GCOM
-# 2) Create keyword.cfg file for offline working
+# 2) Check out/copy, build and install the necessary parts of shumlib
+# 3) Create keyword.cfg file containing mirror and offline keywords
+# 4) Add the kgo-database rose-ana setting to rose.conf
+# 5) Define $UMDIR
 
-if [ "$#" -gt 1 ]; then
-  echo "Usage: $(basename $0) [GCOM source tree]"
+function usage {
+  # Print command line options
+  echo 'Usage: um-setup [-g gcom_path] [-s shumlib_path]'
+  echo
+  echo 'Options:'
+  echo '  -g path    GCOM source location (working copy or repository location)'
+  echo '  -h         Show this help and exit'
+  echo '  -s path    Shumlib source location (working copy or repository location)'
+}
+
+function ereport {
+  # Print an error message, print usage, then exit (non-zero)
+  echo ${1:-"Unknown error"}
+  usage
+  exit 1
+}
+
+function process_args {
+  # Parse and process the command line arguments
+  if [ $# -gt 4 ]; then
+    ereport "Too many arguments"
+    exit 1
+  fi
+
+  while [ $# -ge 1 ] ; do
+    case "$1" in
+      -g) shift
+          if [ -n "$1" ]; then
+            gcom_src=$1
+          else
+            ereport "GCOM source not provided"
+          fi
+          ;;
+      -s) shift
+          if [ -n "$1" ]; then
+            shumlib_src=$1
+          else
+            ereport "shumlib source not provided"
+          fi
+          ;;
+      -h) usage
+          exit 0
+          ;;
+       *) ereport "Unrecognised argument: $1"
+          ;;
+      esac
+      shift
+  done
+}
+
+function get_source_tree {
+  # Put a copy of the src $1 in tmpdir $2,
+  # whether a working copy or repository location,
+  # and return either the revision for a repos, or 'wc' for a working copy.
+  # This is because no check is made whether the wc contains local changes.
+  src=$1
+  tmpdir=$2
+
+  if [[ $src =~ ^fcm:|^svn:|^file:|^http:|^https: ]]; then
+    # A URL of some kind
+    # Check the location is valid and get the Last Changed Rev
+    rev=$(fcm info $src | awk '/Last Changed Rev/ {print $NF}')
+    if [[ -z $rev ]]; then
+      echo "Failed to find a source tree at $src"
+      exit 1
+    fi
+    vn="r$rev"
+    fcm co -q $src $tmpdir/wc || { echo "Failed to checkout $src"; exit 1; }
+  else
+    # Assume working copy
+    if [[ ! -d $src ]]; then
+      echo "$src is not a recognised repository location or a valid directory"
+      exit 1
+    fi
+    vn=wc
+    cp -r $src $tmpdir/wc || { echo "Copy of $src to $tmpdir failed."; exit 1; }
+  fi
+}
+
+function create_keyword {
+  # Create a (primary) keyword in keyword.cfg if it doesn't exist,
+  # and abort if it exists but is set to something unexpected.
+  keyword=$1
+  keypath=$2
+  keyfile=$HOME/.metomi/fcm/keyword.cfg
+  if ! grep -qL "location{primary}\[$keyword\]" $keyfile; then
+    # Keyword isn't present; add it.
+    echo "location{primary}[$keyword] = $keypath" >> $keyfile
+  else
+    if ! grep -q "location{primary}\[$keyword\]\s*=\s*$keypath" $keyfile; then
+      # Keyword is not set to $keypath; abort.
+      echo "Error: FCM keyword $keyword exists and is not set to"
+      echo "$keypath"
+      ereport "Update or delete $keyfile before re-running this script."
+    fi
+  fi
+}
+
+###############
+# Begin script:
+
+process_args $@
+
+gcom_src=${gcom_src:-'fcm:gcom.x/trunk@head'}
+shumlib_src=${shumlib_src:-'fcm:shumlib.x/trunk@head'}
+
+echo "Preparing the VM for running the Unified Model"
+echo
+
+##### .metomi setup #####
+
+echo "Setting up FCM keywords..."
+mkdir -p $HOME/.metomi/fcm
+touch $HOME/.metomi/fcm/keyword.cfg
+
+create_keyword 'um.xm' "https://code.metoffice.gov.uk/svn/um/main"
+create_keyword 'jules.xm' "https://code.metoffice.gov.uk/svn/jules/main"
+create_keyword 'socrates.xm' "https://code.metoffice.gov.uk/svn/socrates/main"
+create_keyword 'casim.xm' "https://code.metoffice.gov.uk/svn/monc/casim"
+create_keyword 'um_aux.xm' "https://code.metoffice.gov.uk/svn/um/aux"
+create_keyword 'um_doc.xm' "https://code.metoffice.gov.uk/svn/um/doc"
+create_keyword 'mule.xm' "https://code.metoffice.gov.uk/svn/um/mule"
+create_keyword 'moci.xm' "https://code.metoffice.gov.uk/svn/moci/main"
+create_keyword 'shumlib.xm' "https://code.metoffice.gov.uk/svn/utils/shumlib"
+create_keyword 'um.offline' "file://$HOME/source/um/offline"
+create_keyword 'jules.offline' "file://$HOME/source/jules/offline"
+create_keyword 'socrates.offline' "file://$HOME/source/socrates/offline"
+create_keyword 'casim.offline' "file://$HOME/source/casim/offline"
+create_keyword 'um_aux.offline' "file://$HOME/source/um_aux/offline"
+create_keyword 'mule.offline' "file://$HOME/source/mule/offline"
+
+echo "Local FCM keywords created."
+echo
+echo 'Adding rose-ana settings to ~/.metomi/rose.conf for KGO auto-generation...'
+conf_file="$HOME/.metomi/rose.conf"
+
+if [ ! -f "$conf_file"  ]; then
+  # rose.conf file doesn't exist; create and populate it:
+  echo "[rose-ana]
+kgo-database=.true." > "$conf_file"
+
+else
+  # rose.conf exists; determine what we need to add/change.
+  if grep -q '^\s*\[rose-ana\]' $conf_file; then
+    if grep -q '^\s*kgo-database' $conf_file; then
+      # The setting is already there; ensure it's set to true:
+      sed -i 's/kgo-database=.*/kgo-database=\.true\./' $conf_file
+    else
+      # Add the database setting:
+      sed -i "/\[rose-ana\]/c\[rose-ana\]\nkgo-database=\.true\." $conf_file
+    fi
+  else
+    # Add the entire rose-ana section:
+    sed -i "\$a\\\n\[rose-ana\]\nkgo-database=\.true\." $conf_file
+  fi
+
+fi
+echo '~/.metomi/rose.conf settings updated.'
+echo
+
+##### Install GCOM #####
+
+tmpdir=$(mktemp -d)
+if [ ! -d "$tmpdir" ]; then
+  echo "Unable to create temporary directory"
   exit 1
 fi
 
-src=fcm:gcom.x/trunk@head
-if [[ -n "$1" ]]; then
-  src=$1
+echo "Finding GCOM source..."
+get_source_tree "$gcom_src" "$tmpdir"        # Sets global $vn
+
+echo "Installing GCOM from: $gcom_src"
+
+cd $tmpdir/wc
+echo "Running rose stem to build GCOM..."
+
+rose stem --quiet --group=all --name=gcom_install --new -- --debug
+if [ $? -ne 0 ]; then
+  echo "Failed to launch GCOM rose stem suite."
+  exit 1
 fi
-
-tmpdir=$(mktemp -d)
-
-if [[ $src =~ ^fcm:|^svn:|file: ]]; then
-  # A URL of some kind
-  # Check the location is valid and get the Last Changed Rev
-  rev=$(fcm info $src | awk '/Last Changed Rev/ {print $NF}')
-  if [[ -z $rev ]]; then
-    echo "Failed to find a source tree at $src"
-    exit 1
-  fi
-  vn="r$rev"
-  fcm co -q $src $tmpdir/gcom_wc
-else
-  # Assume working copy
-  if [[ ! -d $src ]]; then
-    echo "$src is not a recognised repository location or a valid directory"
-    exit 1
-  fi
-  vn=wc
-  cp -r $src $tmpdir/gcom_wc
-fi
-
-echo "Installing GCOM from: $src"
-
-cd $tmpdir/gcom_wc
-echo "Running rose-stem to build GCOM..."
-rose stem --group=all --name=gcom_install --new -- --debug
 echo "GCOM suite output at http://localhost/rose-bush/jobs/$USER/gcom_install"
 
 # copy dirs to right place (remember may have to overwrite...)
@@ -52,10 +199,11 @@ prefix="gcom_rosestem"
 mpichdir="vm_gfortran_mpich3/build"
 serialdir="vm_gfortran_serial/build"
 serial32dir="vm32B_gfortran_serial/build"
-if [ -d "$prefix$mpichdir" ] || [ -d "$prefix$serialdir" ] || [ -d "$prefix$serial32dir"]; then
+if [ -d "$prefix$mpichdir" ] || [ -d "$prefix$serialdir" ] || [ -d "$prefix$serial32dir" ]; then
   echo "Found one or more GCOM build directories to install"
 else
-  exit 1 "Cannot find a GCOM build in $cdir"
+  echo "Cannot find a GCOM build in $cdir"
+  exit 1
 fi
 
 rm -rf $gdir/$vn  # Remove any existing installation
@@ -76,23 +224,83 @@ rm -rf $tmpdir
 
 echo "GCOM library has been installed to $HOME/umdir/gcom/default"
 
-echo "Setting up additional FCM keywords..."
-mkdir -p $HOME/.metomi/fcm
-echo "location{primary}[um.xm] = https://code.metoffice.gov.uk/svn/um/main
-location{primary}[jules.xm] = https://code.metoffice.gov.uk/svn/jules/main
-location{primary}[socrates.xm] = https://code.metoffice.gov.uk/svn/socrates/main
-location{primary}[um_aux.xm] = https://code.metoffice.gov.uk/svn/um/aux
-location{primary}[um_doc.xm] = https://code.metoffice.gov.uk/svn/um/doc
-location{primary}[mule.xm] = https://code.metoffice.gov.uk/svn/um/mule
-location{primary}[moci.xm] = https://code.metoffice.gov.uk/svn/moci/main
+##### Install shumlib #####
 
-location{primary}[um.offline] = file://$HOME/source/um/offline
-location{primary}[jules.offline] = file://$HOME/source/jules/offline
-location{primary}[socrates.offline] = file://$HOME/source/socrates/offline
-location{primary}[um_aux.offline] = file://$HOME/source/um_aux/offline
-location{primary}[mule.offline] = file://$HOME/source/mule/offline" > $HOME/.metomi/fcm/keyword.cfg
+tmpdir=$(mktemp -d)
+if [ ! -d "$tmpdir" ]; then
+  echo "Unable to create temporary directory"
+  exit 1
+fi
 
-echo "Local FCM keywords created."
+echo
+echo "Finding Shumlib source..."
+get_source_tree "$shumlib_src" "$tmpdir"     # Sets global $vn
+
+echo "Installing Shumlib from: $shumlib_src"
+
+mkdir -p $HOME/umdir/shumlib
+
+cd $tmpdir/wc
+vm_config='vm-x86-gfortran-gcc'
+echo "Building Shumlib dependencies"
+
+# shumlib is built twice, with and without OpenMP:
+for shum_omp in true false; do
+
+  if $shum_omp; then
+    omp=openmp
+  else
+    omp=no-openmp
+  fi
+
+  install_dir="$HOME/umdir/shumlib/$vn/$vm_config/$omp"
+  mkdir -p "$install_dir"
+
+
+  # Remove any previous builds
+  make -f make/${vm_config}.mk clean > /dev/null 2>&1 
+
+  # Build the library
+  echo
+  echo "Building Shumlib $omp library..."
+  echo "Make output at $install_dir/make.log"
+  SHUM_OPENMP=$shum_omp make -f make/${vm_config}.mk shum_wgdos_packing &> "$install_dir/make.log"
+  if [ $? -ne 0 ]; then
+    echo "Shumlib $omp build failed."
+    exit 1
+  else
+    echo "Shumlib $omp build completed successfully."
+  fi
+
+  # Test the library
+  echo "Testing Shumlib $omp library..."
+  echo "Test output at $install_dir/test.log"
+  make -f make/${vm_config}.mk test &> "$install_dir/test.log"
+  if [ $? -ne 0 ]; then
+    echo "Shumlib $omp tests failed."
+    exit 1
+  else
+    echo "Shumlib $omp built-in tests passed."
+  fi
+
+  # Copy the library to UMDIR
+  cp -r $tmpdir/wc/build/$vm_config/* $install_dir || echo "Failed to install Shumlib $omp library"
+done
+
+# Set the symlink
+cd $HOME/umdir/shumlib
+rm -f default
+ln -s $vn default
+
+# Clean up
+rm -rf $tmpdir
+
+echo
+echo "Shumlib dependencies have been installed to $HOME/umdir/shumlib/default"
+
+##### Set $UMDIR #####
+
+echo
 echo 'Setting $UMDIR...'
 sed -i "/# If not running interactively/c# Set UMDIR\nexport UMDIR=\$HOME/umdir\n\n# If not running interactively, don't do anything else" $HOME/.bashrc
 echo "UMDIR set (open a new terminal to pick this up)."
