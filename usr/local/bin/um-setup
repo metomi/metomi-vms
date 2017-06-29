@@ -264,7 +264,7 @@ for shum_omp in true false; do
   echo
   echo "Building Shumlib $omp library..."
   echo "Make output at $install_dir/make.log"
-  SHUM_OPENMP=$shum_omp make -f make/${vm_config}.mk shum_wgdos_packing &> "$install_dir/make.log"
+  SHUM_OPENMP=$shum_omp make -f make/${vm_config}.mk &> "$install_dir/make.log"
   if [ $? -ne 0 ]; then
     echo "Shumlib $omp build failed."
     exit 1
