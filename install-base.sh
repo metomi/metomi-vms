@@ -85,10 +85,8 @@ if [[ $dist == ubuntu ]]; then
   apt-get install -q -y gfortran # gfortran is used in the brief tour suite
   apt-get install -q -y python-pip pcregrep
   apt-get install -q -y lxterminal # rose edit is configured to use this
-  if [[ $release == 16* ]]; then
+  if [[ $release != 1404 ]]; then
     apt-get install -q -y tidy
-  fi
-  if [[ $release == 16* ]]; then
     apt-get install -q -y python-requests python-simplejson
   fi
 elif [[ $dist == redhat ]]; then

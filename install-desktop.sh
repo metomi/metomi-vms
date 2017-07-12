@@ -1,12 +1,9 @@
 #### Install the LXDE desktop
 if [[ $dist == ubuntu ]]; then
-  if [[ $release == 16* ]]; then
-    apt-get install -q -y xorg lxdm lxde
-  else
+  if [[ $release == 1404 ]]; then
     apt-get install -q -y lightdm-gtk-greeter xorg lxde
-  fi
-  if [[ $release == 16* ]]; then
-    apt-get install -q -y lxsession-logout
+  else
+    apt-get install -q -y xorg lxdm lxde lxsession-logout
   fi
   apt-get remove -q -y --auto-remove xscreensaver xscreensaver-data gnome-keyring
   # Set language
@@ -38,7 +35,7 @@ perl -pi -e 's/^.*autologin=.*$/autologin=vagrant/;' /etc/lxdm/lxdm.conf
 sudo -u vagrant mkdir -p /home/vagrant/.config/autostart
 sudo -u vagrant cp /usr/share/applications/lxterminal.desktop /home/vagrant/.config/autostart
 # Prevent prompt from clipit on first use
-if [[ $dist == redhat || ($dist == ubuntu && $release == 16*) ]]; then
+if [[ $dist == redhat || ($dist == ubuntu && $release != 1404) ]]; then
   sudo -u vagrant mkdir -p /home/vagrant/.config/clipit
   sudo -u vagrant bash -c 'echo "[rc]" >/home/vagrant/.config/clipit/clipitrc'
   sudo -u vagrant bash -c 'echo "offline_mode=false" >>/home/vagrant/.config/clipit/clipitrc'
