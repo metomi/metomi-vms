@@ -138,6 +138,7 @@ if [[ $dist == redhat ]]; then
   echo '[[ "$-" != *i* ]] && return # Stop here if not running interactively' >>/home/vagrant/.bashrc
 fi
 echo "[[ -f /opt/rose/etc/rose-bash-completion ]] && . /opt/rose/etc/rose-bash-completion" >>/home/vagrant/.bashrc
+echo "[[ -f /opt/cylc/conf/cylc-bash-completion ]] && . /opt/cylc/conf/cylc-bash-completion" >>/home/vagrant/.bashrc
 
 #### Configure firefox as the default PDF viewer
 sudo -u vagrant mkdir -p /home/vagrant/.local/share/applications
