@@ -84,6 +84,7 @@ dos2unix -n /vagrant/opt/metomi-site/conf/global.rc /opt/metomi-site/conf/global
 if [[ $dist == ubuntu ]]; then
   apt-get install -q -y gfortran # gfortran is used in the brief tour suite
   apt-get install -q -y python-pip pcregrep
+  apt-get install -q -y lxterminal # rose edit is configured to use this
   if [[ $release == 16* ]]; then
     apt-get install -q -y tidy
   fi
