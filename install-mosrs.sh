@@ -3,7 +3,7 @@ if [[ $dist == ubuntu && $release == 1404 ]]; then
   apt-get install -q -y gnupg-agent
 elif [[ $dist == ubuntu || ($dist == redhat && $release == fedora*) ]]; then
   if [[ $dist == ubuntu ]]; then
-    apt-get install -q -y libgpg-error-dev libgcrypt20-dev libassuan-dev libksba-dev libpth-dev
+    apt-get install -q -y libgpg-error-dev libgcrypt20-dev libassuan-dev libksba-dev libpth-dev zlib1g-dev
   else
     yum install -y zlib-devel libgpg-error-devel libgcrypt-devel libassuan-devel libksba-devel
   fi
