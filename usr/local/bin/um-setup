@@ -275,7 +275,7 @@ for shum_omp in true false; do
   # Test the library
   echo "Testing Shumlib $omp library..."
   echo "Test output at $install_dir/test.log"
-  make -f make/${vm_config}.mk test &> "$install_dir/test.log"
+  SHUM_OPENMP=$shum_omp make -f make/${vm_config}.mk test &> "$install_dir/test.log"
   if [ $? -ne 0 ]; then
     echo "Shumlib $omp tests failed."
     exit 1
