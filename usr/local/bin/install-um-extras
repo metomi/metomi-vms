@@ -8,8 +8,15 @@ fi
 
 set -x
 
-#### Install UM and mule dependencies
+echo "Installing UM and mule dependencies..."
 apt-get install -y mpich libnetcdf-dev libhdf5-serial-dev netcdf-bin libnetcdff-dev libnetcdff6 libgrib-api-dev python-numpy python-dev python-mock
 
-#### Add mule to the python packages
+echo
+echo "Adding mule to the installed python packages..."
 echo "$HOME/umdir/mule/lib" > /usr/lib/python2.7/dist-packages/mule.pth
+
+echo
+echo "Installing UMDP dependencies..."
+apt-get install -y texlive texlive-latex-extra texlive-generic-extra texlive-science
+echo
+echo "Finished."
