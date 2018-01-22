@@ -2,12 +2,19 @@
 if [[ $dist == ubuntu ]]; then
   if [[ $release == 1404 ]]; then
     apt-get install -q -y lightdm-gtk-greeter xorg lxde
-  else
+  elif [[ $release == 1604 ]]; then
     apt-get install -q -y xorg lxdm lxde lxsession-logout
+  else
+    apt-get install -q -y lxde xinput
   fi
   apt-get remove -q -y --auto-remove xscreensaver xscreensaver-data gnome-keyring
+  if [[ $release == 1710 ]]; then
+    apt-get remove -q -y --auto-remove gnome-screensaver lxlock light-locker
+  fi
   # Set language
-  apt-get install -q -y language-pack-en
+  if [[ $release == 1404 ]]; then
+    apt-get install -q -y language-pack-en
+  fi
   update-locale LANG=en_GB.utf8
   # Set UK keyboard
   perl -pi -e 's/XKBLAYOUT="us"/XKBLAYOUT="gb"/;' /etc/default/keyboard
@@ -30,10 +37,25 @@ elif [[ $dist == redhat ]]; then
   localectl set-x11-keymap gb
 fi
 # Enable auto login
-perl -pi -e 's/^.*autologin=.*$/autologin=vagrant/;' /etc/lxdm/lxdm.conf
+if [[ $dist == ubuntu && $release == 1710 ]]; then
+  echo "[SeatDefaults]" >> /usr/share/lightdm/lightdm.conf.d/lxde.conf
+  echo "user-session=LXDE" >> /usr/share/lightdm/lightdm.conf.d/lxde.conf
+  echo "autologin-user=vagrant" >> /usr/share/lightdm/lightdm.conf.d/lxde.conf
+  echo "autologin-user-timeout=0" >> /usr/share/lightdm/lightdm.conf.d/lxde.conf
+else
+  perl -pi -e 's/^.*autologin=.*$/autologin=vagrant/;' /etc/lxdm/lxdm.conf
+fi
 # Open a terminal on startup
 sudo -u vagrant mkdir -p /home/vagrant/.config/autostart
 sudo -u vagrant cp /usr/share/applications/lxterminal.desktop /home/vagrant/.config/autostart
+# Configure middle button emulation
+if [[ $dist == ubuntu && $release == 1604 ]]; then
+  sudo -u vagrant bash -c 'echo "[Desktop Entry]" >/home/vagrant/.config/autostart/xinput.desktop'
+  sudo -u vagrant bash -c 'echo "Exec=xinput set-prop 11 \"Evdev Middle Button Emulation\" 1" >>/home/vagrant/.config/autostart/xinput.desktop'
+elif [[ ($dist == ubuntu && $release == 1710) || ($dist == redhat && $release == fedora*) ]]; then
+  sudo -u vagrant bash -c 'echo "[Desktop Entry]" >/home/vagrant/.config/autostart/xinput.desktop'
+  sudo -u vagrant bash -c 'echo "Exec=xinput set-prop 11 \"libinput Middle Emulation Enabled\" 1" >>/home/vagrant/.config/autostart/xinput.desktop'
+fi
 # Prevent prompt from clipit on first use
 if [[ $dist == redhat || ($dist == ubuntu && $release != 1404) ]]; then
   sudo -u vagrant mkdir -p /home/vagrant/.config/clipit

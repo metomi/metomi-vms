@@ -13,7 +13,7 @@ if [[ $collections =~ desktop ]]; then
   echo "Installation in progress, please wait" > /etc/nologin
 fi
 
-if [[ $dist == ubuntu ]]; then
+if [[ $dist == ubuntu && $release != 1710 ]]; then
   # Address issues some hosts experience with networking (specifically, DNS latency)
   # See https://github.com/mitchellh/vagrant/issues/1172
   if [ ! $(grep single-request-reopen /etc/resolvconf/resolv.conf.d/base) ]; then
@@ -28,14 +28,17 @@ fi
 
 # Use the WANdisco subversion packages
 if [[ $dist == ubuntu && $release == 1404 ]]; then
-  add-apt-repository 'deb http://opensource.wandisco.com/ubuntu trusty svn18'
+  add-apt-repository 'deb http://opensource.wandisco.com/ubuntu trusty svn19'
+  wget -q http://opensource.wandisco.com/wandisco-debian.gpg -O- | sudo apt-key add -
+elif [[ $dist == ubuntu && $release == 1604 ]]; then
+  add-apt-repository 'deb http://opensource.wandisco.com/ubuntu xenial svn19'
   wget -q http://opensource.wandisco.com/wandisco-debian.gpg -O- | sudo apt-key add -
 elif [[ $dist == redhat && $release == centos6 ]]; then
   cat  > /etc/yum.repos.d/WANdisco-svn.repo <<EOF
 [WANdisco-svn]
 name=WANdisco SVN Repo
 enabled=1
-baseurl=http://opensource.wandisco.com/centos/6/svn-1.8/RPMS/\$basearch/
+baseurl=http://opensource.wandisco.com/centos/6/svn-1.9/RPMS/\$basearch/
 gpgcheck=1
 gpgkey=http://opensource.wandisco.com/RPM-GPG-KEY-WANdisco
 EOF
@@ -44,7 +47,7 @@ elif [[ $dist == redhat && $release == centos7 ]]; then
 [WANdisco-svn]
 name=WANdisco SVN Repo
 enabled=1
-baseurl=http://opensource.wandisco.com/centos/7/svn-1.8/RPMS/\$basearch/
+baseurl=http://opensource.wandisco.com/centos/7/svn-1.9/RPMS/\$basearch/
 gpgcheck=1
 gpgkey=http://opensource.wandisco.com/RPM-GPG-KEY-WANdisco
 EOF
@@ -56,8 +59,7 @@ if [[ $dist == ubuntu ]]; then
   apt-get update -q -y
   apt-get upgrade -q -y
 elif [[ $dist == redhat ]]; then
-  # NB: Disabled since /vagrant fails to mount after this is run
-  : #yum update -y
+  yum update -y
 fi
 
 # Use dos2unix in case any files have Windows EOL characters
