@@ -24,7 +24,9 @@ else
   # Create a symlink to make this the default version
   ln -sf /opt/fcm-$FCM_VERSION /opt/fcm
   # Configure FCM diff and merge viewers
-  ln -sf /opt/metomi-site/etc/fcm/external.cfg /opt/fcm-$FCM_VERSION/etc/fcm/external.cfg
+  if [[ -r /opt/metomi-site/etc/fcm/external.cfg ]]; then
+    ln -sf /opt/metomi-site/etc/fcm/external.cfg /opt/fcm-$FCM_VERSION/etc/fcm/external.cfg
+  fi
   # Set up FCM keywords
   if [[ -r /opt/metomi-site/etc/fcm/keyword.cfg ]]; then
     ln -sf /opt/metomi-site/etc/fcm/keyword.cfg /opt/fcm-$FCM_VERSION/etc/fcm/keyword.cfg

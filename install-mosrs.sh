@@ -7,6 +7,17 @@ elif [[ $dist == ubuntu || ($dist == redhat && $release == fedora*) ]]; then
   else
     yum install -y zlib-devel libgpg-error-devel libgcrypt-devel libassuan-devel libksba-devel
   fi
+  if [[ $dist == redhat && $release == fedora* ]]; then
+    wget -q ftp://ftp.gnu.org/gnu/pth/pth-2.0.7.tar.gz
+    tar xzf pth-2.0.7.tar.gz
+    rm pth-2.0.7.tar.gz
+    cd pth-2.0.7
+    ./configure --libdir=/usr/lib64 --exec-prefix=/usr
+    make
+    make install
+    cd ..
+    rm -r pth-2.0.7
+  fi
   curl -L -s -S https://www.gnupg.org/ftp/gcrypt/gnupg/gnupg-2.0.30.tar.bz2 | tar -xj
   cd gnupg-2.0.30
   ./configure
@@ -30,5 +41,6 @@ dos2unix -n /vagrant/etc/subversion/servers /etc/subversion/servers
 # Set up subversion to use gpg-agent as the password store
 dos2unix -n /vagrant/etc/subversion/config /etc/subversion/config
 # Set up FCM keywords
+mkdir -p /opt/metomi-site/etc/fcm
 dos2unix -n /vagrant/opt/metomi-site/etc/fcm/keyword.cfg /opt/metomi-site/etc/fcm/keyword.cfg
 ln -sf /opt/metomi-site/etc/fcm/keyword.cfg /opt/fcm/etc/fcm/keyword.cfg

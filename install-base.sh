@@ -5,7 +5,6 @@ if [[ $dist == ubuntu ]]; then
   fi
 elif [[ $dist == redhat ]]; then
   #### Disable SELinux to keep things simple
-  yum install -y perl
   setenforce 0
   perl -pi -e 's/^SELINUX=enforcing/SELINUX=disabled/;' /etc/selinux/config
 fi
@@ -17,39 +16,47 @@ fi
 
 #### Install commonly used editors
 if [[ $dist == ubuntu ]]; then
-  apt-get install -q -y dictionaries-common # leaving this to be installed automatically results in errors
-  apt-get install -q -y gedit vim-gtk emacs
+  apt-get install -q -y leafpad vim-gtk emacs
   # Set the default editor in .profile
-  echo "export SVN_EDITOR='gvim -f'" >>.profile
-  echo "export EDITOR=gedit" >>.profile
+  echo "export EDITOR=leafpad" >>.profile
 elif [[ $dist == redhat ]]; then
-  if [[ $release == fedora* ]]; then
-    # gvim fails to install unless vim-minimal is updated first
-    yum update -y vim-minimal
-  fi
-  yum install -y gedit gvim emacs
+  yum install -y gvim emacs
   # Set the default editor in .bash_profile
-  echo "export SVN_EDITOR='gvim -f'" >>.bash_profile
-  echo "export EDITOR=gedit" >>.bash_profile
+  if [[ $release == fedora* ]]; then
+    yum install -y leafpad
+    echo "export EDITOR=leafpad" >>.bash_profile
+  else
+    echo "export EDITOR=emacs" >>.bash_profile
+  fi
 fi
 
 #### Install FCM dependencies & configuration
 if [[ $dist == ubuntu ]]; then
-  apt-get install -q -y subversion firefox tkcvs tk kdiff3 libxml-parser-perl
+  apt-get install -q -y subversion firefox tkcvs tk libxml-parser-perl
   apt-get install -q -y m4 libconfig-inifiles-perl libdbi-perl g++ libsvn-perl
+  if [[ $release == 1404 ]]; then
+    apt-get install -q -y kdiff3
+  else
+    apt-get install -q -y xxdiff
+  fi
 elif [[ $dist == redhat ]]; then
-  yum install -y subversion firefox tkcvs kdiff3 perl-core perl-XML-Parser
+  yum install -y subversion firefox tkcvs perl-core perl-XML-Parser
   yum install -y perl-Config-IniFiles subversion-perl
   yum install -y gcc-c++  # used by fcm test-battery
   if [[ $release == fedora* ]]; then
     yum install -y m4 perl-DBI
+    yum install -y xxdiff
+  else
+    yum install -y kdiff3
   fi
 fi
 # Add the fcm wrapper script
 dos2unix -n /vagrant/usr/local/bin/fcm /usr/local/bin/fcm
 # Configure FCM diff and merge viewers
-mkdir -p /opt/metomi-site/etc/fcm
-dos2unix -n /vagrant/opt/metomi-site/etc/fcm/external.cfg /opt/metomi-site/etc/fcm/external.cfg
+if [[ ($dist == ubuntu && $release == 1404) || ($dist == redhat && $release != fedora*) ]]; then
+  mkdir -p /opt/metomi-site/etc/fcm
+  dos2unix -n /vagrant/opt/metomi-site/etc/fcm/external.cfg /opt/metomi-site/etc/fcm/external.cfg
+fi
 
 #### Install Cylc dependencies & configuration
 if [[ $dist == ubuntu ]]; then
@@ -67,7 +74,11 @@ elif [[ $dist == redhat ]]; then
     easy_install pygraphviz # pip install fails
   else
     yum install -y python-jinja2 pygtk2
-    pip install pygraphviz
+    if [[ $release == centos7 ]]; then
+      pip install pygraphviz
+    else
+      yum install -y python-pygraphviz
+    fi
   fi
   # Ensure "hostname -f" returns the fully qualified name
   perl -pi -e 's/localhost localhost.localdomain/localhost.localdomain localhost/;' /etc/hosts
@@ -105,6 +116,7 @@ dos2unix -n /vagrant/usr/local/bin/rose /usr/local/bin/rose
 cd /usr/local/bin
 ln -sf rose rosie
 # Configure Rose
+mkdir -p /opt/metomi-site/etc
 if [[ $dist == ubuntu ]]; then
   dos2unix -n /vagrant/opt/metomi-site/etc/rose.conf /opt/metomi-site/etc/rose.conf
 elif [[ $dist == redhat ]]; then
@@ -155,7 +167,7 @@ if [[ $dist == ubuntu ]]; then
 elif [[ $dist == redhat ]]; then
   if [[ $release == centos6 ]]; then
     yum install -y mod_dav_svn mod_wsgi python-cherrypy
-    pip install sqlalchemy
+    pip install sqlalchemy=1.1.15 # 1.2 requires python 2.7
   else
     yum install -y mod_dav_svn mod_wsgi python-cherrypy python-sqlalchemy
   fi

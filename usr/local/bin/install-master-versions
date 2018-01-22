@@ -11,7 +11,9 @@ rm -rf /opt/fcm-master
 echo Installing the master version of FCM
 curl -L -s -S https://github.com/metomi/fcm/archive/master.tar.gz | tar -xz -C /opt
 # Configure FCM diff and merge viewers
-ln -sf /opt/metomi-site/etc/fcm/external.cfg /opt/fcm-master/etc/fcm/external.cfg
+if [[ -r /opt/metomi-site/etc/fcm/external.cfg ]]; then
+  ln -sf /opt/metomi-site/etc/fcm/external.cfg /opt/fcm-master/etc/fcm/external.cfg
+fi
 # Set up FCM keywords
 if [[ -r /opt/metomi-site/etc/fcm/keyword.cfg ]]; then
   ln -sf /opt/metomi-site/etc/fcm/keyword.cfg /opt/fcm-master/etc/fcm/keyword.cfg
