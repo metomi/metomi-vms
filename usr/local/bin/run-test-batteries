@@ -15,7 +15,8 @@ if [[ $# != 0 ]]; then
   fi
 fi
 
-cylc check-software
+cylc check-software | tee test-cylc-check-software.out.$(date +%Y-%m-%dT%H%M)
+rose check-software | tee test-rose-check-software.out.$(date +%Y-%m-%dT%H%M)
 fcm test-battery -j4 2>&1 | tee test-fcm.out.$(date +%Y-%m-%dT%H%M)
 cylc test-battery -j4 2>&1 | tee test-cylc.out.$(date +%Y-%m-%dT%H%M)
 rose test-battery -j4 2>&1 | tee test-rose.out.$(date +%Y-%m-%dT%H%M)
