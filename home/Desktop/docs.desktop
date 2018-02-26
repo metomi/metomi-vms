@@ -1,0 +1,5 @@
+[Desktop Entry]
+Name=Local Docs
+Exec=firefox http://localhost/
+Type=Application
+Icon=firefox

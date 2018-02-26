@@ -62,12 +62,14 @@ fi
 if [[ $dist == ubuntu ]]; then
   apt-get install -q -y graphviz python-jinja2 python-pygraphviz python-gtk2 sqlite3
   apt-get install -q -y pep8 # used by test-battery
+  apt-get install -q -y tex4ht imagemagick texlive-generic-extra texlive-latex-extra texlive-fonts-recommended
 elif [[ $dist == redhat ]]; then
   yum install -y python-pip graphviz at lsof python-pep8
   service atd start
   yum install -y graphviz-devel python-devel
   if [[ $release == fedora* ]]; then
     yum install -y redhat-rpm-config sqlite pyOpenSSL
+    yum install -y texlive texlive-dirtree texlive-framed texlive-preprint texlive-tex4ht texlive-tocloft ImageMagick
   fi
   if [[ $release == centos6 ]]; then
     pip install jinja2
@@ -100,6 +102,7 @@ if [[ $dist == ubuntu ]]; then
     apt-get install -q -y tidy
     apt-get install -q -y python-requests python-simplejson
   fi
+  apt-get install -q -y python-virtualenv # needed by rose make-docs
 elif [[ $dist == redhat ]]; then
   yum install -y python-simplejson rsync xterm
   yum install -y gcc-gfortran # gfortran is used in the brief tour suite
@@ -108,6 +111,9 @@ elif [[ $dist == redhat ]]; then
   else
     yum install -y python-requests
     yum install -y pcre-tools
+  fi
+  if [[ $release == fedora* ]]; then
+    yum install -y python2-virtualenv # needed by rose make-docs
   fi
 fi
 pip install mock pytest-tap # used by test-battery
@@ -184,6 +190,8 @@ if [[ $dist == ubuntu ]]; then
 elif [[ $dist == redhat ]]; then
   dos2unix -n /vagrant/opt/metomi-site/etc/httpd/svn.conf.redhat /opt/metomi-site/etc/httpd/svn.conf
 fi
+ln -sf /opt /var/www/html
+dos2unix -n /vagrant/var/www/html/index.html /var/www/html/index.html
 if [[ $dist == ubuntu ]]; then
   ln -sf /opt/metomi-site/etc/httpd/rosie-wsgi.conf /etc/apache2/conf-enabled/rosie-wsgi.conf
   ln -sf /opt/metomi-site/etc/httpd/svn.conf /etc/apache2/conf-enabled/svn.conf

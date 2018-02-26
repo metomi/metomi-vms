@@ -1,6 +1,6 @@
 # metomi-vms
 
-Vagrant virtual machines with [FCM](http://metomi.github.io/fcm/doc/) + [Rose](http://metomi.github.io/rose/doc/rose.html) + [Cylc](http://cylc.github.io/cylc/) installed.
+Vagrant virtual machines with [FCM](http://metomi.github.io/fcm/doc/) + [Rose](http://metomi.github.io/rose/) + [Cylc](http://cylc.github.io/cylc/) installed.
 
 Table of contents:
 * [Software Requirements](#software-requirements)
@@ -11,6 +11,7 @@ Table of contents:
 * [Optional Windows Software](#optional-windows-software)
   * [Git BASH](#git-bash)
   * [Cygwin](#cygwin)
+* [Troubleshooting](#troubleshooting)
 
 ## Software Requirements
 
@@ -54,9 +55,8 @@ A separate window should open containing a lightweight Linux desktop environment
 If your VM includes support for the Met Office Science Repository Service then you will be prompted for your password (and also your user name the first time you use the VM).
 If you get your username or password wrong and Subversion fails to connect, just run `mosrs-cache-password` to try again.
 
-The VM is configured with a local [Rose suite repository](http://metomi.github.io/rose/doc/rose-rug-introduction.html#suite-storage) and with the suite log viewer running under apache.
-To try this out, you can follow the [Rose Brief Tour](http://metomi.github.io/rose/doc/rose-rug-brief-tour.html).
-You can also try out all the other tutorials in the [Rose User Guide](http://metomi.github.io/rose/doc/rose.html).
+The VM is configured with a local [Rose suite repository](http://metomi.github.io/rose/doc/html/tutorial/rose/rosie.html) and with the suite log viewer running under apache.
+If you want to learn more about Rose and Cylc you can follow the tutorials contained in the [Rose User Guide](http://metomi.github.io/rose/).
 
 To shutdown the VM you can either use the menu item available in the bottom right hand corner of the Linux desktop or you can issue the command `vagrant halt` from the command window where you launched the VM.
 
@@ -106,3 +106,12 @@ Then, instead of using a normal command window for launching the VM, you should 
 In Cygwin-X terminals, you can use many common Unix commands (e.g. cd, ls).
 Firstly run the command  `cd /cygdrive` followed by `ls` and you should see your Windows drives.
 Then use the `cd` command to navigate to the directory where you have extracted the setup files (e.g. `c/Users/User/metomi-vms-master`).
+
+## Troubleshooting
+
+### Guest display resolution
+
+When you resize the VirtualBox window (e.g. to mazimise it) the display resolution of your Linux VM should adjust to match.
+If this doesn't work it may be due to the Guest Additions installed in your VM not matching the version of VirtualBox you have installed.
+The easiest way to fix this is to install the [vagrant-vbguest Vagrant plugin](https://github.com/dotless-de/vagrant-vbguest).
+Note that, if the plugin does update your Guest Additions then you will need to shutdown and restart your VM (using `vagrant up`) in order for them to take effect.

@@ -1,4 +1,5 @@
 #### Install the LXDE desktop
+sudo -u vagrant mkdir -p /home/vagrant/Desktop
 if [[ $dist == ubuntu ]]; then
   if [[ $release == 1404 ]]; then
     apt-get install -q -y lightdm-gtk-greeter xorg lxde
@@ -23,7 +24,6 @@ if [[ $dist == ubuntu ]]; then
     perl -pi -e 's/edge=bottom/edge=top/;' /usr/share/lxpanel/profile/LXDE/panels/panel
   fi
   # Create a desktop shortcut
-  sudo -u vagrant mkdir -p /home/vagrant/Desktop
   sudo -u vagrant cp /usr/share/applications/lxterminal.desktop /home/vagrant/Desktop
   if [[ $release == 1404 ]]; then
     # Allow shutdown to work (https://tracker.zentyal.org/issues/360)
@@ -45,6 +45,8 @@ if [[ $dist == ubuntu && $release == 1710 ]]; then
 else
   perl -pi -e 's/^.*autologin=.*$/autologin=vagrant/;' /etc/lxdm/lxdm.conf
 fi
+# Create a desktop shortcut to the local documentation
+sudo -u vagrant dos2unix -n /vagrant/home/Desktop/docs.desktop /home/vagrant/Desktop/docs.desktop
 # Open a terminal on startup
 sudo -u vagrant mkdir -p /home/vagrant/.config/autostart
 sudo -u vagrant cp /usr/share/applications/lxterminal.desktop /home/vagrant/.config/autostart
