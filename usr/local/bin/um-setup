@@ -183,7 +183,7 @@ echo "Installing GCOM from: $gcom_src"
 cd $tmpdir/wc
 echo "Running rose stem to build GCOM..."
 
-rose stem --quiet --group=all --name=gcom_install --new -- --debug
+rose stem --quiet --group=all --name=gcom_install --new -- --no-detach
 if [ $? -ne 0 ]; then
   echo "Failed to launch GCOM rose stem suite."
   exit 1
