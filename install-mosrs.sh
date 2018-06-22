@@ -4,6 +4,9 @@ if [[ $dist == ubuntu && $release == 1404 ]]; then
 elif [[ $dist == ubuntu || ($dist == redhat && $release == fedora*) ]]; then
   if [[ $dist == ubuntu ]]; then
     apt-get install -q -y libgpg-error-dev libgcrypt20-dev libassuan-dev libksba-dev libpth-dev zlib1g-dev
+    if [[ $release == 1804 ]]; then
+      apt-get remove -q -y --auto-remove gpg-agent
+    fi
   else
     yum install -y zlib-devel libgpg-error-devel libgcrypt-devel libassuan-devel libksba-devel
   fi

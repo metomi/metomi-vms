@@ -165,7 +165,7 @@ sudo -u vagrant bash -c 'echo "application/pdf=firefox.desktop;" >>/home/vagrant
 #### Configure rose bush & rosie web services (with a local rosie repository)
 if [[ $dist == ubuntu ]]; then
   apt-get install -q -y apache2 libapache2-mod-wsgi python-cherrypy3 apache2-utils python-sqlalchemy
-  if [[ $release != 1710 ]]; then
+  if [[ $release != 1804 ]]; then
     apt-get install -q -y libapache2-svn
   else
     apt-get install -q -y libapache2-mod-svn
