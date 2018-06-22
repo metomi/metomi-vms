@@ -9,7 +9,7 @@ if [[ $dist == ubuntu ]]; then
     apt-get install -q -y lxde xinput
   fi
   apt-get remove -q -y --auto-remove xscreensaver xscreensaver-data gnome-keyring
-  if [[ $release == 1710 ]]; then
+  if [[ $release == 1804 ]]; then
     apt-get remove -q -y --auto-remove gnome-screensaver lxlock light-locker
   fi
   # Set language
@@ -37,7 +37,7 @@ elif [[ $dist == redhat ]]; then
   localectl set-x11-keymap gb
 fi
 # Enable auto login
-if [[ $dist == ubuntu && $release == 1710 ]]; then
+if [[ $dist == ubuntu && $release == 1804 ]]; then
   echo "[SeatDefaults]" >> /usr/share/lightdm/lightdm.conf.d/lxde.conf
   echo "user-session=LXDE" >> /usr/share/lightdm/lightdm.conf.d/lxde.conf
   echo "autologin-user=vagrant" >> /usr/share/lightdm/lightdm.conf.d/lxde.conf
@@ -54,7 +54,7 @@ sudo -u vagrant cp /usr/share/applications/lxterminal.desktop /home/vagrant/.con
 if [[ $dist == ubuntu && $release == 1604 ]]; then
   sudo -u vagrant bash -c 'echo "[Desktop Entry]" >/home/vagrant/.config/autostart/xinput.desktop'
   sudo -u vagrant bash -c 'echo "Exec=xinput set-prop 11 \"Evdev Middle Button Emulation\" 1" >>/home/vagrant/.config/autostart/xinput.desktop'
-elif [[ ($dist == ubuntu && $release == 1710) || ($dist == redhat && $release == fedora*) ]]; then
+elif [[ ($dist == ubuntu && $release == 1804) || ($dist == redhat && $release == fedora*) ]]; then
   sudo -u vagrant bash -c 'echo "[Desktop Entry]" >/home/vagrant/.config/autostart/xinput.desktop'
   sudo -u vagrant bash -c 'echo "Exec=xinput set-prop 11 \"libinput Middle Emulation Enabled\" 1" >>/home/vagrant/.config/autostart/xinput.desktop'
 fi
