@@ -10,7 +10,7 @@ if [[ $dist == ubuntu ]]; then
   fi
   apt-get remove -q -y --auto-remove xscreensaver xscreensaver-data gnome-keyring
   if [[ $release == 1804 ]]; then
-    apt-get remove -q -y --auto-remove gnome-screensaver lxlock light-locker
+    apt-get remove -q -y --auto-remove gnome-screensaver lxlock light-locker network-manager-gnome gnome-online-accounts
   fi
   # Set language
   if [[ $release == 1404 ]]; then
