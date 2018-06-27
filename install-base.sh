@@ -102,7 +102,7 @@ if [[ $dist == ubuntu ]]; then
     apt-get install -q -y tidy
     apt-get install -q -y python-requests python-simplejson
   fi
-  apt-get install -q -y python-virtualenv # needed by rose make-docs
+  apt-get install -q -y python-virtualenv latexmk # needed by rose make-docs
 elif [[ $dist == redhat ]]; then
   yum install -y python-simplejson rsync xterm
   yum install -y gcc-gfortran # gfortran is used in the brief tour suite
@@ -113,7 +113,8 @@ elif [[ $dist == redhat ]]; then
     yum install -y pcre-tools
   fi
   if [[ $release == fedora* ]]; then
-    yum install -y python2-virtualenv # needed by rose make-docs
+    yum install -y python2-virtualenv latexmk # needed by rose make-docs
+    yum install -y texlive-fncychap texlive-titlesec texlive-tabulary texlive-wrapfig texlive-upquote texlive-capt-of texlive-needspace
   fi
 fi
 pip install mock pytest-tap # used by test-battery
