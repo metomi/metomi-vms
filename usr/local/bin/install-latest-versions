@@ -69,6 +69,6 @@ else
   ln -sf /opt/metomi-site/etc/rose.conf /opt/rose-$ROSE_VERSION/etc/rose.conf
   if [[ -e /usr/bin/latex ]]; then
     # Build documentation
-    /usr/local/bin/rose make-docs --venv html slides
+    /usr/local/bin/rose make-docs --venv html slides pdf
   fi
 fi
