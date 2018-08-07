@@ -1,5 +1,7 @@
 # metomi-vms
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1341042.svg)](https://doi.org/10.5281/zenodo.1341042)
+
 Vagrant virtual machines with [FCM](http://metomi.github.io/fcm/doc/) + [Rose](http://metomi.github.io/rose/) + [Cylc](http://cylc.github.io/cylc/) installed.
 
 Table of contents:
