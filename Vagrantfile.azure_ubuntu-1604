@@ -15,8 +15,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     azure.client_secret = ENV["AZURE_CLIENT_SECRET"]
     azure.subscription_id = ENV["AZURE_SUBSCRIPTION_ID"]
     azure.location = "eastus"
-    # 4 CPU, 8GB memory
+    # 4 CPU, 8GB memory, HDD. General purpose
     azure.vm_size = "Standard_A4_v2"
+    # select Ubuntu 16.04LTS image
+    azure.vm_image_urn = "canonical:ubuntuserver:16.04-LTS:latest"
   end
 
   config.vm.provision :shell, path: "install.sh", args: "ubuntu 1604 desktop mosrs"
