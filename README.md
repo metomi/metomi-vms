@@ -146,12 +146,12 @@ vagrant plugin install vagrant-azure
 DDDDDDDD-DDDD-DDDD-DDDD-DDDDDDDDDDDD
 ```
 
-* You will then need to export these as the following, as these are used within the Azure Vagrantfile. You should keep a note of these, as you will need them to make sure that they are set each time you access the VM.
+* You will then need to export these as the following environment variables, as these are used within the Azure Vagrantfile. You should also keep a note of them, as you will need to make sure that they are set each time you access the VM.
 ```
-AZURE_CLIENT_ID="AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAA"; export AZURE_CLIENT_ID 
-AZURE_CLIENT_SECRET="BBBBBBBB-BBBB-BBBB-BBBB-BBBBBBBBBBB"; export AZURE_CLIENT_SECRET
-AZURE_TENANT_ID="CCCCCCCC-CCCC-CCCC-CCCC-CCCCCCCCCCC"; export AZURE_TENANT_ID
-AZURE_SUBSCRIPTION_ID="DDDDDDDD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"; export AZURE_SUBSCRIPTION_ID
+export AZURE_CLIENT_ID="AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAA"
+export AZURE_CLIENT_SECRET="BBBBBBBB-BBBB-BBBB-BBBB-BBBBBBBBBBB"
+export AZURE_TENANT_ID="CCCCCCCC-CCCC-CCCC-CCCC-CCCCCCCCCCC"
+export AZURE_SUBSCRIPTION_ID="DDDDDDDD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"
 ```
 
 * To run the VM you should then run `vagrant up --provider=azure` and once previsioned you can `vagrant ssh` etc. in the usual way.
