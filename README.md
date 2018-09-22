@@ -156,3 +156,4 @@ AZURE_SUBSCRIPTION_ID="DDDDDDDD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"; export AZURE_SUBSC
 
 * To run the VM you should then run `vagrant up --provider=azure` and once previsioned you can `vagrant ssh` etc. in the usual way.
 
+There are many different [https://docs.microsoft.com/en-us/azure/virtual-machines/linux/sizes](Linux VMs available on Azure), for different [https://azure.microsoft.com/en-gb/pricing/details/virtual-machines/linux/](price plans). Currently the VM is set to use the [https://docs.microsoft.com/en-us/azure/virtual-machines/linux/sizes-compute](`Standard_F4s_v2`) Azure Linux machine, which is compute optimised with 4 virtual CPUs and 8GB memory. Other options are available dependent on need and cost.
