@@ -118,14 +118,20 @@ If this doesn't work it may be due to the Guest Additions installed in your VM n
 The easiest way to fix this is to install the [vagrant-vbguest Vagrant plugin](https://github.com/dotless-de/vagrant-vbguest).
 Note that, if the plugin does update your Guest Additions then you will need to shutdown and restart your VM (using `vagrant up`) in order for them to take effect.
 
-## Using Microsoft Azure
+## Microsoft Azure
 
 It is possible to run using Vagrant on a Microsoft Azure cloud virtual machine. To do this you will need to install the [`vagrant-azure`](https://github.com/Azure/vagrant-azure) plugin. You should also install the [Azure CLI command line tool](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest), which will allow you to manage your Azure resources.
 
-To begin you should follow the instructions from https://github.com/Azure/vagrant-azure.
+* To begin you should follow the instructions from https://github.com/Azure/vagrant-azure. First ensure you have the dummy box and have added the plugin:
+```
+vagrant box add azure https://github.com/azure/vagrant-azure/raw/v2.0/dummy.box --provider azure
+vagrant plugin install vagrant-azure
+```
 
-* You need to run the `az ad sp create-for-rbac` command to get information about your client ID, client secret, and tenant ID. You will get output similar to this:
-```json
+* You should login using `az login`
+
+* You will need to run the `az ad sp create-for-rbac` command to create the active directory. This will provide the following information with output similar to this:
+```
 {
   "appId": "AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA",
   "displayName": "some-display-name",
@@ -134,14 +140,24 @@ To begin you should follow the instructions from https://github.com/Azure/vagran
   "tenant": "CCCCCCCC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"
 }
 ```
+
 * You should then run the `az account list --query "[?isDefault].id" -o tsv` command to get your subscription information. This will have output similar to:
-```json
+```
 DDDDDDDD-DDDD-DDDD-DDDD-DDDDDDDDDDDD
 ```
-* You will then need to export these as the following:
-```json
+
+* You will then need to export these as the following, as these are used within the Azure Vagrantfile:
+```
 AZURE_CLIENT_ID="AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAA"; export AZURE_CLIENT_ID 
 AZURE_CLIENT_SECRET="BBBBBBBB-BBBB-BBBB-BBBB-BBBBBBBBBBB"; export AZURE_CLIENT_SECRET
 AZURE_TENANT_ID="CCCCCCCC-CCCC-CCCC-CCCC-CCCCCCCCCCC"; export AZURE_TENANT_ID
 AZURE_SUBSCRIPTION_ID="DDDDDDDD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"; export AZURE_SUBSCRIPTION_ID
 ```
+You should keep a note of these settings as you will need them to access the VM.
+
+* To run the VM you should then
+```
+vagrant up --provider=azure
+```
+and once previsioned you can `vagrant ssh` etc. in the usual way.
+
