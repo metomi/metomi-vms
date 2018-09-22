@@ -2,14 +2,10 @@
 set -eu
 wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh
 bash Miniconda2-latest-Linux-x86_64.sh -b
-
-# add to .bashrc here in case of issues with conda installation
-# causing the script to exit on the `conda install` step
-cat >> /home/vagrant/.bashrc <<EOF
-alias conda="xterm -l -e 'export PATH=~/miniconda2/bin:\$PATH && bash'&"
-EOF
-
 PATH=~/miniconda2/bin:$PATH
-conda install -y -c scitools iris ipython
+conda install -y -c conda-forge iris ipython
 rm Miniconda2-latest-Linux-x86_64.sh
 
+cat >> /home/vagrant/.bashrc <<EOF
+alias conda="xterm -l -e 'export PATH=~/miniconda2/bin:\$PATH && bash' &"
+EOF
