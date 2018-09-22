@@ -14,6 +14,7 @@ Table of contents:
   * [Git BASH](#git-bash)
   * [Cygwin](#cygwin)
 * [Troubleshooting](#troubleshooting)
+* [Microsoft Azure](#microsoft-azure)
 
 ## Software Requirements
 
