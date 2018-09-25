@@ -121,7 +121,7 @@ Note that, if the plugin does update your Guest Additions then you will need to 
 
 ## Microsoft Azure
 
-It is possible to run using Vagrant on a Microsoft Azure cloud virtual machine. To do this you will need to install the [`vagrant-azure`](https://github.com/Azure/vagrant-azure) plugin. You should also install the [Azure CLI command line tool](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest), which will allow you to manage your Azure resources.
+It is possible to run using Vagrant on a Microsoft Azure cloud virtual machine. To do this you will need to install the [`vagrant-azure`](https://github.com/Azure/vagrant-azure) plugin. You should also install the [Azure CLI command line tool](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest), which will allow you to manage your Azure resources. You do not need VirtualBox.
 
 * To begin you should follow the instructions from https://github.com/Azure/vagrant-azure. First ensure you have the dummy box and have added the plugin:
 ```
