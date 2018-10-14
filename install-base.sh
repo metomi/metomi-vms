@@ -1,7 +1,7 @@
 if [[ $dist == ubuntu ]]; then
   if [[ $release == 1404 ]]; then
     #### Remove some packages we don't need
-    apt-get remove -q -y --auto-remove chef puppet
+    apt-get remove -q -y --auto-remove --purge chef puppet
   fi
 elif [[ $dist == redhat ]]; then
   #### Disable SELinux to keep things simple

@@ -18,8 +18,8 @@ Table of contents:
 ## Software Requirements
 
 In order to use a virtual machine (VM), you must first install:
- * [VirtualBox](https://www.virtualbox.org/), software that enables running of virtual machines (version 5.1.6 or later required).
- * [Vagrant](https://www.vagrantup.com/), software that allows easy configuration of virtual machines (version 1.9.1 or later required).
+ * [VirtualBox](https://www.virtualbox.org/), software that enables running of virtual machines (version 5.1.x or later required).
+ * [Vagrant](https://www.vagrantup.com/), software that allows easy configuration of virtual machines (version 2.0.x or later required).
 
 These applications provide point-and-click installers for Windows and can usually be installed via the package manager on Linux systems.
 
