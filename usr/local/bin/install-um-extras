@@ -1,6 +1,57 @@
 #!/bin/bash
 set -eu
 
+major_version=$(lsb_release -rs | cut -d. -f1)
+
+function usage {
+  # Print command line options
+  echo 'Usage: um-setup [-e|--eccodes] [-g|--grib]'
+  echo
+  echo 'Options:'
+  echo '  -e, --eccodes  Install the EcCodes GRIB library'
+  echo '  -g, --grib     Install the GRIB_API GRIB library'
+  echo '  -h, --help     Show this help and exit'
+  echo
+  echo 'Only one of the two GRIB libraries may be installed at any given time.'
+  echo 'EcCodes is only available to virtual machines using Ubuntu 18 or later,'
+  echo 'where it is the default.'
+  echo 'UM 11.1 and earlier requires GRIB_API; UM 11.2 onwards requires EcCodes.'
+  echo 'Re-run this script with a different option to install the alternative library.'
+}
+
+function ereport {
+  # Print an error message, print usage, then exit (non-zero)
+  echo ${1:-"Unknown error"}
+  usage
+  exit 1
+}
+
+function process_args {
+  # Parse and process the command line arguments
+  if [ $# -gt 1 ]; then
+    ereport "Too many arguments"
+
+  elif [ $# -eq 1 ] ; then
+    case "$1" in
+      -e|--eccodes)
+          if [ $major_version -lt 18 ]; then
+            ereport "EcCodes installation requires Ubuntu 18 or later"
+          fi
+          grib_library=libeccodes-dev
+          ;;
+      -g|--grib)
+          grib_library=libgrib-api-dev
+          ;;
+      -h|--help)
+          usage
+          exit 0
+          ;;
+       *) ereport "Unrecognised argument: $1"
+          ;;
+      esac
+  fi
+}
+
 if [[ $USER != root ]]; then
   echo "Please run this command via sudo"
   exit 1
@@ -8,8 +59,17 @@ fi
 
 set -x
 
+# Set a default GRIB library. EcCodes requires v18 or higher.
+if [ $major_version -ge 18 ]; then
+  grib_library=libeccodes-dev
+else
+  grib_library=libgrib-api-dev
+fi
+
+process_args $@
+
 echo "Installing UM and mule dependencies..."
-apt-get install -y mpich libnetcdf-dev libhdf5-serial-dev netcdf-bin libnetcdff-dev libnetcdff6 libgrib-api-dev python-numpy python-dev python-mock
+apt-get install -y mpich libnetcdf-dev libhdf5-serial-dev netcdf-bin libnetcdff-dev libnetcdff6 python-numpy python-dev python-mock $grib_library
 
 echo
 echo "Adding mule to the installed python packages..."
