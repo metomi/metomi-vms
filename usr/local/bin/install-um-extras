@@ -66,6 +66,9 @@ function process_args {
       -v|--version)
           shift
           get_version $1
+          if [ $# -eq 0 ] ; then
+            ereport "No UM version number provided"
+          fi
           if [ $um_version -ge 112 ]; then
             grib_library=libeccodes-dev
           else
