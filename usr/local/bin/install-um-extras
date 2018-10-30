@@ -1,54 +1,85 @@
 #!/bin/bash
+# Install packages for the UM and UMDPs.
+# Allows a choice of GRIB_API and EcCodes, which are mutually exclusive.
 set -eu
 
-major_version=$(lsb_release -rs | cut -d. -f1)
+ubuntu_major=$(lsb_release -rs | cut -d. -f1)
 
 function usage {
   # Print command line options
-  echo 'Usage: um-setup [-e|--eccodes] [-g|--grib]'
+  echo
+  echo 'Usage: um-setup [-e|--eccodes] [-g|--grib_api] [-v|--version <x.y>]'
   echo
   echo 'Options:'
-  echo '  -e, --eccodes  Install the EcCodes GRIB library'
-  echo '  -g, --grib     Install the GRIB_API GRIB library'
-  echo '  -h, --help     Show this help and exit'
+  echo '  -e, --eccodes        Install the EcCodes GRIB library'
+  echo '  -g, --grib           Install the GRIB_API GRIB library'
+  echo '  -h, --help           Show this help and exit'
+  echo '  -v, --version <x.y>  Install packages for this UM version'
   echo
-  echo 'Only one of the two GRIB libraries may be installed at any given time.'
-  echo 'EcCodes is only available to virtual machines using Ubuntu 18 or later,'
-  echo 'where it is the default.'
-  echo 'UM 11.1 and earlier requires GRIB_API; UM 11.2 onwards requires EcCodes.'
+  echo 'Provide at most one argument.'
+  echo 'Recommended usage is to indicate which UM version you wish to work with, e.g.'
+  echo '  um-setup -v 11.2'
+  echo 'For UM 11.2 or later, the EcCodes library for GRIB will be installed.'
+  echo 'For UM 11.1 or earlier, the GRIB_API library for GRIB will be installed.'
+  echo 'Alternatively, the --eccodes or --grib_api arguments may be provided to'
+  echo 'explicitly choose one library over another.'
+  echo 'These two libraries are mutually exclusive; only one may be installed ata time.'
+  echo
+  echo 'EcCodes is only available when running Ubuntu 18.04 or later, where it is'
+  echo 'the default. Earlier versions will default to the GRIB_API library.'
+  echo
   echo 'Re-run this script with a different option to install the alternative library.'
 }
 
 function ereport {
   # Print an error message, print usage, then exit (non-zero)
-  echo ${1:-"Unknown error"}
+  echo "${1:-Unknown error}"
   usage
   exit 1
 }
 
+function get_version {
+  # Turn an x.y version number into an integer
+  um_version=${1#vn}  # Remove leading vn, if present
+  um_major=$(echo $um_version | cut -d. -f1)
+  um_minor=$(echo $um_version | cut -d. -f2) # Ignores sub-releases (x.y.z)
+  um_version=$((10*um_major + um_minor))
+}
+
 function process_args {
   # Parse and process the command line arguments
-  if [ $# -gt 1 ]; then
-    ereport "Too many arguments"
-
-  elif [ $# -eq 1 ] ; then
+  if [ $# -ge 1 ] ; then
     case "$1" in
       -e|--eccodes)
-          if [ $major_version -lt 18 ]; then
+          if [ $ubuntu_major -lt 18 ]; then
             ereport "EcCodes installation requires Ubuntu 18 or later"
           fi
           grib_library=libeccodes-dev
           ;;
-      -g|--grib)
+      -g|--grib_api|--grib-api)
           grib_library=libgrib-api-dev
           ;;
       -h|--help)
           usage
           exit 0
           ;;
+      -v|--version)
+          shift
+          get_version $1
+          if [ $um_version -ge 112 ]; then
+            grib_library=libeccodes-dev
+          else
+            grib_library=libgrib-api-dev
+          fi
+          ;;
        *) ereport "Unrecognised argument: $1"
           ;;
-      esac
+    esac
+    shift
+    # Only 1 option at a time is permitted:
+    if [ $# -gt 1 ]; then
+      ereport "Too many arguments"
+    fi
   fi
 }
 
@@ -57,16 +88,26 @@ if [[ $USER != root ]]; then
   exit 1
 fi
 
-set -x
-
-# Set a default GRIB library. EcCodes requires v18 or higher.
-if [ $major_version -ge 18 ]; then
+# Set defaults
+if [ $ubuntu_major -ge 18 ]; then
+  # Assume a recent UM release (11.2+)
   grib_library=libeccodes-dev
 else
+  # Assume an older UM release (-11.1)
   grib_library=libgrib-api-dev
 fi
 
 process_args $@
+
+# Check chosen library is available:
+if [ $ubuntu_major -lt 18 ]; then
+  if [ "$grib_library" = "libeccodes-dev" ]; then
+    ereport "The EcCodes library is not available at this Ubuntu release.
+Upgrade to Ubuntu 18.04 or later, or supply -v <x.y> to use UM 11.1 or earlier."
+  fi
+fi
+
+set -x
 
 echo "Installing UM and mule dependencies..."
 apt-get install -y mpich libnetcdf-dev libhdf5-serial-dev netcdf-bin libnetcdff-dev libnetcdff6 python-numpy python-dev python-mock $grib_library
