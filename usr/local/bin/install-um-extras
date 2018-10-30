@@ -14,7 +14,7 @@ function usage {
   echo '  -e, --eccodes        Install the EcCodes GRIB library'
   echo '  -g, --grib           Install the GRIB_API GRIB library'
   echo '  -h, --help           Show this help and exit'
-  echo '  -v, --version <x.y>  Install packages for this UM version'
+  echo '  -v, --version <x.y>  Install packages for the selected UM version'
   echo
   echo 'Provide at most one argument.'
   echo 'Recommended usage is to indicate which UM version you wish to work with, e.g.'
