@@ -1,6 +1,6 @@
 #!/bin/bash
 # Install packages for the UM and UMDPs.
-# Allows a choice of GRIB_API and EcCodes, which are mutually exclusive.
+# Allows a choice of GRIB-API and EcCodes, which are mutually exclusive.
 set -eu
 
 ubuntu_major=$(lsb_release -rs | cut -d. -f1)
@@ -8,26 +8,25 @@ ubuntu_major=$(lsb_release -rs | cut -d. -f1)
 function usage {
   # Print command line options
   echo
-  echo 'Usage: um-setup [-e|--eccodes] [-g|--grib_api] [-v|--version <x.y>]'
-  echo
+  echo 'Usage: um-setup [-e|--eccodes] [-g|--grib-api] [-v|--version <x.y>]'
   echo 'Options:'
   echo '  -e, --eccodes        Install the EcCodes GRIB library'
-  echo '  -g, --grib           Install the GRIB_API GRIB library'
+  echo '  -g, --grib-api       Install the GRIB-API GRIB library'
   echo '  -h, --help           Show this help and exit'
   echo '  -v, --version <x.y>  Install packages for the selected UM version'
   echo
-  echo 'Provide at most one argument.'
-  echo 'Recommended usage is to indicate which UM version you wish to work with, e.g.'
+  echo 'um-setup will install the packages necessary for using the UM and UMDPs.'
+  echo "The packages required for the UM's GRIB functionality vary by UM version:"
+  echo ' - UM 11.2 or later requires the EcCodes library.'
+  echo ' - UM 11.1 or earlier requires the GRIB-API library.'
+  echo 'Use the -v option to automatically install the correct packages, e.g.:'
   echo '  um-setup -v 11.2'
-  echo 'For UM 11.2 or later, the EcCodes library for GRIB will be installed.'
-  echo 'For UM 11.1 or earlier, the GRIB_API library for GRIB will be installed.'
-  echo 'Alternatively, the --eccodes or --grib_api arguments may be provided to'
+  echo 'Alternatively, the --eccodes or --grib-api arguments may be provided to'
   echo 'explicitly choose one library over another.'
-  echo 'These two libraries are mutually exclusive; only one may be installed ata time.'
+  echo 'These two libraries are mutually exclusive and cannot be installed together.'
   echo
   echo 'EcCodes is only available when running Ubuntu 18.04 or later, where it is'
-  echo 'the default. Earlier versions will default to the GRIB_API library.'
-  echo
+  echo 'the default. Earlier versions will default to the GRIB-API library.'
   echo 'Re-run this script with a different option to install the alternative library.'
 }
 
