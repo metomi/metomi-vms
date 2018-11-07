@@ -30,8 +30,8 @@ After you have installed VirtualBox and Vagrant, download the metomi VM setup fi
 
 Then extract the files which will be put into a directory called `metomi-vms-master`.
 
-The default VM uses Ubuntu 16.04.
-If necessary you can customise the VM by editing the file `Vagrantfile.ubuntu-1604` as follows:
+The default VM uses Ubuntu 18.04.
+If necessary you can customise the VM by editing the file `Vagrantfile.ubuntu-1804` as follows:
 * By default the VM will be built with support for accessing the Met Office Science Repository Service.
   If you don't want this (or don't have access) then remove `mosrs` from the `args` in the `config.vm.provision` line.
 * As described below, you may prefer not to install the desktop environment.
@@ -68,7 +68,7 @@ If you need to change this, take a look at how this is configured in the file `i
 ## Disabling the Desktop Environment
 
 If you are using the VM on a Mac or Linux system where you already have a X server running then you may find it easier to not install the desktop environment.
-In order to do this, edit the file `Vagrantfile.ubuntu-1604` as described above.
+In order to do this, edit the file `Vagrantfile.ubuntu-1804` as described above.
 Then run the command `vagrant up` to launch the VM in the normal way.
 Note that, unlike when installing the desktop environment, it will not shutdown after the initial installation.
 
@@ -85,7 +85,7 @@ Note that they are not as well tested as the default VM and may not include a de
 To use a different VM, modify the file which is loaded in the default `Vagrantfile` before running `vagrant up`.
 Alternatively you can set the environment variable `VAGRANT_VAGRANTFILE`, for example:
 ```
-export VAGRANT_VAGRANTFILE=Vagrantfile.ubuntu-1404
+export VAGRANT_VAGRANTFILE=Vagrantfile.ubuntu-1604
 ```
 (use `set` in place of `export` when using the command window on Windows).
 
