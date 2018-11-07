@@ -137,6 +137,7 @@ create_keyword 'socrates.offline' "file://$HOME/source/socrates/offline"
 create_keyword 'casim.offline' "file://$HOME/source/casim/offline"
 create_keyword 'um_aux.offline' "file://$HOME/source/um_aux/offline"
 create_keyword 'mule.offline' "file://$HOME/source/mule/offline"
+create_keyword 'shumlib.offline' "file://$HOME/source/shumlib/offline"
 
 echo "Local FCM keywords created."
 echo
