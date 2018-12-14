@@ -3,7 +3,7 @@ set -eu
 wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh
 bash Miniconda2-latest-Linux-x86_64.sh -b
 PATH=~/miniconda2/bin:$PATH
-conda install -y -c scitools iris ipython
+conda install -y -c conda-forge iris ipython
 rm Miniconda2-latest-Linux-x86_64.sh
 
 cat >> /home/vagrant/.bashrc <<EOF

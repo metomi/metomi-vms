@@ -13,6 +13,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.provider "virtualbox" do |v|
     v.name = "metomi-vm-fedora-28"
+    v.customize ["modifyvm", :id, "--vram", "12"]
     # Comment out the line below if only accessing via SSH
     v.gui = true
     # Modify the line below if you need more than 1GB RAM
