@@ -187,7 +187,7 @@ echo "Running rose stem to build GCOM..."
 rose stem --quiet --group=all --name=gcom_install --new --no-gcontrol -- --no-detach
 if [ $? -ne 0 ]; then
   echo "Problem running GCOM rose stem suite."
-  echo "Check suite logs and output at /home/vagrant/cylc-run/gcom_install"
+  echo "Check suite logs and output at $HOME/cylc-run/gcom_install"
   echo "or try http://localhost/rose-bush/taskjobs/$USER?&suite=gcom_install."
   exit 1
 fi
