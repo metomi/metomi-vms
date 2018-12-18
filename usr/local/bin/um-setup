@@ -188,10 +188,10 @@ rose stem --quiet --group=all --name=gcom_install --new --no-gcontrol -- --no-de
 if [ $? -ne 0 ]; then
   echo "Problem running GCOM rose stem suite."
   echo "Check suite logs and output at /home/vagrant/cylc-run/gcom_install"
-  echo "or try http://localhost/rose-bush/jobs/$USER/gcom_install."
+  echo "or try http://localhost/rose-bush/taskjobs/$USER?&suite=gcom_install."
   exit 1
 fi
-echo "GCOM suite output at http://localhost/rose-bush/jobs/$USER/gcom_install"
+echo "Suite output at http://localhost/rose-bush/taskjobs/$USER?&suite=gcom_install"
 
 # copy dirs to right place (remember may have to overwrite...)
 gdir="$HOME/umdir/gcom"
