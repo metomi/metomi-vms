@@ -86,10 +86,10 @@ function process_args {
   fi
 }
 
-#if [[ $USER != root ]]; then
-#  echo "Please run this command via sudo"
-#  exit 1
-#fi
+if [[ $USER != root ]]; then
+  echo "Please run this command via sudo"
+  exit 1
+fi
 
 # Set defaults
 if [ $ubuntu_major -ge 18 ]; then
