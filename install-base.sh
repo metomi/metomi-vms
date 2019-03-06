@@ -62,14 +62,14 @@ fi
 if [[ $dist == ubuntu ]]; then
   apt-get install -q -y graphviz python-jinja2 python-pygraphviz python-gtk2 sqlite3
   apt-get install -q -y pep8 # used by test-battery
-  apt-get install -q -y tex4ht imagemagick texlive-generic-extra texlive-latex-extra texlive-fonts-recommended
+  apt-get install -q -y python-sphinx imagemagick texlive-generic-extra texlive-latex-extra texlive-fonts-recommended
 elif [[ $dist == redhat ]]; then
   yum install -y python-pip graphviz at lsof python-pep8
   service atd start
   yum install -y graphviz-devel python-devel
   if [[ $release == fedora* ]]; then
     yum install -y redhat-rpm-config sqlite pyOpenSSL
-    yum install -y texlive texlive-dirtree texlive-framed texlive-preprint texlive-tex4ht texlive-tocloft ImageMagick
+    yum install -y texlive texlive-dirtree texlive-framed texlive-preprint texlive-tocloft ImageMagick
   fi
   if [[ $release == centos6 ]]; then
     pip install jinja2
@@ -131,8 +131,8 @@ elif [[ $dist == redhat ]]; then
 fi
 
 #### Install latest versions of FCM, Cylc & Rose 
-dos2unix -n /vagrant/usr/local/bin/install-latest-versions /usr/local/bin/install-latest-versions
-/usr/local/bin/install-latest-versions
+dos2unix -n /vagrant/usr/local/bin/install-rose-cylc-fcm /usr/local/bin/install-rose-cylc-fcm
+/usr/local/bin/install-rose-cylc-fcm --set-default --make-docs
 
 #### Configure syntax highlighting & bash completion
 if [[ $dist == redhat && $release == centos6 ]]; then
@@ -245,7 +245,6 @@ elif [[ $dist == redhat ]]; then
 fi
 
 #### Miscellaneous utilities
-dos2unix -n /vagrant/usr/local/bin/install-cylc-6 /usr/local/bin/install-cylc-6
 dos2unix -n /vagrant/usr/local/bin/install-iris /usr/local/bin/install-iris
 dos2unix -n /vagrant/usr/local/bin/install-jules-benchmark-data /usr/local/bin/install-jules-benchmark-data
 dos2unix -n /vagrant/usr/local/bin/install-jules-extras /usr/local/bin/install-jules-extras
