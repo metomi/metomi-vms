@@ -64,3 +64,9 @@ if [[ $dist == redhat || ($dist == ubuntu && $release != 1404) ]]; then
   sudo -u vagrant bash -c 'echo "[rc]" >/home/vagrant/.config/clipit/clipitrc'
   sudo -u vagrant bash -c 'echo "offline_mode=false" >>/home/vagrant/.config/clipit/clipitrc'
 fi
+# Setup desktop background colour
+if [[ $dist == ubuntu && $release == 1804 ]]; then
+  sudo -u vagrant mkdir -p /home/vagrant/.config/pcmanfm/LXDE
+  sudo -u vagrant bash -c 'echo "[*]" >/home/vagrant/.config/pcmanfm/LXDE/desktop-items-0.conf'
+  sudo -u vagrant bash -c 'echo "desktop_bg=#2f4266" >>/home/vagrant/.config/pcmanfm/LXDE/desktop-items-0.conf'
+fi

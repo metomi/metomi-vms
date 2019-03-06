@@ -56,15 +56,15 @@ fi
 # Get the latest package info and install any updates
 if [[ $dist == ubuntu ]]; then
   export DEBIAN_FRONTEND=noninteractive  # Disable user interaction
-  apt-get update -q -y
-  apt-get upgrade -q -y
+  apt-get -yq update
+  apt-get -yq -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade
 elif [[ $dist == redhat ]]; then
   yum update -y
 fi
 
 # Use dos2unix in case any files have Windows EOL characters
 if [[ $dist == ubuntu ]]; then
-  apt-get install -q -y dos2unix
+  apt-get -yq install dos2unix
 elif [[ $dist == redhat ]]; then
   yum install -y dos2unix
 fi
