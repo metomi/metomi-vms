@@ -24,11 +24,11 @@ while [[ $# != 0 ]]; do
 done
 
 # Define software versions (use latest releases if not defined)
-FCM_VERSION=${FCM_VERSION:-$(curl -s https://api.github.com/repos/metomi/fcm/releases|\
+FCM_VERSION=${FCM_VERSION:-$(curl -s -L https://api.github.com/repos/metomi/fcm/releases|\
   grep tag_name|sort|tail -1|sed -e 's/^.*: "//' -e 's/".*$//')}
-CYLC_VERSION=${CYLC_VERSION:-$(curl -s https://api.github.com/repos/cylc/cylc/releases|\
+CYLC_VERSION=${CYLC_VERSION:-$(curl -s -L https://api.github.com/repos/cylc/cylc/releases|\
   grep tag_name|sort|tail -1|sed -e 's/^.*: "//' -e 's/".*$//')}
-ROSE_VERSION=${ROSE_VERSION:-$(curl -s https://api.github.com/repos/metomi/rose/releases|\
+ROSE_VERSION=${ROSE_VERSION:-$(curl -s -L https://api.github.com/repos/metomi/rose/releases|\
   grep tag_name|sort|tail -1|sed -e 's/^.*: "//' -e 's/".*$//')}
 
 #### Install FCM
