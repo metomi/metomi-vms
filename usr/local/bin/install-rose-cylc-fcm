@@ -24,11 +24,11 @@ while [[ $# != 0 ]]; do
 done
 
 # Define software versions (use latest releases if not defined)
-FCM_VERSION=${FCM_VERSION:-$(curl -s https://api.github.com/repos/metomi/fcm/releases|\
+FCM_VERSION=${FCM_VERSION:-$(curl -L -s -S https://api.github.com/repos/metomi/fcm/releases|\
   grep tag_name|sort|tail -1|sed -e 's/^.*: "//' -e 's/".*$//')}
-CYLC_VERSION=${CYLC_VERSION:-$(curl -s https://api.github.com/repos/cylc/cylc/releases|\
-  grep tag_name|sort|tail -1|sed -e 's/^.*: "//' -e 's/".*$//')}
-ROSE_VERSION=${ROSE_VERSION:-$(curl -s https://api.github.com/repos/metomi/rose/releases|\
+CYLC_VERSION=${CYLC_VERSION:-$(curl -L -s -S https://api.github.com/repos/cylc/cylc/releases|\
+  grep tag_name|sort|grep '"7\.'|tail -1|sed -e 's/^.*: "//' -e 's/".*$//')}
+ROSE_VERSION=${ROSE_VERSION:-$(curl -L -s -S https://api.github.com/repos/metomi/rose/releases|\
   grep tag_name|sort|tail -1|sed -e 's/^.*: "//' -e 's/".*$//')}
 
 #### Install FCM
@@ -59,7 +59,7 @@ if [[ -e /opt/cylc-$CYLC_VERSION ]]; then
 else
   echo Installing Cylc version $CYLC_VERSION
   # Get Cylc from github
-  curl -L -s -S https://github.com/cylc/cylc/archive/$CYLC_VERSION.tar.gz | tar -xz -C /opt
+  curl -L -s -S https://github.com/cylc/cylc/archive/$CYLC_VERSION.tar.gz | tar -xz  --transform="s#^cylc-flow#cylc#" -C /opt
   # Create the version file and build the documentation if possible
   cd /opt/cylc-$CYLC_VERSION
   make version
