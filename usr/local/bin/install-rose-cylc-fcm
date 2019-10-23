@@ -29,7 +29,7 @@ FCM_VERSION=${FCM_VERSION:-$(curl -L -s -S https://api.github.com/repos/metomi/f
 CYLC_VERSION=${CYLC_VERSION:-$(curl -L -s -S https://api.github.com/repos/cylc/cylc/releases|\
   grep tag_name|sort|grep '"7\.'|tail -1|sed -e 's/^.*: "//' -e 's/".*$//')}
 ROSE_VERSION=${ROSE_VERSION:-$(curl -L -s -S https://api.github.com/repos/metomi/rose/releases|\
-  grep tag_name|sort|tail -1|sed -e 's/^.*: "//' -e 's/".*$//')}
+  grep tag_name|sort|grep '"201'|tail -1|sed -e 's/^.*: "//' -e 's/".*$//')}
 
 #### Install FCM
 if [[ -e /opt/fcm-$FCM_VERSION ]]; then
