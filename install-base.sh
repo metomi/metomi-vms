@@ -54,7 +54,8 @@ if [[ $dist == ubuntu ]]; then
   apt-get install -q -y graphviz python-jinja2 python-pygraphviz python-gtk2 sqlite3 || error
   apt-get install -q -y pep8 || error # used by test-battery
   if [[ $release != 1604 ]]; then
-    apt-get install -q -y imagemagick || error
+    : # Rose docs build no longer working - disable for the moment
+    #apt-get install -q -y imagemagick || error
   fi
 elif [[ $dist == redhat ]]; then
   yum install -y python-pip graphviz at lsof python-pep8 || error
