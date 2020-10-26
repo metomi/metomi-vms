@@ -128,6 +128,7 @@ create_keyword 'socrates.xm' "https://code.metoffice.gov.uk/svn/socrates/main"
 create_keyword 'casim.xm' "https://code.metoffice.gov.uk/svn/monc/casim"
 create_keyword 'um_aux.xm' "https://code.metoffice.gov.uk/svn/um/aux"
 create_keyword 'um_doc.xm' "https://code.metoffice.gov.uk/svn/um/doc"
+create_keyword 'um_meta.xm' "https://code.metoffice.gov.uk/svn/um/meta"
 create_keyword 'mule.xm' "https://code.metoffice.gov.uk/svn/um/mule"
 create_keyword 'moci.xm' "https://code.metoffice.gov.uk/svn/moci/main"
 create_keyword 'shumlib.xm' "https://code.metoffice.gov.uk/svn/utils/shumlib"
@@ -188,10 +189,10 @@ rose stem --quiet --group=all --name=gcom_install --new --no-gcontrol -- --no-de
 if [ $? -ne 0 ]; then
   echo "Problem running GCOM rose stem suite."
   echo "Check suite logs and output at $HOME/cylc-run/gcom_install"
-  echo "or try http://localhost/rose-bush/taskjobs/$USER?&suite=gcom_install."
+  echo "or try http://localhost/cylc-review/taskjobs/$USER?&suite=gcom_install."
   exit 1
 fi
-echo "Suite output at http://localhost/rose-bush/taskjobs/$USER?&suite=gcom_install"
+echo "Suite output at http://localhost/cylc-review/taskjobs/$USER?&suite=gcom_install"
 
 # copy dirs to right place (remember may have to overwrite...)
 gdir="$HOME/umdir/gcom"

@@ -1,6 +1,12 @@
 #!/bin/bash
 
 STARTDATE=$(date +"%Y-%m-%dT%H%M")
+ERROR_COUNT=0
+error() {
+  ((ERROR_COUNT++))
+  echo "[ERROR] $@"
+}
+
 {
 set -x
 
@@ -23,31 +29,19 @@ fi
 
 if [[ $dist == redhat && $release == centos* ]]; then
   # Add the EPEL repository
-  yum install -y epel-release
+  yum install -y epel-release || error
 fi
 
 # Use the WANdisco subversion packages
-if [[ $dist == ubuntu && $release == 1404 ]]; then
-  add-apt-repository 'deb http://opensource.wandisco.com/ubuntu trusty svn19'
-  wget -q http://opensource.wandisco.com/wandisco-debian.gpg -O- | sudo apt-key add -
-elif [[ $dist == ubuntu && $release == 1604 ]]; then
-  add-apt-repository 'deb http://opensource.wandisco.com/ubuntu xenial svn19'
-  wget -q http://opensource.wandisco.com/wandisco-debian.gpg -O- | sudo apt-key add -
-elif [[ $dist == redhat && $release == centos6 ]]; then
-  cat  > /etc/yum.repos.d/WANdisco-svn.repo <<EOF
-[WANdisco-svn]
-name=WANdisco SVN Repo
-enabled=1
-baseurl=http://opensource.wandisco.com/centos/6/svn-1.9/RPMS/\$basearch/
-gpgcheck=1
-gpgkey=http://opensource.wandisco.com/RPM-GPG-KEY-WANdisco
-EOF
+if [[ $dist == ubuntu && $release == 1604 ]]; then
+  add-apt-repository 'deb http://opensource.wandisco.com/ubuntu xenial svn110' || error
+  wget -q http://opensource.wandisco.com/wandisco-debian.gpg -O- | sudo apt-key add - || error
 elif [[ $dist == redhat && $release == centos7 ]]; then
   cat  > /etc/yum.repos.d/WANdisco-svn.repo <<EOF
 [WANdisco-svn]
 name=WANdisco SVN Repo
 enabled=1
-baseurl=http://opensource.wandisco.com/centos/7/svn-1.9/RPMS/\$basearch/
+baseurl=http://opensource.wandisco.com/centos/7/svn-1.10/RPMS/\$basearch/
 gpgcheck=1
 gpgkey=http://opensource.wandisco.com/RPM-GPG-KEY-WANdisco
 EOF
@@ -56,17 +50,17 @@ fi
 # Get the latest package info and install any updates
 if [[ $dist == ubuntu ]]; then
   export DEBIAN_FRONTEND=noninteractive  # Disable user interaction
-  apt-get update -q -y
-  apt-get upgrade -q -y
+  apt-get -yq update || error
+  apt-get -yq -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade || error
 elif [[ $dist == redhat ]]; then
-  yum update -y
+  yum update -y || error
 fi
 
 # Use dos2unix in case any files have Windows EOL characters
 if [[ $dist == ubuntu ]]; then
-  apt-get install -q -y dos2unix
+  apt-get -yq install dos2unix || error
 elif [[ $dist == redhat ]]; then
-  yum install -y dos2unix
+  yum install -y dos2unix || error
 fi
 
 for collection in $collections; do
@@ -76,9 +70,18 @@ for collection in $collections; do
   rm /tmp/install-$collection.sh
 done
 
+# Remove python-gi on Ubuntu since it breaks rosie go (not needed unless using GNOME keyring)
+if [[ $dist == ubuntu ]]; then
+  apt-get remove -q -y --auto-remove --purge python-gi || error
+fi
+
 set +x
 echo Finished provisioning at $(date +"%Y-%m-%dT%H%M") \(started at $STARTDATE\)
 echo
+
+if [[ $ERROR_COUNT != "0" ]]; then
+  echo "[ERROR] $ERROR_COUNT errors occurred during installation"
+fi
 
 if [[ $collections =~ desktop ]]; then
   echo Shutting down the system.
@@ -88,4 +91,5 @@ if [[ $collections =~ desktop ]]; then
 else
   echo Please run vagrant ssh to connect.
 fi
+
 } |& tee -a /var/log/install.log
