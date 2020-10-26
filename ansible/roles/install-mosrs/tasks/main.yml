@@ -21,6 +21,14 @@
     - libpth-dev
     - zlib1g-dev
 
+- name: Remove gpg-agent
+  apt:
+    name: "{{ item }}"
+    state: absent
+    autoremove: yes
+  with_items:
+    - gpg-agent
+
 - name: download gpg
   unarchive:
     remote_src: yes
@@ -74,6 +82,11 @@
 
 - name: Set up subversion to use gpg-agent as the password store
   command: dos2unix -n /home/{{ username }}/metomi-vms/etc/subversion/config /etc/subversion/config
+
+- name: make fcm folder
+  file:
+    path: /opt/metomi-site/etc/fcm
+    state: directory
 
 - name: Set up FCM keywords
   command: dos2unix -n /home/{{ username }}/metomi-vms/opt/metomi-site/etc/fcm/keyword.cfg /opt/metomi-site/etc/fcm/keyword.cfg

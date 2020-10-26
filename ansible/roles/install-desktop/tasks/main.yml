@@ -1,17 +1,10 @@
 #### Install the LXDE desktop
-- name: Install packages 1/2
-  apt:
-    name: "{{ item }}"
-  with_items:
-    - xorg
-    - lxdm
-
-- name: Install packages 2/2
+- name: Install packages
   apt:
     name: "{{ item }}"
   with_items:
     - lxde
-    - lxsession-logout
+    - xinput
 
 # Install x2go virtual desktop server
 - block:
@@ -38,9 +31,11 @@
     state: absent
     autoremove: yes
   with_items:
-    - xscreensaver
-    - xscreensaver-data
-    - gnome-keyring
+    - gnome-screensaver
+    - lxlock
+    - light-locker
+    - network-manager-gnome
+    - gnome-online-accounts
 
 
 - name: Install language pack
@@ -70,7 +65,21 @@
     owner: "{{ username }}"
 
 - name: Enable autologin
-  command: perl -pi -e 's/^.*autologin=.*$/autologin={{ username }}/;' /etc/lxdm/lxdm.conf
+  lineinfile:
+    dest: /usr/share/lightdm/lightdm.conf.d/lxde.conf
+    line: "[SeatDefaults]"
+    line: "user-session=LXDE"
+    line: 'autologin-user={{ username }}'
+    line: "autologin-user-timeout=0"
+
+# Docs shortcut
+- command: dos2unix -n /home/{{ username }}/metomi-vms/home/Desktop/docs.desktop /home/{{ username }}/Desktop/docs.desktop
+
+- name: Configure middle button emulation
+  lineinfile:
+    dest: /home/{{ username }}/.config/autostart/xinput.desktop
+    line: "[Desktop Entry]"
+    line: "Exec=xinput set-prop 11 \"libinput Middle Emulation Enabled\" 1"
 
 # Open terminal on startup
 - block:
@@ -97,3 +106,14 @@
   become: yes
   become_user: "{{ username }}"
 
+# Setup desktop background colour
+- block
+    - name: create LXDE directory
+      file:
+        path: /home/{{ username }}/.config/pcmanfm/LXDE
+    - name: Copy LXDE config file
+      copy:
+        src: lxdeconf
+        dest: /home/{{ username }}/.config/pcmanfm/LXDE/desktop-items-0.conf
+  become: yes
+  become_user: "{{ username }}"

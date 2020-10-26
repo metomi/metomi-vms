@@ -10,6 +10,6 @@ storage_partition: /dev/sdb
 
 
 # Define software versions
-FCM_VERSION: 2017.02.0
-CYLC_VERSION: 7.1.1
-ROSE_VERSION: 2017.02.0
+FCM_VERSION: 2019.05.0
+CYLC_VERSION: 7.9.1
+ROSE_VERSION: 2019.01.3

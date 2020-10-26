@@ -5,6 +5,7 @@
   with_items:
     - dictionaries-common
     - gedit
+    - leafpad
 
 - name: Install commonly used editors, long process (~5mins) 2/2
   apt:
@@ -18,5 +19,4 @@
     dest: /home/{{ username }}/.profile
     line: "{{ item }}"
   with_items:
-    - export SVN_EDITOR='gvim -f'
-    - export EDITOR=gedit
+    - export EDITOR=leafpad

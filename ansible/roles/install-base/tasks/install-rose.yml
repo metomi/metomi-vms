@@ -4,6 +4,7 @@
   with_items:
     - gfortran
     - python-pip
+    - lxterminal
     - pcregrep
 
 - name: Install dependencies
@@ -102,6 +103,7 @@
   lineinfile:
     dest: /home/{{ username }}/.bashrc
     line: "[[ -f /opt/rose/etc/rose-bash-completion ]] && . /opt/rose/etc/rose-bash-completion"
+    line: "[[ -f /opt/cylc/conf/cylc-bash-completion ]] && . /opt/cylc/conf/cylc-bash-completion"
 
 
 
@@ -121,7 +123,7 @@
     line: "application/pdf=firefox.desktop;"
 
 
-#### Configure rose bush & rosie web services (with a local rosie repository)
+#### Configure cylc review & rosie web services (with a local rosie repository)
 - name: Configure rose bush & rosie web services (with a local rosie repository)
   apt:
     name: "{{item}}"
@@ -148,8 +150,11 @@
     dest: "{{ item.dest }}"
     state: link
   with_items:
+   - {src: /opt, dest: /var/www/html}
    - {src: /opt/metomi-site/etc/httpd/rosie-wsgi.conf, dest: /etc/apache2/conf-enabled/rosie-wsgi.conf}
    - {src: /opt/metomi-site/etc/httpd/svn.conf, dest: /etc/apache2/conf-enabled/svn.conf}
+
+- command: dos2unix -n /home/{{ username }}/metomi-vms/var/www/html/index.html /var/www/html/index.html
 
 - name: restart apache
   service:
@@ -225,7 +230,6 @@
 - name: install misc utilities
   command: dos2unix -n /home/{{ username }}/metomi-vms/usr/local/bin/{{ item }} /usr/local/bin/{{ item }}
   with_items:
-    - install-cylc-6
     - install-iris
     - install-jules-benchmark-data
     - install-jules-extras

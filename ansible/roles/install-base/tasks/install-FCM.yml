@@ -17,7 +17,7 @@
   apt:
     name: "{{ item }}"
   with_items:
-    - kdiff3
+    - xxdiff
     - libxml-parser-perl
 
 - name: install FCM depedencies 4/5
