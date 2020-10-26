@@ -1,0 +1,22 @@
+---
+- name: Install commonly used editors, long process (~5mins) 1/2
+  apt:
+    name: "{{item}}"
+  with_items:
+    - dictionaries-common
+    - gedit
+
+- name: Install commonly used editors, long process (~5mins) 2/2
+  apt:
+    name: "{{item}}"
+  with_items:
+    - vim-gtk
+    - emacs
+
+- name: add environment variables to .profile
+  lineinfile:
+    dest: /home/{{ username }}/.profile
+    line: "{{ item }}"
+  with_items:
+    - export SVN_EDITOR='gvim -f'
+    - export EDITOR=gedit

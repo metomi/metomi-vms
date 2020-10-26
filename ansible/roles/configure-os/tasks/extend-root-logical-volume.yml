@@ -1,0 +1,29 @@
+---
+
+
+- name: Check if storage device has been partitioned
+  stat: path={{ storage_partition }}
+  register: stat
+
+- debug:
+    var: stat.stat.exists
+
+
+- name: Make primary partition on storage device
+  shell: parted -s -a opt {{ storage_partition }} mklabel gpt -- mkpart primary ext4 1 -1
+  when: not stat.stat.exists
+
+- name: add new disk to ubuntu-vg group
+  lvg:
+    vg: ubuntu-vg
+    pvs: /dev/sda5,/dev/sdb
+
+- name: allocate free space to logical volume
+  command: lvextend -l +100%FREE /dev/ubuntu-vg/root
+  register: result
+  failed_when: "'FAILED' in result.stderr and 'matches existing size' not in result.stderr"
+  changed_when: "'matches existing size' not in result.stderr"
+
+- name: resize filesystem
+  command: resize2fs /dev/ubuntu-vg/root
+  when: result|changed

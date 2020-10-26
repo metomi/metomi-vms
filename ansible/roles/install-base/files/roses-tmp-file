@@ -1,0 +1,10 @@
+  depth-project = 5
+  depth-branch = 1
+  depth-tag = 1
+  dir-trunk = trunk
+  dir-branch =
+  dir-tag =
+  level-owner-branch =
+  level-owner-tag =
+  template-branch =
+  template-tag =

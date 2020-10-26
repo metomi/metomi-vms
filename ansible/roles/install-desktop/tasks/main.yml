@@ -1,0 +1,99 @@
+#### Install the LXDE desktop
+- name: Install packages 1/2
+  apt:
+    name: "{{ item }}"
+  with_items:
+    - xorg
+    - lxdm
+
+- name: Install packages 2/2
+  apt:
+    name: "{{ item }}"
+  with_items:
+    - lxde
+    - lxsession-logout
+
+# Install x2go virtual desktop server
+- block:
+    - name: Install software-properties-common
+      apt:
+        name: software-properties-common
+
+    - name: add x2go to apt repo
+      apt_repository:
+        repo: ppa:x2go/stable
+        update_cache: yes
+
+    - name: install x2goserver
+      apt:
+        name: "{{ item }}"
+      with_items:
+        - x2goserver
+        - x2goserver-xsession
+  when: not local
+
+- name: Remove extra packages
+  apt:
+    name: "{{ item }}"
+    state: absent
+    autoremove: yes
+  with_items:
+    - xscreensaver
+    - xscreensaver-data
+    - gnome-keyring
+
+
+- name: Install language pack
+  apt:
+    name: language-pack-en
+
+
+- name: set language
+  command: update-locale LANG=en_GB.utf8
+
+- name: Set UK keyboard
+  command: perl -pi -e 's/XKBLAYOUT="us"/XKBLAYOUT="gb"/;' /etc/default/keyboard
+
+
+# Create a desktop shortcut
+- name: Create a desktop shortcut
+  file:
+    path: /home/{{ username }}/Desktop
+    state: directory
+    owner: "{{ username }}"
+
+- name: Add terminal shortcut to desktop
+  copy:
+    src: /usr/share/applications/lxterminal.desktop
+    dest: /home/{{ username }}/Desktop
+    remote_src: yes
+    owner: "{{ username }}"
+
+- name: Enable autologin
+  command: perl -pi -e 's/^.*autologin=.*$/autologin={{ username }}/;' /etc/lxdm/lxdm.conf
+
+# Open terminal on startup
+- block:
+    - name: create autostart file
+      file:
+        path: /home/{{ username }}/.config/autostart
+        state: directory
+
+    - name: Copy terminal shortcut to autostart folder
+      copy:
+        src: /usr/share/applications/lxterminal.desktop
+        dest: /home/{{ username }}/.config/autostart
+        remote_src: yes
+
+    - name: configure startup terminal
+      file:
+        path: /home/{{ username }}/.config/clipit
+        state: directory
+
+    - name: Copy clipitrc config file
+      copy:
+        src: clipitrc
+        dest: /home/{{ username }}/.config/clipit/clipitrc
+  become: yes
+  become_user: "{{ username }}"
+
