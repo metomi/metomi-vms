@@ -71,10 +71,10 @@
     dest: /home/{{ username }}/metomi-vms
     force: yes
   register: git_deploy
-  until: git_deploy|succeeded
+  until: git_deploy is success
 
 # Extend root volume using lvm to include a new physical disk
-- include: extend-root-logical-volume.yml
+- include: create-data-vol.yml
   when: not local
 
 

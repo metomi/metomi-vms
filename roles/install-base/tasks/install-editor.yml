@@ -1,22 +1,18 @@
 ---
 - name: Install commonly used editors, long process (~5mins) 1/2
   apt:
-    name: "{{item}}"
-  with_items:
+    pkg:
     - dictionaries-common
     - gedit
     - leafpad
 
 - name: Install commonly used editors, long process (~5mins) 2/2
   apt:
-    name: "{{item}}"
-  with_items:
+    pkg:
     - vim-gtk
     - emacs
 
 - name: add environment variables to .profile
   lineinfile:
     dest: /home/{{ username }}/.profile
-    line: "{{ item }}"
-  with_items:
-    - export EDITOR=leafpad
+    line: "export EDITOR=leafpad"

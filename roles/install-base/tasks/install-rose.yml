@@ -1,7 +1,6 @@
 - name: Install fortran
   apt:
-    name: "{{ item }}"
-  with_items:
+    pkg:
     - gfortran
     - python-pip
     - lxterminal
@@ -9,18 +8,16 @@
 
 - name: Install dependencies
   apt:
-    name: "{{ item }}"
-  with_items:
+    pkg:
     - tidy
     - python-requests
     - python-simplejson
 
 - name: Pip packages
   pip:
-    name: "{{item}}"
-  with_items:
-    - mock
-    - pytest-tap
+    name:
+      - mock
+      - pytest-tap
 
 - name: Get Rose from Github and Uzip file to /opt
   unarchive:
@@ -102,9 +99,10 @@
 - name: Set syntax highlighting in .bashrc
   lineinfile:
     dest: /home/{{ username }}/.bashrc
-    line: "[[ -f /opt/rose/etc/rose-bash-completion ]] && . /opt/rose/etc/rose-bash-completion"
-    line: "[[ -f /opt/cylc/conf/cylc-bash-completion ]] && . /opt/cylc/conf/cylc-bash-completion"
-
+    line: "{{ item }}"
+  with_items:
+    - "[[ -f /opt/rose/etc/rose-bash-completion ]] && . /opt/rose/etc/rose-bash-completion"
+    - "[[ -f /opt/cylc/conf/cylc-bash-completion ]] && . /opt/cylc/conf/cylc-bash-completion"
 
 
 #### Configure firefox as the default PDF viewer
@@ -126,8 +124,7 @@
 #### Configure cylc review & rosie web services (with a local rosie repository)
 - name: Configure rose bush & rosie web services (with a local rosie repository)
   apt:
-    name: "{{item}}"
-  with_items:
+    pkg:
     - apache2
     - libapache2-mod-wsgi
     - python-cherrypy3
@@ -143,6 +140,12 @@
 
 - command: dos2unix -n /home/{{ username }}/metomi-vms/opt/metomi-site/etc/httpd/rosie-wsgi.conf /opt/metomi-site/etc/httpd/rosie-wsgi.conf
 - command: dos2unix -n /home/{{ username }}/metomi-vms/opt/metomi-site/etc/httpd/svn.conf /opt/metomi-site/etc/httpd/svn.conf
+
+# remove /var/www/html directory as will be linked to /opt below
+- name: Remove /var/www/html directory
+  file:
+    path: /var/www/html
+    state: absent
 
 - name: Create links
   file:

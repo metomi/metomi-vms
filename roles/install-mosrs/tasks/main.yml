@@ -2,32 +2,27 @@
 
 - name: Install gpg-agent dependencies 1/3
   apt:
-    name: "{{ item }}"
-  with_items:
+    pkg:
     - libgpg-error-dev
     - libgcrypt20-dev
 
 - name: Install gpg-agent dependencies 2/3
   apt:
-    name: "{{ item }}"
-  with_items:
+    pkg:
     - libassuan-dev
     - libksba-dev
 
 - name: Install gpg-agent dependencies 3/3
   apt:
-    name: "{{ item }}"
-  with_items:
+    pkg:
     - libpth-dev
     - zlib1g-dev
 
 - name: Remove gpg-agent
   apt:
-    name: "{{ item }}"
+    name: gpg-agent
     state: absent
     autoremove: yes
-  with_items:
-    - gpg-agent
 
 - name: download gpg
   unarchive:

@@ -16,7 +16,7 @@
 - name: add new disk to ubuntu-vg group
   lvg:
     vg: ubuntu-vg
-    pvs: /dev/sda5,/dev/sdb
+    pvs: /dev/sdb
 
 - name: allocate free space to logical volume
   command: lvextend -l +100%FREE /dev/ubuntu-vg/root
@@ -26,4 +26,4 @@
 
 - name: resize filesystem
   command: resize2fs /dev/ubuntu-vg/root
-  when: result|changed
+  when: result is changed

@@ -1,36 +1,31 @@
 
 - name: install FCM depedencies 1/5
   apt:
-    name: "{{ item }}"
-  with_items:
+    pkg:
     - subversion
     - firefox
 
 - name: install FCM depedencies 2/5
   apt:
-    name: "{{ item }}"
-  with_items:
+    pkg:
     - tkcvs
     - tk
 
 - name: install FCM depedencies 3/5
   apt:
-    name: "{{ item }}"
-  with_items:
+    pkg:
     - xxdiff
     - libxml-parser-perl
 
 - name: install FCM depedencies 4/5
   apt:
-    name: "{{ item }}"
-  with_items:
+    pkg:
     - m4
     - libconfig-inifiles-perl
 
 - name: install FCM depedencies 5/5
   apt:
-    name: "{{ item }}"
-  with_items:
+    pkg:
     - libdbi-perl
     - g++
     - libsvn-perl

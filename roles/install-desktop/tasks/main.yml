@@ -1,8 +1,7 @@
 #### Install the LXDE desktop
 - name: Install packages
   apt:
-    name: "{{ item }}"
-  with_items:
+    pkg:
     - lxde
     - xinput
 
@@ -19,18 +18,16 @@
 
     - name: install x2goserver
       apt:
-        name: "{{ item }}"
-      with_items:
+        pkg:
         - x2goserver
         - x2goserver-xsession
   when: not local
 
 - name: Remove extra packages
   apt:
-    name: "{{ item }}"
     state: absent
     autoremove: yes
-  with_items:
+    pkg:
     - gnome-screensaver
     - lxlock
     - light-locker
@@ -64,29 +61,34 @@
     remote_src: yes
     owner: "{{ username }}"
 
-- name: Enable autologin
+- name: Enable autologin (1/2)
+  copy:
+    src: lxdeconf
+    dest: /usr/share/lightdm/lightdm.conf.d/lxde.conf
+
+# need to populate username string here
+- name: Enable autologin (2/2)
   lineinfile:
     dest: /usr/share/lightdm/lightdm.conf.d/lxde.conf
-    line: "[SeatDefaults]"
-    line: "user-session=LXDE"
-    line: 'autologin-user={{ username }}'
-    line: "autologin-user-timeout=0"
+    line: "{{ item }}"
+  with_items:
+    - autologin-user={{ username }}
+    - autologin-user-timeout=0
 
 # Docs shortcut
 - command: dos2unix -n /home/{{ username }}/metomi-vms/home/Desktop/docs.desktop /home/{{ username }}/Desktop/docs.desktop
 
-- name: Configure middle button emulation
-  lineinfile:
-    dest: /home/{{ username }}/.config/autostart/xinput.desktop
-    line: "[Desktop Entry]"
-    line: "Exec=xinput set-prop 11 \"libinput Middle Emulation Enabled\" 1"
-
 # Open terminal on startup
 - block:
-    - name: create autostart file
+    - name: create autostart dir
       file:
         path: /home/{{ username }}/.config/autostart
         state: directory
+
+    - name: Configure middle button emulation
+      copy:
+        src: xinput
+        dest: /home/{{ username }}/.config/autostart/xinput.desktop
 
     - name: Copy terminal shortcut to autostart folder
       copy:
@@ -107,13 +109,14 @@
   become_user: "{{ username }}"
 
 # Setup desktop background colour
-- block
+- block:
     - name: create LXDE directory
       file:
         path: /home/{{ username }}/.config/pcmanfm/LXDE
+        state: directory
     - name: Copy LXDE config file
       copy:
-        src: lxdeconf
+        src: lxdedeskconf
         dest: /home/{{ username }}/.config/pcmanfm/LXDE/desktop-items-0.conf
   become: yes
   become_user: "{{ username }}"

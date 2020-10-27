@@ -19,3 +19,9 @@
     - install-base
     - install-desktop
     - install-mosrs
+    - remove-root-access
+
+
+  handlers:
+  - name: Restart ssh
+    service: name=ssh state=restarted
