@@ -6,7 +6,6 @@ password: vagrant
 
 # If running on local vagrant vm, set local: true
 local: false
-storage_partition: /dev/sdb
 
 
 # Define software versions

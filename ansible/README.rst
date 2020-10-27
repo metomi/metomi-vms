@@ -31,7 +31,6 @@ There are only a couple of variables which can be defined in group_vars/all.yml:
 
     # If running on local vagrant vm, set local: true
     local: false
-    storage_partition: /dev/sdb
 
     # Define software versions
     FCM_VERSION: 2017.02.0
@@ -40,13 +39,11 @@ There are only a couple of variables which can be defined in group_vars/all.yml:
 
 **DUE TO PATHS SETUP IN THE UM INSTALLATION SCRIPTS, ONLY USERNAME OF VAGRANT WILL WORK**
 
-``storage partition`` - refers to the physical location of the extra disk assigned to the target machine.
-
 **inventory.ini**
 
-This is where details about the target host/hosts goes::
+This is where details about the target host/hosts goes e.g.::
 
-    rsmith-um-test ansible_ssh_host=192.134.234.37 ansible_port=22 ansible_user=root
+    ukca-test ansible_ssh_host=192.134.234.37 ansible_port=22 ansible_user=root
 
 Before running the playbook against a cloud machine
 ---------------------------------------------------
@@ -55,7 +52,7 @@ Using `cloud.jasmin.ac.uk <https://cloud.jasmin.ac.uk>`_ to preapre machine on j
 
 1.  Click **New machine**
 
-2.  Select Ubuntu-16.04 template
+2.  Select Ubuntu-18.04 template
 
 3.  Enter **Machine name** and check the networking box
 
