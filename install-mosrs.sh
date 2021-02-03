@@ -1,5 +1,5 @@
 #### Install and configure gpg-agent
-if [[ $dist == ubuntu || ($dist == redhat && $release == fedora*) ]]; then
+if [[ $dist == ubuntu || ($dist == redhat && $release != centos7) ]]; then
   if [[ $dist == ubuntu ]]; then
     apt-get install -q -y libgpg-error-dev libgcrypt20-dev libassuan-dev libksba-dev libpth-dev zlib1g-dev || error
     if [[ $release == 1804 ]]; then
@@ -7,8 +7,6 @@ if [[ $dist == ubuntu || ($dist == redhat && $release == fedora*) ]]; then
     fi
   else
     yum install -y zlib-devel libgpg-error-devel libgcrypt-devel libassuan-devel libksba-devel || error
-  fi
-  if [[ $dist == redhat && $release == fedora* ]]; then
     wget -q ftp://ftp.gnu.org/gnu/pth/pth-2.0.7.tar.gz || error
     tar xzf pth-2.0.7.tar.gz
     rm pth-2.0.7.tar.gz

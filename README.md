@@ -81,7 +81,7 @@ To shutdown the VM you can either run the command `sudo shutdown -h now` from wi
 
 ## Using other Virtual Machines
 
-In addition to the default VM, additional VMs are supported in separate files named `Vagrantfile.<distribution>`, e.g. `Vagrantfile.centos-6`.
+In addition to the default VM, additional VMs are supported in separate files named `Vagrantfile.<distribution>`, e.g. `Vagrantfile.centos-7`.
 These other VMs are provided primarily for the purpose of testing FCM, Rose & Cylc on other Linux distributions and providing a reference install on these platforms.
 Note that they are not as well tested as the default VM and may not include a desktop environment.
 

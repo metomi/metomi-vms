@@ -19,7 +19,7 @@ if [[ $collections =~ desktop ]]; then
   echo "Installation in progress, please wait" > /etc/nologin
 fi
 
-if [[ $dist == ubuntu && $release != 1804 ]]; then
+if [[ $dist == ubuntu && $release == 1604 ]]; then
   # Address issues some hosts experience with networking (specifically, DNS latency)
   # See https://github.com/mitchellh/vagrant/issues/1172
   if [ ! $(grep single-request-reopen /etc/resolvconf/resolv.conf.d/base) ]; then
