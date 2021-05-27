@@ -14,7 +14,10 @@ Table of contents:
   * [Git BASH](#git-bash)
   * [Cygwin](#cygwin)
 * [Troubleshooting](#troubleshooting)
+<<<<<<< HEAD
 * [Microsoft Azure](#microsoft-azure)
+=======
+>>>>>>> 58e5268e77cf79030bd3ad23c3e8e3a4c4c07302
 
 ## Software Requirements
 
@@ -118,6 +121,7 @@ When you resize the VirtualBox window (e.g. to mazimise it) the display resoluti
 If this doesn't work it may be due to the Guest Additions installed in your VM not matching the version of VirtualBox you have installed.
 The easiest way to fix this is to install the [vagrant-vbguest Vagrant plugin](https://github.com/dotless-de/vagrant-vbguest).
 Note that, if the plugin does update your Guest Additions then you will need to shutdown and restart your VM (using `vagrant up`) in order for them to take effect.
+<<<<<<< HEAD
 
 ## Microsoft Azure
 
@@ -158,3 +162,5 @@ export AZURE_SUBSCRIPTION_ID="DDDDDDDD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"
 * To run the VM you should then run `vagrant up --provider=azure` and once provisioned you can `vagrant ssh` etc. in the usual way.
 
 There are many different [Linux VMs available on Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/sizes) with different [price plans](https://azure.microsoft.com/en-gb/pricing/details/virtual-machines/linux/). Currently the VM is set to use the [`Standard_F4s_v2`](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/sizes-compute) machine, which is compute optimised with 4 virtual CPUs and 8GB memory. Other options are available, depending on need and cost.
+=======
+>>>>>>> 58e5268e77cf79030bd3ad23c3e8e3a4c4c07302
