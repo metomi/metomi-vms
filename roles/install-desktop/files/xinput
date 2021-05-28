@@ -1,2 +1,0 @@
-[Desktop Entry]
-Exec=xinput set-prop 11 "libinput Middle Emulation Enabled" 1
