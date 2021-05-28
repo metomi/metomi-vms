@@ -1,0 +1,56 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# workaround to deal with "undefined method `except' for #<Hash:...> (NoMethodError)"
+# see https://github.com/mitchellh/vagrant-aws/issues/566
+class Hash
+  def slice(*keep_keys)
+    h = {}
+    keep_keys.each { |key| h[key] = fetch(key) if has_key?(key) }
+    h
+  end unless Hash.method_defined?(:slice)
+  def except(*less_keys)
+    slice(*keys - less_keys)
+  end unless Hash.method_defined?(:except)
+end
+
+VAGRANTFILE_API_VERSION = "2"
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  # when provisioning symlink /home/ubuntu to /home/vagrant as this will be needed for UM install
+  config.vm.provision :shell, path: "vagrant_symlink.sh"
+
+  # Remove "desktop" from the args below if only accessing via SSH
+  # Remove "mosrs" from the args below if not accessing the Met Office Science Repository Service
+  config.vm.provision :shell, path: "install.sh", args: "ubuntu 1804 desktop mosrs"
+  config.ssh.forward_x11 = true
+
+  # workaround to prevent use of SMB shared folders
+  # see https://github.com/mitchellh/vagrant-aws/issues/365
+  config.vm.allowed_synced_folder_types = [:rsync]
+
+  # AWS box: must use dummy box - run this command prior to bringing VM up
+  # vagrant box add dummy https://github.com/mitchellh/vagrant-aws/raw/master/dummy.box
+  # (do not run in metomi-vms directory)
+  # bring up using: vagrant up --provider=aws
+  # Environment variables defined within aws-credentials file, but can be hard-coded here
+  # (do NOT commit key and secret information back to a public repo)
+  config.vm.provider :aws do |aws, override|
+    # need to set up a user within the AWS console prior to bringing VM up
+    aws.access_key_id = ENV['AWS_KEY'] # user key
+    aws.secret_access_key = ENV['AWS_SECRET'] # user secret
+    aws.keypair_name = ENV['AWS_KEYNAME'] # name of key as named on AWS region (no ".pem")
+    # Ubuntu-18.04.5 LTS
+    # OS/VM type determined from AMI - get this from list when searching for instance to launch
+    aws.ami = "ami-09a56048b08f94cdf"
+    aws.region = "eu-west-2" # London
+    aws.instance_type = "t2.micro" # free tier size: 1xCPU/1GB RAM/8GB SSD
+    aws.security_groups = "MyIP" # use MyIP - need to set this manually in console
+
+    # use dummy box
+    override.vm.box = "dummy"
+    # on AWS EC2 Ubuntu VMs the default username is 'ubuntu' and NOT vagrant
+    override.ssh.username = "ubuntu"
+    override.ssh.private_key_path = ENV['AWS_KEYPATH'] # full path (inc. filename) to key file
+  end
+end
