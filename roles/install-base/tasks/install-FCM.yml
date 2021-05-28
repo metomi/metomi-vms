@@ -1,0 +1,70 @@
+
+- name: install FCM depedencies 1/5
+  apt:
+    pkg:
+    - subversion
+    - firefox
+
+- name: install FCM depedencies 2/5
+  apt:
+    pkg:
+    - tkcvs
+    - tk
+
+- name: install FCM depedencies 3/5
+  apt:
+    pkg:
+    - xxdiff
+    - libxml-parser-perl
+
+- name: install FCM depedencies 4/5
+  apt:
+    pkg:
+    - m4
+    - libconfig-inifiles-perl
+
+- name: install FCM depedencies 5/5
+  apt:
+    pkg:
+    - libdbi-perl
+    - g++
+    - libsvn-perl
+
+- name: Get FCM from Github and Uzip file to /opt
+  unarchive:
+    remote_src: yes
+    src: https://github.com/metomi/fcm/archive/{{ FCM_VERSION }}.tar.gz
+    dest: /opt
+  become: yes
+
+- name: make default version
+  file:
+    src: /opt/fcm-{{ FCM_VERSION }}
+    dest: /opt/fcm
+    state: link
+    force: yes
+  become: yes
+
+# Add the fcm wrapper script
+- name: Add the fcm wrapper script
+  command: dos2unix -n /home/{{ username }}/metomi-vms/usr/local/bin/fcm /usr/local/bin/fcm
+  become: yes
+
+# Configure FCM diff and merge viewers
+- name: Config FCM diff and merge viewers, make directory
+  file:
+    path: /opt/metomi-site/etc/fcm
+    state: directory
+  become: yes
+
+- name: Copy external.cfg file into place
+  command: dos2unix -n /home/{{ username }}/metomi-vms/opt/metomi-site/etc/fcm/external.cfg /opt/metomi-site/etc/fcm/external.cfg
+  become: yes
+
+- name: create symlink external.cfg
+  file:
+    src: /opt/metomi-site/etc/fcm/external.cfg
+    dest: /opt/fcm-{{ FCM_VERSION }}/etc/fcm/external.cfg
+    state: link
+    force: yes
+  become: yes

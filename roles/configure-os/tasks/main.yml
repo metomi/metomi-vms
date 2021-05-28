@@ -1,0 +1,80 @@
+# Prepare the base os
+
+# Get latest package info and install updates
+
+- name: get updates, long running process (~5mins)
+  apt:
+    update_cache: yes
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
+- name: Install dos2unix in case any files have Windows EOL characters
+  apt:
+    name: dos2unix
+
+- name: install git
+  apt:
+    name: git
+
+- name: create hashed password
+  command: openssl passwd -1 {{ password }}
+  register: result
+
+- set_fact:
+    hashed_password: "{{ result.stdout }}"
+
+- name: create new user
+  user:
+    name: "{{ username }}"
+    password: "{{ hashed_password }}"
+    groups: sudo,netdev
+    shell: /bin/bash
+
+- name: create ssh key directory
+  file:
+    path: ssh_keys/{{ inventory_hostname }}
+    state: directory
+  delegate_to: 127.0.0.1
+  become: no
+
+- stat:
+    path: ssh_keys/{{ inventory_hostname }}/id_rsa_metomi.pub
+  register: status
+  delegate_to: 127.0.0.1
+  become: no
+
+- name: create ssh key
+  command: ssh-keygen -t rsa -b 2048 -f id_rsa_metomi -q -N ""
+  args:
+    chdir: ssh_keys/{{ inventory_hostname }}
+  delegate_to: 127.0.0.1
+  register: result
+  failed_when: "'FAILED' in result.stderr and 'id_rsa_metomi already exists' not in result.stderr"
+  become: no
+  when: not status.stat.exists
+
+
+- name: copy ssh key to remote host
+  copy:
+    src: ssh_keys/{{ inventory_hostname }}/id_rsa_metomi.pub
+    dest: /home/{{ username }}/.ssh/
+
+- name: add ssh key to remote account
+  authorized_key:
+    user: "{{ username }}"
+    key: "{{ lookup('file', 'ssh_keys/{{ inventory_hostname }}/id_rsa_metomi.pub') }}"
+
+# Download metomivms data from github
+- name: download metomi-vm-files from github
+  git:
+    repo: https://github.com/metomi/metomi-vms.git
+    dest: /home/{{ username }}/metomi-vms
+    force: yes
+  register: git_deploy
+  until: git_deploy is success
+
+# Extend root volume using lvm to include a new physical disk
+- include: create-data-vol.yml
+  when: not local
+
+

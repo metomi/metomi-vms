@@ -1,0 +1,27 @@
+---
+- hosts: all
+  remote_user: root
+  gather_facts: no
+  pre_tasks:
+    - name: install python2
+      raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+
+    - name: Gather facts
+      setup:
+
+
+
+
+
+  roles:
+  # configure the VM and download the metomi-vm files from github
+    - configure-os
+    - install-base
+    - install-desktop
+    - install-mosrs
+    - remove-root-access
+
+
+  handlers:
+  - name: Restart ssh
+    service: name=ssh state=restarted

@@ -1,0 +1,47 @@
+- name: Use parted on mounted volume
+  parted:
+     device: /dev/sdb
+     number: 1
+     flags: [ lvm ]
+     state: present
+
+- name: define filesystem on mounted volume
+  filesystem:
+     fstype: ext2
+     dev: /dev/sdb1
+
+- name: mount to /work
+  mount:
+    fstype: ext2
+    src: /dev/sdb1
+    path: /work
+    state: mounted
+
+# Put large directories on external volume
+- name: Make /work/umdir folder
+  file:
+    path: /work/umdir
+    state: directory
+    owner: "{{ username }}"
+
+- name: symlink umdir
+  file:
+    src: /work/umdir
+    dest: /home/{{ username }}/umdir
+    state: link
+    force: yes
+    owner: "{{ username }}"
+
+- name: Make /work/cylc-run folder
+  file:
+    path: /work/cylc-run
+    state: directory
+    owner: "{{ username }}"
+
+- name: symlink cylc-run
+  file:
+    src: /work/cylc-run
+    dest: /home/{{ username }}/cylc-run
+    state: link
+    force: yes
+    owner: "{{ username }}"

@@ -14,7 +14,9 @@ Table of contents:
   * [Git BASH](#git-bash)
   * [Cygwin](#cygwin)
 * [Troubleshooting](#troubleshooting)
+* [Amazon AWS](#amazon-aws)
 * [Microsoft Azure](#microsoft-azure)
+
 
 ## Software Requirements
 
@@ -118,6 +120,84 @@ When you resize the VirtualBox window (e.g. to mazimise it) the display resoluti
 If this doesn't work it may be due to the Guest Additions installed in your VM not matching the version of VirtualBox you have installed.
 The easiest way to fix this is to install the [vagrant-vbguest Vagrant plugin](https://github.com/dotless-de/vagrant-vbguest).
 Note that, if the plugin does update your Guest Additions then you will need to shutdown and restart your VM (using `vagrant up`) in order for them to take effect.
+
+## Amazon AWS
+
+It is possible to run using Vagrant on an Amazon AWS EC2 virtual machine. To do this you will need to install the the [`vagrant-aws`](https://github.com/mitchellh/vagrant-aws) plugin. You do not need VirtualBox. You should ensure that you are using a recent version of Vagrant to enable the AWS plugin to work.
+
+Some set-up is required within the AWS console. You will first need to:
+
+1. Generate a key to allow you to connect to the VM
+2. Create a security group and restrict incoming access to the IP address of your computer 
+3. Create a user and make a note of the required information 
+
+The information in points 1 & 2 will need to be saved to a file called **_aws-credentials_** - an example one is provided which looks like
+```
+export AWS_KEY='AAAAAAAAAAAAAAAAAAAA'
+export AWS_SECRET='BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB'
+export AWS_KEYNAME='CCCCCCCCC'
+export AWS_KEYPATH='/full/path/to/CCCCCCCCC.pem'
+```
+If you are using Windows you may want to replace the options in the Vagrantfile directly, but be careful not to commit this information back to a public repository.
+
+There are many different types of EC2 VMs, which are identified by their unique **ami-** identifier, which has already been set in the provided Vagrantfile for Ubuntu 18.04 LTS.
+
+### Chose your region
+
+On the [AWS console](https://aws.amazon.com/) you should change your region to the one where you want the VM to be provisioned by using the drop-down menu on the top right of the page. The current settings will be using London (or `eu-west-2`). 
+
+From here you should click the **All services** drop-down menu, and then click **EC2** to enter the EC2 Dashboard.
+
+### Create your key pair
+
+In the EC2 Dashboard scroll down the left-hand menu until you find **Network & Security** and click **Key Pairs**, and then click **Create key pair** on the top right. 
+
+Here you should give your key a name, e.g. "vagrant" or "metomi-vms" etc. You should keep the **pem** file format, and then click **Create key pair**. Save this file to your local machine, and ensure it has the correct permissions so that it is only readable by you.
+
+You should add the name of and full path to your key to your **_aws-credentials_** file. Note that the name should not include the `.pem` extension, but the full path should.
+
+### Create a security group to limit IP access to your VM
+
+In the EC2 Dashboard scroll down the left-hand menu until you find **Network & Security** and click **Security Groups**, and then click **Create security group** on the top right. 
+
+You should give it a name, e.g. **MyIP** as is used in the Vagrantfile, and a description (e.g. "limit access to my IP"). Scroll down to the **Inbound rule** section and click **Add rule**.
+
+Here, use the drop-down menus to change the _Type_ to **All traffic** and the _Source_ to **My IP**. Scroll down to the bottom of the page and click **Create security group**.
+
+If you used a name other than "MyIP" for the name of the group you will need to update the AWS Vagrantfile.
+
+### Create a user
+
+You will need to create a user with the correct permissions to access your EC2 VM, which again is done via the console. This is not done within the EC2 Dashboard, but is instead done within the **IAM Dashboard** (Identity and Access Management). To get to this from the EC2 Dashboard first click the AWS logo on the top left of the page to bring you back to the console front page, and then click the **All services** drop-down menu, and then click **IAM**.
+
+Under **Access Management** click **Users** and then click **Add user**. You should give them a name, e.g. _vagrant_ or _metomi-vms_ etc.. Tick the box for **Programmatic access** and then click the **Next: Permissions** button.
+
+Here you should click the tab labelled **Attach existing policies directly** and search for **AmazonEC2FullAccess** and then tick the check-box next to this option. Now click the **Next: Tags** button. You can then click the **Next: Review** button. 
+
+Now click **Create user**. This will bring you to a page listing the username, the _Access key ID_ and the _Secret access key_. **THE SECRET ACCESS KEY INFORMATION WILL BE DISPLAYED ONLY ONCE**. You should copy this information into your **_aws-credentials_** file and download and save the `.csv` file containing this information. Again, do not upload this information (either the aws-credentials file or the csv file) to a public repository.
+
+### Provision your AWS VM
+
+Once you have all the information for your aws-credentials file, and you have created (& potentially added) the security group to your AWS Vagrantfile, you should edit the top-level Vagrantfile to point to `Vagrantfile.aws_ubuntu-1804`. Then provision the VM by
+```
+vagrant up --provider=aws
+```
+If this hangs on the line
+```
+Waiting for SSH to become available...
+```
+then you should check the security group settings above.
+
+Once the required packages have been installed you will need to run
+```
+vagrant up
+```
+again, before being able to connect via
+```
+vagrant ssh
+```
+
+**Note** that because the default username for EC2 VMs is **_ubuntu_** the `/home/ubuntu` directory has also been symbolically linked to `/home/vagrant`, as this is required for running the Unified Model.
 
 ## Microsoft Azure
 

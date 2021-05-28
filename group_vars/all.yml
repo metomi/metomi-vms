@@ -1,0 +1,14 @@
+---
+
+username: vagrant
+password: vagrant
+
+
+# If running on local vagrant vm, set local: true
+local: false
+
+
+# Define software versions
+FCM_VERSION: 2019.05.0
+CYLC_VERSION: 7.9.1
+ROSE_VERSION: 2019.01.3

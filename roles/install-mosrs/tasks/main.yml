@@ -1,0 +1,93 @@
+#### Install and configure gpg-agent
+
+- name: Install gpg-agent dependencies 1/3
+  apt:
+    pkg:
+    - libgpg-error-dev
+    - libgcrypt20-dev
+
+- name: Install gpg-agent dependencies 2/3
+  apt:
+    pkg:
+    - libassuan-dev
+    - libksba-dev
+
+- name: Install gpg-agent dependencies 3/3
+  apt:
+    pkg:
+    - libpth-dev
+    - zlib1g-dev
+
+- name: Remove gpg-agent
+  apt:
+    name: gpg-agent
+    state: absent
+    autoremove: yes
+
+- name: download gpg
+  unarchive:
+    remote_src: yes
+    src: https://www.gnupg.org/ftp/gcrypt/gnupg/gnupg-2.0.30.tar.bz2
+    dest: /home/{{ username }}
+
+- name: make install
+  command: "./configure"
+  args:
+    chdir: /home/{{ username }}/gnupg-2.0.30
+
+- name: make gnupg-2.0.30
+  make:
+    chdir: /home/{{ username }}/gnupg-2.0.30
+
+# Install gnupg
+- name: Install gnupg
+  make:
+    chdir: /home/{{ username }}/gnupg-2.0.30
+    target: install
+
+# Delete file from download
+- name: Delete downloaded file for gnupg
+  file:
+    path: /home/{{ username }}/gnupg-2.0.30
+    state: absent
+
+- name: Add script that caches the user's Science Repository Service password for the session
+  command: dos2unix -n /home/{{ username }}/metomi-vms/usr/local/bin/mosrs-cache-password /usr/local/bin/mosrs-cache-password
+
+- name: Add script to start gpg-agent and cache the password when needed and source it in .bashrc
+  command: dos2unix -n /home/{{ username }}/metomi-vms/usr/local/bin/mosrs-setup-gpg-agent /usr/local/bin/mosrs-setup-gpg-agent
+
+- name: Edit .bashrc
+  lineinfile:
+    dest: /home/{{ username }}/.bashrc
+    line: ". /usr/local/bin/mosrs-setup-gpg-agent"
+
+
+- name: Add script to install Rose meta data
+  command: dos2unix -n /home/{{ username }}/metomi-vms/usr/local/bin/install-rose-meta /usr/local/bin/install-rose-meta
+
+#### Configure FCM
+- name: make subversion folder
+  file:
+    path: /etc/subversion
+    state: directory
+
+- name: Set up subversion to not use plaintext passwords for Met Office Science Repository Service
+  command: dos2unix -n /home/{{ username }}/metomi-vms/etc/subversion/servers /etc/subversion/servers
+
+- name: Set up subversion to use gpg-agent as the password store
+  command: dos2unix -n /home/{{ username }}/metomi-vms/etc/subversion/config /etc/subversion/config
+
+- name: make fcm folder
+  file:
+    path: /opt/metomi-site/etc/fcm
+    state: directory
+
+- name: Set up FCM keywords
+  command: dos2unix -n /home/{{ username }}/metomi-vms/opt/metomi-site/etc/fcm/keyword.cfg /opt/metomi-site/etc/fcm/keyword.cfg
+
+- name: link Keywords
+  file:
+    src: /opt/metomi-site/etc/fcm/keyword.cfg
+    dest: /opt/fcm-{{ FCM_VERSION }}/etc/fcm/keyword.cfg
+    state: link

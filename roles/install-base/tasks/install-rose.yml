@@ -1,0 +1,246 @@
+- name: Install fortran
+  apt:
+    pkg:
+    - gfortran
+    - python-pip
+    - lxterminal
+    - pcregrep
+
+- name: Install dependencies
+  apt:
+    pkg:
+    - tidy
+    - python-requests
+    - python-simplejson
+
+- name: Pip packages
+  pip:
+    name:
+      - mock
+      - pytest-tap
+
+- name: Get Rose from Github and Uzip file to /opt
+  unarchive:
+    remote_src: yes
+    src: https://github.com/metomi/rose/archive/{{ ROSE_VERSION }}.tar.gz
+    dest: /opt/
+
+- name: make Rose default version
+  file:
+    src: /opt/rose-{{ ROSE_VERSION }}
+    dest: /opt/rose
+    state: link
+    force: yes
+
+# Add the Rose wrapper scripts
+- name: Add the Rose wrapper scripts
+  command: dos2unix -n /home/{{ username }}/metomi-vms/usr/local/bin/rose /usr/local/bin/rose
+- file:
+    src: /usr/local/bin/rose
+    dest: /usr/local/bin/rosie
+    state: link
+    force: yes
+
+# Configure Rose
+- name: Configure Rose
+  command: dos2unix -n /home/{{ username }}/metomi-vms/opt/metomi-site/etc/rose.conf /opt/metomi-site/etc/rose.conf
+
+- file:
+    src: /opt/metomi-site/etc/rose.conf
+    dest: /opt/rose-{{ ROSE_VERSION }}/etc/rose.conf
+    state: link
+    force: yes
+
+
+# Configure syntax highlighting & bash completion
+- block:
+  - name: Make required folders
+    file:
+      dest: "{{ item }}"
+      state: directory
+      owner: "{{ username }}"
+    with_items:
+      - /home/{{ username }}/.local/share/gtksourceview-3.0/language-specs
+      - /home/{{ username }}/.vim/syntax
+      - /home/{{ username }}/.emacs.d/lisp
+    become: yes
+    ignore_errors: yes
+
+  - command: dos2unix -n /home/{{ username }}/metomi-vms/home/{{ item }} /home/{{ username }}/{{ item }}
+    with_items:
+      - .vimrc
+      - .emacs
+
+  - name: link cylc files
+    file:
+      src: /opt/cylc/conf/{{ item.src }}
+      dest: /home/{{ username }}/{{ item.dest }}
+      state: link
+      force: yes
+    with_items:
+      - { src: cylc.lang , dest: .local/share/gtksourceview-3.0/language-specs }
+      - { src: cylc.vim , dest: .vim/syntax}
+      - { src: cylc-mode.el , dest: .emacs.d/lisp }
+
+  - name: link rose files
+    file:
+      src: /opt/rose/etc/{{ item.src }}
+      dest: /home/{{ username }}/{{ item.dest }}
+      state: link
+      force: yes
+    with_items:
+      - { src: rose-conf.lang , dest: .local/share/gtksourceview-3.0/language-specs }
+      - { src: rose-conf.vim , dest: .vim/syntax }
+      - { src: rose-conf-mode.el , dest: .emacs.d/lisp }
+
+  become: yes
+  become_user: "{{ username }}"
+
+- name: Set syntax highlighting in .bashrc
+  lineinfile:
+    dest: /home/{{ username }}/.bashrc
+    line: "{{ item }}"
+  with_items:
+    - "[[ -f /opt/rose/etc/rose-bash-completion ]] && . /opt/rose/etc/rose-bash-completion"
+    - "[[ -f /opt/cylc/conf/cylc-bash-completion ]] && . /opt/cylc/conf/cylc-bash-completion"
+
+
+#### Configure firefox as the default PDF viewer
+- name: Make required folders
+  file:
+    path: /home/{{ username }}/.local/share/applications
+    state: directory
+    owner: "{{ username }}"
+
+- copy:
+    src: mimeapps.list
+    dest: /home/{{ username }}/.local/share/applications/mimeapps.list
+
+- lineinfile:
+    dest: /home/{{ username }}/.local/share/applications/mimeapps.list
+    line: "application/pdf=firefox.desktop;"
+
+
+#### Configure cylc review & rosie web services (with a local rosie repository)
+- name: Configure rose bush & rosie web services (with a local rosie repository)
+  apt:
+    pkg:
+    - apache2
+    - libapache2-mod-wsgi
+    - python-cherrypy3
+    - apache2-utils
+    - python-sqlalchemy
+    - libapache2-mod-svn
+
+# Configure apache
+- name: Make required folders
+  file:
+    path: /opt/metomi-site/etc/httpd
+    state: directory
+
+- command: dos2unix -n /home/{{ username }}/metomi-vms/opt/metomi-site/etc/httpd/rosie-wsgi.conf /opt/metomi-site/etc/httpd/rosie-wsgi.conf
+- command: dos2unix -n /home/{{ username }}/metomi-vms/opt/metomi-site/etc/httpd/svn.conf /opt/metomi-site/etc/httpd/svn.conf
+
+# remove /var/www/html directory as will be linked to /opt below
+- name: Remove /var/www/html directory
+  file:
+    path: /var/www/html
+    state: absent
+
+- name: Create links
+  file:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    state: link
+  with_items:
+   - {src: /opt, dest: /var/www/html}
+   - {src: /opt/metomi-site/etc/httpd/rosie-wsgi.conf, dest: /etc/apache2/conf-enabled/rosie-wsgi.conf}
+   - {src: /opt/metomi-site/etc/httpd/svn.conf, dest: /etc/apache2/conf-enabled/svn.conf}
+
+- command: dos2unix -n /home/{{ username }}/metomi-vms/var/www/html/index.html /var/www/html/index.html
+
+- name: restart apache
+  service:
+    name: apache2
+    state: restarted
+
+# Setup the rosie repository
+- name: Make required folders
+  file:
+    path: /srv/svn
+    state: directory
+    owner: www-data
+
+- name: Create an new, empty svn repo
+  command: svnadmin create /srv/svn/roses-tmp
+  become: yes
+  become_user: www-data
+  register: command_result
+  failed_when: "'FAILED' in command_result.stderr and '/srv/svn/roses-tmp' not in command_result.stderr"
+
+- command: htpasswd -b -c /srv/svn/auth.htpasswd {{ username }} {{ password }}
+
+- block:
+    - shell: svn co -q --config-option config:auth:password-stores= --config-option=servers:global:store-plaintext-passwords=yes --password "{{ password }}" http://localhost/svn/roses-tmp
+      args:
+        executable: /bin/bash
+        chdir: /home/{{ username }}
+
+    - name: create roses-temp for use with svn propset
+      copy:
+        src: roses-tmp-file
+        dest: /home/{{ username }}/
+
+    - shell: svn ps fcm:layout -F roses-tmp-file roses-tmp
+      args:
+        executable: /bin/bash
+        chdir: /home/{{ username }}/
+
+    - shell: 'svn ci -m "fcm:layout: defined." roses-tmp'
+      args:
+        executable: /bin/bash
+        chdir: /home/{{ username }}
+  become: yes
+  become_user: "{{ username }}"
+
+- file:
+    path: /home/{{ username }}/roses-tmp-file
+    state: absent
+
+- file:
+    path: /opt/metomi-site/etc/hooks
+    state: directory
+
+- command: dos2unix -n /home/{{ username }}/metomi-vms/opt/metomi-site/etc/hooks/{{ item.src }} /opt/metomi-site/etc/hooks/{{ item.dest }}
+  with_items:
+    - {src: pre-commit , dest: pre-commit}
+    - {src: post-commit, dest: post-commit}
+
+- file:
+    src: /opt/metomi-site/etc/hooks/{{ item }}
+    dest: /srv/svn/roses-tmp/hooks/{{ item }}
+    state: link
+    force: yes
+  with_items:
+    - pre-commit
+    - post-commit
+
+- command: /opt/rose/sbin/rosa db-create
+  become: yes
+  become_user: www-data
+
+#### Miscellaneous utilities
+- name: install misc utilities
+  command: dos2unix -n /home/{{ username }}/metomi-vms/usr/local/bin/{{ item }} /usr/local/bin/{{ item }}
+  with_items:
+    - install-iris
+    - install-jules-benchmark-data
+    - install-jules-extras
+    - install-jules-gswp2-data
+    - install-master-versions
+    - install-ukca-data
+    - install-um-data
+    - install-um-extras
+    - run-test-batteries
+    - um-setup
+
