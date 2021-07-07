@@ -200,6 +200,7 @@ You may get 1 error reported, associated with
 ```
 Error: invalid locale settings:  LANG=en_GB.utf8
 ```
+but this can be ignored.
 
 Once the required packages have been installed you will need to run
 ```
@@ -210,7 +211,13 @@ again, before being able to connect via
 vagrant ssh
 ```
 
-**Note** that because the default username for EC2 VMs is **_ubuntu_** the `/home/ubuntu` directory has also been symbolically linked to `/home/vagrant`, as this is required for running the Unified Model.
+If the VM becomes unresponsive you many need to force-stop it via the EC2 Dashboard and run
+```
+vagrant up
+```
+again.
+
+**Note** that because the default username for EC2 VMs is **_ubuntu_** the `/home/ubuntu` directory has also been symbolically linked to `/home/vagrant`, as this is required for running the Unified Model. You can continue to work under the `ubuntu` user as normal.
 
 ## Microsoft Azure
 
