@@ -123,7 +123,11 @@ Note that, if the plugin does update your Guest Additions then you will need to 
 
 ## Amazon AWS
 
-It is possible to run using Vagrant on an Amazon AWS EC2 virtual machine. To do this you will need to install the the [`vagrant-aws`](https://github.com/mitchellh/vagrant-aws) plugin. You do not need VirtualBox. You should ensure that you are using a recent version of Vagrant to enable the AWS plugin to work.
+It is possible to run using Vagrant on an Amazon AWS EC2 virtual machine. To do this you will need to install the the [`vagrant-aws`](https://github.com/mitchellh/vagrant-aws) plugin. You do not need VirtualBox. You should ensure that you are using a recent version of Vagrant to enable the AWS plugin to work, and you will first need to run the command
+```
+vagrant box add dummy https://github.com/mitchellh/vagrant-aws/raw/master/dummy.box
+```
+in a different directory to your `metomi-vms` directory.
 
 Some set-up is required within the AWS console. You will first need to:
 
@@ -136,7 +140,7 @@ The information in points 1 & 2 will need to be saved to a file called **_aws-cr
 export AWS_KEY='AAAAAAAAAAAAAAAAAAAA'
 export AWS_SECRET='BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB'
 export AWS_KEYNAME='CCCCCCCCC'
-export AWS_KEYPATH='/full/path/to/CCCCCCCCC.pem'
+export AWS_KEYPATH='/full/path/to/CCCCCCCCC'
 ```
 If you are using Windows you may want to replace the options in the Vagrantfile directly, but be careful not to commit this information back to a public repository.
 
@@ -144,7 +148,7 @@ There are many different types of EC2 VMs, which are identified by their unique 
 
 ### Chose your region
 
-On the [AWS console](https://aws.amazon.com/) you should change your region to the one where you want the VM to be provisioned by using the drop-down menu on the top right of the page. The current settings will be using London (or `eu-west-2`). 
+On the [AWS console](https://aws.amazon.com/) you should change your region to the one where you want the VM to be provisioned by using the drop-down menu on the top right of the page. The defualt settings may put you in `us-east-2` (US East (Ohio)), but you may want to change this to, e.g., London (or `eu-west-2`). 
 
 From here you should click the **All services** drop-down menu, and then click **EC2** to enter the EC2 Dashboard.
 
@@ -154,7 +158,7 @@ In the EC2 Dashboard scroll down the left-hand menu until you find **Network & S
 
 Here you should give your key a name, e.g. "vagrant" or "metomi-vms" etc. You should keep the **pem** file format, and then click **Create key pair**. Save this file to your local machine, and ensure it has the correct permissions so that it is only readable by you.
 
-You should add the name of and full path to your key to your **_aws-credentials_** file. Note that the name should not include the `.pem` extension, but the full path should.
+You should add the name of and full path to your key to your **_aws-credentials_** file. Note that the name should not include the any extension (e.g. `.pem`), but the full path should.
 
 ### Create a security group to limit IP access to your VM
 
@@ -162,13 +166,13 @@ In the EC2 Dashboard scroll down the left-hand menu until you find **Network & S
 
 You should give it a name, e.g. **MyIP** as is used in the Vagrantfile, and a description (e.g. "limit access to my IP"). Scroll down to the **Inbound rule** section and click **Add rule**.
 
-Here, use the drop-down menus to change the _Type_ to **All traffic** and the _Source_ to **My IP**. Scroll down to the bottom of the page and click **Create security group**.
+Here, use the drop-down menus to change the _Type_ to **All traffic** and the _Source_ to **My IP** (your current IP address will be automatically added). Scroll down to the bottom of the page and click **Create security group**.
 
-If you used a name other than "MyIP" for the name of the group you will need to update the AWS Vagrantfile.
+If you used a name other than "MyIP" for the name of the group you will need to update the setting in the AWS Vagrantfile.
 
 ### Create a user
 
-You will need to create a user with the correct permissions to access your EC2 VM, which again is done via the console. This is not done within the EC2 Dashboard, but is instead done within the **IAM Dashboard** (Identity and Access Management). To get to this from the EC2 Dashboard first click the AWS logo on the top left of the page to bring you back to the console front page, and then click the **All services** drop-down menu, and then click **IAM**.
+You will need to create a user with the correct permissions to access your EC2 VM, which again is done via the console. This is not done within the EC2 Dashboard, but is instead done within the **IAM Dashboard** (Identity and Access Management). To get to this from the EC2 Dashboard first click the AWS logo on the top left of the page to bring you back to the console front page, and then click the **All services** drop-down menu, and then click **IAM** under the "Security, Identity, & Compliance" section.
 
 Under **Access Management** click **Users** and then click **Add user**. You should give them a name, e.g. _vagrant_ or _metomi-vms_ etc.. Tick the box for **Programmatic access** and then click the **Next: Permissions** button.
 
@@ -178,7 +182,11 @@ Now click **Create user**. This will bring you to a page listing the username, t
 
 ### Provision your AWS VM
 
-Once you have all the information for your aws-credentials file, and you have created (& potentially added) the security group to your AWS Vagrantfile, you should edit the top-level Vagrantfile to point to `Vagrantfile.aws_ubuntu-1804`. Then provision the VM by
+Once you have all the information for your aws-credentials file, you should first _source_ this file
+```
+source aws-credentials
+```
+Once you have created (& potentially added) the security group to your AWS Vagrantfile, you should edit the top-level Vagrantfile to point to `Vagrantfile.aws_ubuntu-1804`. Then provision the VM by
 ```
 vagrant up --provider=aws
 ```
@@ -186,7 +194,12 @@ If this hangs on the line
 ```
 Waiting for SSH to become available...
 ```
-then you should check the security group settings above.
+then you should check the security group settings above. You may also recieve an email saying _"You recently requested an AWS Service that required additional validation"_, which may have also caused a delay. It will take several minutes to provision the VM for the first time.
+
+You may get 1 error reported, associated with
+```
+Error: invalid locale settings:  LANG=en_GB.utf8
+```
 
 Once the required packages have been installed you will need to run
 ```
