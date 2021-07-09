@@ -144,13 +144,19 @@ export AWS_KEYPATH='/full/path/to/CCCCCCCCC'
 ```
 If you are using Windows you may want to replace the options in the Vagrantfile directly, but be careful not to commit this information back to a public repository.
 
-There are many different types of EC2 VMs, which are identified by their unique **ami-** identifier, which has already been set in the provided Vagrantfile for Ubuntu 18.04 LTS.
+### VM size
+
+There are many different sizes of VM to choose from (known as [instance types](https://aws.amazon.com/ec2/instance-types/)), some of which will be eligible for the free tier, e.g. `t2.micro` that has 1 CPU and 1GB of memory. To be able to run the UM you will need to select a larger type, such as `t2.medium`(2 CPUs and 4GB of memory) or `t2.large`(2 CPUs and 8GB of memory). This is changed in the `aws.instance_type` setting in the Vagrantfile. Larger and faster options are available, but these will all come with an associated cost.
+
+The hard disk size of the VM has been set to 30GB in the Vagrantfile in the `aws.block_device_mapping` settings. This can be changed as required.
 
 ### Chose your region
 
 On the [AWS console](https://aws.amazon.com/) you should change your region to the one where you want the VM to be provisioned by using the drop-down menu on the top right of the page. The defualt settings may put you in `us-east-2` (US East (Ohio)), but you may want to change this to, e.g., London (or `eu-west-2`). 
 
 From here you should click the **All services** drop-down menu, and then click **EC2** to enter the EC2 Dashboard.
+
+There are many different types of EC2 VMs (e.g. Ubuntu, Amazon Linux etc.), which are identified by their unique **ami-** identifier. This identifier is also unique to a particular region. The setting for Ubuntu 18.04 LTS in the London (eu-west-2) region has already been set in the `aws.ami` setting in the provided Vagrantfile. If you wish to use a different region you will need to search for the correct _ami-_ identifier from the **Launch instance** option within the EC2 Dashboard and then set this in the Vagrantfile accordingly.
 
 ### Create your key pair
 
