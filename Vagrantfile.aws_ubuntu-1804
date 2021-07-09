@@ -17,7 +17,7 @@ end
 VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-  # when provisioning symlink /home/ubuntu to /home/vagrant as this will be needed for UM install
+  # when provisioning symlink /home/ubuntu to /home/vagrant
   config.vm.provision :shell, path: "vagrant_symlink.sh"
 
   # Remove "desktop" from the args below if only accessing via SSH
@@ -42,16 +42,17 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     aws.keypair_name = ENV['AWS_KEYNAME'] # name of key as named on AWS region (no ".pem")
     aws.security_groups = "MyIP" # use MyIP - need to set this manually in console
 
-    aws.region = "eu-west-2" # London
-
-    # Ubuntu-18.04.5 LTS
+    # Ubuntu-18.04.5 LTS in the London region (eu-west-2)
     # OS/VM type determined from AMI - get this from list when searching for instance to launch
+    aws.region = "eu-west-2"
     aws.ami = "ami-09a56048b08f94cdf"
 
-    #aws.instance_type = "t2.micro" # free tier size: 1xCPU/1GB RAM/8GB SSD
-    #aws.instance_type = "t2.2xlarge" # 8xCPU/32GB RAM SSD set below to 30GB
-    aws.instance_type = "m5.xlarge" # Intel Xeon 4xCPU/16GB RAM SSD set below to 30GB
-    aws.block_device_mapping = [{ 'DeviceName' => '/dev/sda1', 'Ebs.VolumeSize' => 30 }] 
+    # VM size
+    # free tier size: 1xCPU/1GB RAM/8GB disk
+    #aws.instance_type = "t2.micro"
+    # larger VM, e.g. Intel Xeon 4xCPU/16GB RAM, disk set below to 30GB
+    aws.instance_type = "m5.xlarge"
+    aws.block_device_mapping = [{ 'DeviceName' => '/dev/sda1', 'Ebs.VolumeSize' => 30 }]
 
     # use dummy box
     override.vm.box = "dummy"

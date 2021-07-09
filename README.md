@@ -148,7 +148,7 @@ If you are using Windows you may want to replace the options in the Vagrantfile 
 
 There are many different sizes of VM to choose from (known as [instance types](https://aws.amazon.com/ec2/instance-types/)), some of which will be eligible for the free tier, e.g. `t2.micro` that has 1 CPU and 1GB of memory. To be able to run the UM you will need to select a larger type, such as `t2.medium`(2 CPUs and 4GB of memory) or `t2.large`(2 CPUs and 8GB of memory). This is changed in the `aws.instance_type` setting in the Vagrantfile. Larger and faster options are available, but these will all come with an associated cost. You can also select faster hardware, e.g. the `m5` hardware uses more advanced Intel Xeon processors and may give better performance.
 
-The hard disk size of the VM has been set to 30GB in the Vagrantfile in the `aws.block_device_mapping` settings. This can be changed as required.
+The hard disk size of the VM can be set to 30GB in the Vagrantfile in the `aws.block_device_mapping` settings. This can be changed as required. The default `t2.micro` size is 8GB.
 
 It is possible to resize your VM by changing the instance type once it has been created. To do this you need to first stop it using
 ```
