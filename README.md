@@ -150,11 +150,11 @@ There are many different sizes of VM to choose from (known as [instance types](h
 
 The hard disk size of the VM has been set to 30GB in the Vagrantfile in the `aws.block_device_mapping` settings. This can be changed as required.
 
-It is possible to resize your VM once it has been created. To do this you need to first stop it using
+It is possible to resize your VM by changing the instance type once it has been created. To do this you need to first stop it using
 ```
 vagrant halt
 ```
-and then [follow the instructions](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-resize.html) for resizing using the AWS console. 
+and then [follow the instructions](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-resize.html) for changing the instance using the AWS console. 
 
 ### Chose your region
 
