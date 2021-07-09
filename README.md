@@ -150,7 +150,7 @@ There are many different sizes of VM to choose from (known as [instance types](h
 
 The hard disk size of the VM has been set to 30GB in the Vagrantfile in the `aws.block_device_mapping` settings. This can be changed as required.
 
-It is possible to resize your VM. To do this you need to first stop it using
+It is possible to resize your VM once it has been created. To do this you need to first stop it using
 ```
 vagrant halt
 ```
