@@ -49,7 +49,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     aws.ami = "ami-09a56048b08f94cdf"
 
     #aws.instance_type = "t2.micro" # free tier size: 1xCPU/1GB RAM/8GB SSD
-    aws.instance_type = "t2.2xlarge" # 8xCPU/32GB RAM SSD set below to 30GB
+    #aws.instance_type = "t2.2xlarge" # 8xCPU/32GB RAM SSD set below to 30GB
+    aws.instance_type = "m5.xlarge" # Intel Xeon 4xCPU/16GB RAM SSD set below to 30GB
     aws.block_device_mapping = [{ 'DeviceName' => '/dev/sda1', 'Ebs.VolumeSize' => 30 }] 
 
     # use dummy box
