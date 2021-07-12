@@ -49,10 +49,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     # VM size
     # free tier size: 1xCPU/1GB RAM/8GB disk
-    #aws.instance_type = "t2.micro"
-    # larger VM, e.g. Intel Xeon 4xCPU/16GB RAM, disk set below to 30GB
-    aws.instance_type = "m5.xlarge"
-    aws.block_device_mapping = [{ 'DeviceName' => '/dev/sda1', 'Ebs.VolumeSize' => 30 }]
+    aws.instance_type = "t2.micro"
+    # larger VM, e.g. Intel Xeon 2xCPU/8GB RAM, disk set below to 30GB
+    #aws.instance_type = "m5.large"
+    #aws.block_device_mapping = [{ 'DeviceName' => '/dev/sda1', 'Ebs.VolumeSize' => 30 }]
 
     # use dummy box
     override.vm.box = "dummy"

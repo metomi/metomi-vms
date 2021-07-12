@@ -15,8 +15,6 @@ Table of contents:
   * [Cygwin](#cygwin)
 * [Troubleshooting](#troubleshooting)
 * [Amazon AWS](#amazon-aws)
-* [Microsoft Azure](#microsoft-azure)
-
 
 ## Software Requirements
 
@@ -144,11 +142,13 @@ export AWS_KEYPATH='/full/path/to/CCCCCCCCC'
 ```
 If you are using Windows you may want to replace the options in the Vagrantfile directly, but be careful not to commit this information back to a public repository.
 
+**Note** that because the default username for EC2 Ubuntu VMs is **_ubuntu_** the `/home/ubuntu` directory has also been symbolically linked to `/home/vagrant`. You should continue to work under the `ubuntu` user as normal.
+
 ### VM size
 
-There are many different sizes of VM to choose from (known as [instance types](https://aws.amazon.com/ec2/instance-types/)), some of which will be eligible for the free tier, e.g. `t2.micro` that has 1 CPU and 1GB of memory. To be able to run the UM you will need to select a larger type, such as `t2.medium`(2 CPUs and 4GB of memory) or `t2.large`(2 CPUs and 8GB of memory). This is changed in the `aws.instance_type` setting in the Vagrantfile. Larger and faster options are available, but these will all come with an associated cost. You can also select faster hardware, e.g. the `m5` hardware uses more advanced Intel Xeon processors and may give better performance.
+There are many different sizes of VM to choose from (known as [instance types](https://aws.amazon.com/ec2/instance-types/)), some of which will be eligible for the free tier, e.g. `t2.micro` that has 1 CPU and 1GB of memory. To be able to run the UM you will need to select a larger type, such as `t2.medium`(2 CPUs and 4GB of memory) or `t2.large`(2 CPUs and 8GB of memory). This is changed in the `aws.instance_type` setting in the Vagrantfile. Larger and faster options are available, but these will all come with an associated cost. You can also select faster hardware, e.g. the `m5` hardware uses faster Intel Xeon processors with a greater network and storage bandwidth, and may give better performance.
 
-The hard disk size of the VM can be set to 30GB in the Vagrantfile in the `aws.block_device_mapping` settings. This can be changed as required. The default `t2.micro` size is 8GB.
+The hard disk size of the VM can be set to 30GB in the Vagrantfile in the `aws.block_device_mapping` setting. This can be changed as required. The default `t2.micro` size is 8GB.
 
 It is possible to resize your VM by changing the instance type once it has been created. To do this you need to first stop it using
 ```
@@ -180,7 +180,7 @@ You should give it a name, e.g. **MyIP** as is used in the Vagrantfile, and a de
 
 Here, use the drop-down menus to change the _Type_ to **All traffic** and the _Source_ to **My IP** (your current IP address will be automatically added). Scroll down to the bottom of the page and click **Create security group**.
 
-If you used a name other than "MyIP" for the name of the group you will need to update the setting in the AWS Vagrantfile.
+If you used a name other than "MyIP" for the name of the group you will need to update the `aws.security_groups` setting in the AWS Vagrantfile.
 
 ### Create a user
 
@@ -190,7 +190,9 @@ Under **Access Management** click **Users** and then click **Add user**. You sho
 
 Here you should click the tab labelled **Attach existing policies directly** and search for **AmazonEC2FullAccess** and then tick the check-box next to this option. Now click the **Next: Tags** button. You can then click the **Next: Review** button. 
 
-Now click **Create user**. This will bring you to a page listing the username, the _Access key ID_ and the _Secret access key_. **THE SECRET ACCESS KEY INFORMATION WILL BE DISPLAYED ONLY ONCE**. You should copy this information into your **_aws-credentials_** file and download and save the `.csv` file containing this information. Again, do not upload this information (either the aws-credentials file or the csv file) to a public repository.
+Now click **Create user**. This will bring you to a page listing the username, the _Access key ID_ and the _Secret access key_. **THE SECRET ACCESS KEY INFORMATION WILL BE DISPLAYED ONLY ONCE**. 
+
+You should copy this information into your **_aws-credentials_** file and download and save the `.csv` file containing this information. Again, do not upload this information (either the aws-credentials file or the csv file) to a public repository.
 
 ### Provision your AWS VM
 
@@ -212,7 +214,7 @@ You may get 1 error reported, associated with
 ```
 Error: invalid locale settings:  LANG=en_GB.utf8
 ```
-but this can be ignored.
+but this can be safely ignored.
 
 Once the required packages have been installed you will need to run
 ```
@@ -228,45 +230,3 @@ If the VM becomes unresponsive you many need to force-stop it via the EC2 Dashbo
 vagrant up
 ```
 again.
-
-**Note** that because the default username for EC2 VMs is **_ubuntu_** the `/home/ubuntu` directory has also been symbolically linked to `/home/vagrant`, as this is required for running the Unified Model. You can continue to work under the `ubuntu` user as normal.
-
-## Microsoft Azure
-
-It is possible to run using Vagrant on a Microsoft Azure cloud virtual machine. To do this you will need to install the [`vagrant-azure`](https://github.com/Azure/vagrant-azure) plugin. You should also install the [Azure CLI command line tool](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest), which will allow you to manage your Azure resources. You do not need VirtualBox.
-
-* To begin you should follow the instructions from https://github.com/Azure/vagrant-azure. First ensure you have the dummy box and have added the plugin:
-```
-vagrant box add azure https://github.com/azure/vagrant-azure/raw/v2.0/dummy.box --provider azure
-vagrant plugin install vagrant-azure
-```
-
-* You should login using `az login`
-
-* You will need to run the `az ad sp create-for-rbac` command to create the active directory. This will provide the following information with output similar to this:
-```
-{
-  "appId": "AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA",
-  "displayName": "some-display-name",
-  "name": "http://azure-cli-2017-04-03-15-30-52",
-  "password": "BBBBBBBB-BBBB-BBBB-BBBB-BBBBBBBBBBBB",
-  "tenant": "CCCCCCCC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"
-}
-```
-
-* You should then run the `az account list --query "[?isDefault].id" -o tsv` command to get your subscription information. This will have output similar to:
-```
-DDDDDDDD-DDDD-DDDD-DDDD-DDDDDDDDDDDD
-```
-
-* You will then need to export these as the following environment variables, as these are used within the Azure Vagrantfile. You should also keep a note of them, as you will need to make sure that they are set each time you access the VM.
-```
-export AZURE_CLIENT_ID="AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAA"
-export AZURE_CLIENT_SECRET="BBBBBBBB-BBBB-BBBB-BBBB-BBBBBBBBBBB"
-export AZURE_TENANT_ID="CCCCCCCC-CCCC-CCCC-CCCC-CCCCCCCCCCC"
-export AZURE_SUBSCRIPTION_ID="DDDDDDDD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"
-```
-
-* To run the VM you should then run `vagrant up --provider=azure` and once provisioned you can `vagrant ssh` etc. in the usual way.
-
-There are many different [Linux VMs available on Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/sizes) with different [price plans](https://azure.microsoft.com/en-gb/pricing/details/virtual-machines/linux/). Currently the VM is set to use the [`Standard_F4s_v2`](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/sizes-compute) machine, which is compute optimised with 4 virtual CPUs and 8GB memory. Other options are available, depending on need and cost.
