@@ -170,7 +170,7 @@ In the EC2 Dashboard scroll down the left-hand menu until you find **Network & S
 
 Here you should give your key a name, e.g. "vagrant" or "metomi-vms" etc. You should keep the **pem** file format, and then click **Create key pair**. Save this file to your local machine, and ensure it has the correct permissions so that it is only readable by you.
 
-You should add the name of and full path to your key to your **_aws-credentials_** file. Note that the name should not include the any extension (e.g. `.pem`), but the full path should.
+You should add the name of and full path to your key to your **_aws-credentials_** file. Note that the name should not include any extension (e.g. `.pem`), but the full path should.
 
 ### Create a security group to limit IP access to your VM
 
