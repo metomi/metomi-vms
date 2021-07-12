@@ -39,7 +39,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # need to set up a user within the AWS console prior to bringing VM up
     aws.access_key_id = ENV['AWS_KEY'] # user key
     aws.secret_access_key = ENV['AWS_SECRET'] # user secret
-    aws.keypair_name = ENV['AWS_KEYNAME'] # name of key as named on AWS region (no ".pem")
+    aws.keypair_name = ENV['AWS_KEYNAME'] # name of key as named on AWS region (no file ext.)
     aws.security_groups = "MyIP" # use MyIP - need to set this manually in console
 
     # Ubuntu-18.04.5 LTS in the London region (eu-west-2)
