@@ -210,12 +210,6 @@ Waiting for SSH to become available...
 ```
 then you should check the security group settings above. You may also recieve an email saying _"You recently requested an AWS Service that required additional validation"_, which may have also caused a delay. It will take several minutes to provision the VM for the first time.
 
-You may get 1 error reported, associated with
-```
-Error: invalid locale settings:  LANG=en_GB.utf8
-```
-but this can be safely ignored.
-
 Once the required packages have been installed you will need to run
 ```
 vagrant up
