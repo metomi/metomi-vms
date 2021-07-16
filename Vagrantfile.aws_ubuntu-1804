@@ -17,12 +17,12 @@ end
 VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-  # when provisioning symlink /home/ubuntu to /home/vagrant
-  config.vm.provision :shell, path: "vagrant_symlink.sh"
+  # when provisioning symlink home/ directory to /home/vagrant
+  config.vm.provision :shell, inline: "ln -s /home/$(logname) /home/vagrant"
 
   # Remove "desktop" from the args below if only accessing via SSH
   # Remove "mosrs" from the args below if not accessing the Met Office Science Repository Service
-  config.vm.provision :shell, path: "install.sh", args: "ubuntu 1804 desktop mosrs"
+  config.vm.provision :shell, path: "install.sh", args: "ubuntu 1804 desktop mosrs x2go"
   config.ssh.forward_x11 = true
 
   # workaround to prevent use of SMB shared folders

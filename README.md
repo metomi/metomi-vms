@@ -230,3 +230,26 @@ If the VM becomes unresponsive you many need to force-stop it via the EC2 Dashbo
 vagrant up
 ```
 again.
+
+### Connecting via X2Go
+
+To be able to connect to a full desktop, you can use X2Go. You should install the [X2Go client](https://wiki.x2go.org/doku.php/download:start).
+
+1. Fill out the settings details on new session popup as below, then press _OK_.
+
+2. Click on your new session on the right hand side of the x2goclient window.
+
+3. It should automatically login, asking if you wish to allow connection on first run.
+
+If you stop the instance and then later restart it, the IP address may change. You can find the IP address of your EC2 instance on the EC2 Dashboard. You will need to change this in your X2Go settings and allow the connection when prompted.
+
+**X2Go settings for AWS EC2 instance**
+
+| Option | Setting |
+| :--- | :--- |
+| Session name | *e.g.* AWS |
+| Host | *IP address for the VM, e.g.* 3.8.24.92 |
+| Login | ubuntu |
+| Use RSA/DSA key for ssh connection | *The full path to the key file you created earlier (navigate via button)* |
+| Session type | *Select* LXDE *from drop-down menu* |
+

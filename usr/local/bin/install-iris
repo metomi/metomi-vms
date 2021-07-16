@@ -7,5 +7,5 @@ conda install -y -c conda-forge iris ipython
 rm Miniconda3-latest-Linux-x86_64.sh
 
 cat >> /home/vagrant/.bashrc <<EOF
-alias conda="lxterminal -l -e 'export PATH=~/miniconda3/bin:\$PATH && bash'"
+alias pyterm="lxterminal -l -e 'export PATH=~/miniconda3/bin:\$PATH && bash'"
 EOF
