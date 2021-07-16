@@ -112,22 +112,22 @@ elif [[ $dist == redhat ]]; then
   dos2unix -n /vagrant/opt/metomi-site/etc/rose.conf.redhat /opt/metomi-site/etc/rose.conf
 fi
 
-#### Install latest versions of FCM, Cylc & Rose 
+#### Install latest versions of FCM, Cylc & Rose
 dos2unix -n /vagrant/usr/local/bin/install-rose-cylc-fcm /usr/local/bin/install-rose-cylc-fcm
 /usr/local/bin/install-rose-cylc-fcm --set-default --make-docs || error
 
 #### Configure syntax highlighting & bash completion
-sudo -u vagrant mkdir -p /home/vagrant/.local/share/gtksourceview-3.0/language-specs/
-sudo -u vagrant ln -sf /opt/cylc/conf/cylc.lang /home/vagrant/.local/share/gtksourceview-3.0/language-specs
-sudo -u vagrant ln -sf /opt/rose/etc/rose-conf.lang /home/vagrant/.local/share/gtksourceview-3.0/language-specs
-sudo -u vagrant mkdir -p /home/vagrant/.vim/syntax
-sudo -u vagrant ln -sf /opt/cylc/conf/cylc.vim /home/vagrant/.vim/syntax
-sudo -u vagrant ln -sf /opt/rose/etc/rose-conf.vim /home/vagrant/.vim/syntax
-sudo -u vagrant dos2unix -n /vagrant/home/.vimrc /home/vagrant/.vimrc
-sudo -u vagrant mkdir -p /home/vagrant/.emacs.d/lisp
-sudo -u vagrant ln -sf /opt/cylc/conf/cylc-mode.el /home/vagrant/.emacs.d/lisp
-sudo -u vagrant ln -sf /opt/rose/etc/rose-conf-mode.el /home/vagrant/.emacs.d/lisp
-sudo -u vagrant dos2unix -n /vagrant/home/.emacs /home/vagrant/.emacs
+sudo -u $(logname) mkdir -p /home/vagrant/.local/share/gtksourceview-3.0/language-specs/
+sudo -u $(logname) ln -sf /opt/cylc/conf/cylc.lang /home/vagrant/.local/share/gtksourceview-3.0/language-specs
+sudo -u $(logname) ln -sf /opt/rose/etc/rose-conf.lang /home/vagrant/.local/share/gtksourceview-3.0/language-specs
+sudo -u $(logname) mkdir -p /home/vagrant/.vim/syntax
+sudo -u $(logname) ln -sf /opt/cylc/conf/cylc.vim /home/vagrant/.vim/syntax
+sudo -u $(logname) ln -sf /opt/rose/etc/rose-conf.vim /home/vagrant/.vim/syntax
+sudo -u $(logname) dos2unix -n /vagrant/home/.vimrc /home/vagrant/.vimrc
+sudo -u $(logname) mkdir -p /home/vagrant/.emacs.d/lisp
+sudo -u $(logname) ln -sf /opt/cylc/conf/cylc-mode.el /home/vagrant/.emacs.d/lisp
+sudo -u $(logname) ln -sf /opt/rose/etc/rose-conf-mode.el /home/vagrant/.emacs.d/lisp
+sudo -u $(logname) dos2unix -n /vagrant/home/.emacs /home/vagrant/.emacs
 if [[ $dist == redhat ]]; then
   echo '[[ "$-" != *i* ]] && return # Stop here if not running interactively' >>/home/vagrant/.bashrc
 fi
@@ -135,9 +135,9 @@ echo "[[ -f /opt/rose/etc/rose-bash-completion ]] && . /opt/rose/etc/rose-bash-c
 echo "[[ -f /opt/cylc/conf/cylc-bash-completion ]] && . /opt/cylc/conf/cylc-bash-completion" >>/home/vagrant/.bashrc
 
 #### Configure firefox as the default PDF viewer
-sudo -u vagrant mkdir -p /home/vagrant/.local/share/applications
-sudo -u vagrant bash -c 'echo "[Added Associations]" >/home/vagrant/.local/share/applications/mimeapps.list'
-sudo -u vagrant bash -c 'echo "application/pdf=firefox.desktop;" >>/home/vagrant/.local/share/applications/mimeapps.list'
+sudo -u $(logname) mkdir -p /home/vagrant/.local/share/applications
+sudo -u $(logname) bash -c 'echo "[Added Associations]" >/home/vagrant/.local/share/applications/mimeapps.list'
+sudo -u $(logname) bash -c 'echo "application/pdf=firefox.desktop;" >>/home/vagrant/.local/share/applications/mimeapps.list'
 
 #### Configure cylc review & rosie web services (with a local rosie repository)
 if [[ $dist == ubuntu ]]; then
@@ -185,8 +185,8 @@ elif [[ $dist == redhat ]]; then
 fi
 htpasswd -b -c /srv/svn/auth.htpasswd vagrant vagrant || error
 cd /home/vagrant
-sudo -H -u vagrant bash -c 'svn co -q --config-option config:auth:password-stores= --config-option=servers:global:store-plaintext-passwords=yes --password "vagrant" http://localhost/svn/roses-tmp'
-sudo -H -u vagrant bash -c 'svn ps fcm:layout -F - roses-tmp' <<EOF
+sudo -H -u $(logname) bash -c 'svn co -q --config-option config:auth:password-stores= --config-option=servers:global:store-plaintext-passwords=yes --password "vagrant" http://localhost/svn/roses-tmp'
+sudo -H -u $(logname) bash -c 'svn ps fcm:layout -F - roses-tmp' <<EOF
 depth-project = 5
 depth-branch = 1
 depth-tag = 1
@@ -198,7 +198,7 @@ level-owner-tag =
 template-branch =
 template-tag =
 EOF
-sudo -H -u vagrant bash -c 'svn ci -m "fcm:layout: defined." roses-tmp'
+sudo -H -u $(logname) bash -c 'svn ci -m "fcm:layout: defined." roses-tmp'
 rm -rf roses-tmp
 mkdir -p /opt/metomi-site/etc/hooks
 dos2unix -n /vagrant/opt/metomi-site/etc/hooks/pre-commit /opt/metomi-site/etc/hooks/pre-commit
