@@ -229,11 +229,11 @@ again. In the instance list it will be called **_metomi-vms_**.
 
 To be able to connect to a full desktop, you can use X2Go. You should install the [X2Go client](https://wiki.x2go.org/doku.php/download:start).
 
-1. Fill out the settings details on new session popup as below, then press _OK_.
+1. Fill out the settings details on the new session popup as in the table below, then press _OK_.
 
 2. Click on your new session on the right hand side of the x2goclient window.
 
-3. It should automatically login, asking if you wish to allow connection on first run.
+3. It should automatically login, asking if you wish to allow the connection on first run.
 
 If you stop the instance and then later restart it, the IP address may change. You can find the IP address of your EC2 instance on the EC2 Dashboard. You will need to change this in your X2Go settings and allow the connection when prompted.
 
