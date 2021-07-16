@@ -223,7 +223,7 @@ If the VM becomes unresponsive you many need to force-stop it via the EC2 Dashbo
 ```
 vagrant up
 ```
-again.
+again. In the instance list it will be called **_metomi-vms_**.
 
 ### Connecting via X2Go
 
