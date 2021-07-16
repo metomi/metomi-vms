@@ -233,7 +233,7 @@ To be able to connect to a full desktop, you can use X2Go. You should install th
 
 2. Click on your new session on the right hand side of the x2goclient window.
 
-3. It should automatically login, asking if you wish to allow the connection on first run.
+3. It should automatically login after asking you if you wish to allow the connection.
 
 If you stop the instance and then later restart it, the IP address may change. You can find the IP address of your EC2 instance on the EC2 Dashboard. You will need to change this in your X2Go settings and allow the connection when prompted.
 
