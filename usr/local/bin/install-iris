@@ -3,9 +3,9 @@ set -eu
 wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
 bash Miniconda3-latest-Linux-x86_64.sh -b
 PATH=~/miniconda3/bin:$PATH
-conda install -y -c conda-forge iris ipython
+conda install -y -c conda-forge iris mo_pack ipython
 rm Miniconda3-latest-Linux-x86_64.sh
 
 cat >> /home/vagrant/.bashrc <<EOF
-alias conda="lxterminal -l -e 'export PATH=~/miniconda3/bin:\$PATH && bash'"
+alias pyterm="lxterminal -l -e 'export PATH=~/miniconda3/bin:\$PATH && bash'"
 EOF
