@@ -121,7 +121,7 @@ Note that, if the plugin does update your Guest Additions then you will need to 
 
 ## Amazon AWS
 
-It is possible to run using Vagrant on an Amazon AWS EC2 virtual machine. To do this you will need to install the the [`vagrant-aws`](https://github.com/mitchellh/vagrant-aws) plugin. You do not need VirtualBox. You should ensure that you are using a recent version of Vagrant to enable the AWS plugin to work, and you will first need to run the command
+It is possible to run using Vagrant on an Amazon AWS EC2 virtual machine. To do this you will need to install the [`vagrant-aws`](https://github.com/mitchellh/vagrant-aws) plugin. You do not need VirtualBox. You should ensure that you are using a recent version of Vagrant to enable the AWS plugin to work, and you will first need to run the command
 ```
 vagrant box add dummy https://github.com/mitchellh/vagrant-aws/raw/master/dummy.box
 ```
@@ -159,7 +159,7 @@ and then [follow the instructions](https://docs.aws.amazon.com/AWSEC2/latest/Use
 
 ### Chose your region
 
-On the [AWS console](https://aws.amazon.com/) you should change your region to the one where you want the VM to be provisioned by using the drop-down menu on the top right of the page. The defualt settings may put you in `us-east-2` (US East (Ohio)), but you may want to change this to, e.g., London (or `eu-west-2`). 
+On the [AWS console](https://aws.amazon.com/) you should change your region to the one where you want the VM to be provisioned by using the drop-down menu on the top right of the page. The default settings may put you in `us-east-2` (US East (Ohio)), but you may want to change this to, e.g., London (or `eu-west-2`). 
 
 From here you should click the **All services** drop-down menu, and then click **EC2** to enter the EC2 Dashboard.
 
