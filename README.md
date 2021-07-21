@@ -135,6 +135,7 @@ Some set-up is required within the AWS console. You will first need to:
 
 The information in points 1 & 2 will need to be saved to a file called **_aws-credentials_** - an example one is provided which looks like
 ```
+export VAGRANT_VAGRANTFILE=Vagrantfile.aws_ubuntu-1804
 export AWS_KEY='AAAAAAAAAAAAAAAAAAAA'
 export AWS_SECRET='BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB'
 export AWS_KEYNAME='CCCCCCCCC'
@@ -200,7 +201,7 @@ Once you have all the information for your aws-credentials file, you should firs
 ```
 source aws-credentials
 ```
-Once you have created (& potentially added) the security group to your AWS Vagrantfile, you should edit the top-level Vagrantfile to point to `Vagrantfile.aws_ubuntu-1804`. Then provision the VM by
+Once you have created (& potentially added) the security group to your AWS Vagrantfile, you should then provision the VM by
 ```
 vagrant up --provider=aws
 ```
