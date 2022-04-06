@@ -114,7 +114,9 @@ Then use the `cd` command to navigate to the directory where you have extracted 
 
 ## VMware
 
-As an alternative to VirtualBox, [VMware Workstation Player](https://www.vmware.com/uk/products/workstation-player.html) (Windows, Linux) or ([VMware Fusion](https://www.vmware.com/uk/products/fusion.html) (macOS) can be used as an alternative to host the virtual machine. VMware Workstation Player is free for non-commercial use. As a minimum you will need to download and install
+As an alternative to VirtualBox, [VMware Workstation Player](https://www.vmware.com/uk/products/workstation-player.html) (Windows, Linux) or ([VMware Fusion](https://www.vmware.com/uk/products/fusion.html) (macOS) can be used to host the virtual machine. VMware Workstation Player is free for non-commercial use.
+
+You will need to download and install
 
 * [VMware Workstation Player](https://www.vmware.com/uk/products/workstation-player.html) **or** [VMware Fusion](https://www.vmware.com/uk/products/fusion.html)
 * The [Vagrant VMware utility](https://www.vagrantup.com/vmware/downloads)
