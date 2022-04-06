@@ -130,7 +130,7 @@ and run the command
 ```
 vagrant up --provider=vmware_desktop
 ```
-You may have issues with both VMware and VirtualBox installed, or if the Hyper-V hypervisor is also running. If you are using an Apple Silicon device with VMware Fusion you will need to set the following
+You may have issues if both VMware and VirtualBox are installed, or if the Hyper-V hypervisor is also running. If you are using an Apple Silicon device with VMware Fusion you will need to set the following
 ```
 config.vm.box = "uwbbi/bionic-arm64"
 ```
