@@ -134,7 +134,7 @@ You may have issues if both VMware and VirtualBox are installed, or if the Hyper
 ```
 config.vm.box = "uwbbi/bionic-arm64"
 ```
-in the [Vagrantfile.vmware_ubuntu-1804](Vagrantfile.vmware_ubuntu-1804) file as you cannot use an amd64-based installation on an Apple Silicon (ARM-based) hardware.
+in the [Vagrantfile.vmware_ubuntu-1804](Vagrantfile.vmware_ubuntu-1804) file as you cannot use an amd64-based installation on Apple Silicon (ARM-based) hardware.
 
 ## Troubleshooting
 
