@@ -5,13 +5,16 @@ VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.define "metomi-vm-ubuntu-1804"
+  # amd64-based system for VMware Workstation Player on Windows & Linux
   config.vm.box = "bento/ubuntu-18.04"
+  # use uwbbi/bionic-arm64 as the box if using VMware Fusion on macOS using Apple Silicon (ARM-based)
+  #config.vm.box = "uwbbi/bionic-arm64"
   # Remove "desktop" from the args below if only accessing via SSH
   # Remove "mosrs" from the args below if not accessing the Met Office Science Repository Service
   config.vm.provision :shell, path: "install.sh", args: "ubuntu 1804 desktop mosrs"
   config.ssh.forward_x11 = true
 
-  config.vm.provider :vmware_desktop do |vmware_desktop, override|
+  config.vm.provider "vmware_desktop" do |v|
     # Comment out the line below if only accessing via SSH
     v.gui = true
     # Modify the line below if you need more than 1GB RAM

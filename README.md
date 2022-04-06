@@ -114,17 +114,25 @@ Then use the `cd` command to navigate to the directory where you have extracted 
 
 ## VMware
 
-As an alternative to VirtualBox, [VMware Workstation Player](https://www.vmware.com/uk/products/workstation-player.html) can be used as an alternative to host the virtual machine. This is free for non-commercial use, and works on Windows and Linux systems ([VMware Fusion](https://www.vmware.com/uk/products/fusion.html) is a similar product for macOS). As a minimum you will need to download and install
+As an alternative to VirtualBox, [VMware Workstation Player](https://www.vmware.com/uk/products/workstation-player.html) (Windows, Linux) or ([VMware Fusion](https://www.vmware.com/uk/products/fusion.html) (macOS) can be used as an alternative to host the virtual machine. VMware Workstation Player is free for non-commercial use. As a minimum you will need to download and install
 
-* [VMware Workstation Player](https://www.vmware.com/uk/products/workstation-player.html)
+* [VMware Workstation Player](https://www.vmware.com/uk/products/workstation-player.html) **or** [VMware Fusion](https://www.vmware.com/uk/products/fusion.html)
 * The [Vagrant VMware utility](https://www.vagrantup.com/vmware/downloads)
 * The Vagrant VMware plugin by running the command `vagrant plugin install vagrant-vmware-desktop`
 
-The configuration settings can be found in the [Vagrantfile.vmware_ubuntu-1804](Vagrantfile.vmware_ubuntu-1804) file. To bring the box up using VMware, run the command
+The configuration settings can be found in the [Vagrantfile.vmware_ubuntu-1804](Vagrantfile.vmware_ubuntu-1804) file. To bring the box up using VMware, edit the [Vagrantfile](Vagrantfile) to point to the VMware configuration
+```
+load 'Vagrantfile.vmware_ubuntu-1804'
+```
+and run the command
 ```
 vagrant up --provider=vmware_desktop
 ```
-You may have issues with both VMware and VirtualBox installed, or if the Hyper-V hypervisor is also running.
+You may have issues with both VMware and VirtualBox installed, or if the Hyper-V hypervisor is also running. If you are using an Apple Silicon device with VMware Fusion you will need to set the following
+```
+config.vm.box = "uwbbi/bionic-arm64"
+```
+in the [Vagrantfile.vmware_ubuntu-1804](Vagrantfile.vmware_ubuntu-1804) file as you cannot use an amd64-based installation on an Apple M1 (ARM-based) chip.
 
 ## Troubleshooting
 
