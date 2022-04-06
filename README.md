@@ -13,6 +13,7 @@ Table of contents:
 * [Optional Windows Software](#optional-windows-software)
   * [Git BASH](#git-bash)
   * [Cygwin](#cygwin)
+* [VMware](#vmware)
 * [Troubleshooting](#troubleshooting)
 * [Amazon AWS](#amazon-aws)
 
@@ -20,6 +21,7 @@ Table of contents:
 
 In order to use a virtual machine (VM), you must first install:
  * [VirtualBox](https://www.virtualbox.org/), software that enables running of virtual machines (version 5.1.x or later required).
+   * As an alternative, [VMware Workstation Player](https://www.vmware.com/uk/products/workstation-player.html) can also be used to run the virtual machine. See the [VMware section](#vmware) for further information.
  * [Vagrant](https://www.vagrantup.com/), software that allows easy configuration of virtual machines (version 2.0.x or later required).
 
 These applications provide point-and-click installers for Windows and can usually be installed via the package manager on Linux systems.
@@ -109,6 +111,19 @@ Then, instead of using a normal command window for launching the VM, you should 
 In Cygwin-X terminals, you can use many common Unix commands (e.g. cd, ls).
 Firstly run the command  `cd /cygdrive` followed by `ls` and you should see your Windows drives.
 Then use the `cd` command to navigate to the directory where you have extracted the setup files (e.g. `c/Users/User/metomi-vms-master`).
+
+## VMware
+
+As an alternative to VirtualBox, [VMware Workstation Player](https://www.vmware.com/uk/products/workstation-player.html) can be used as an alternative to host the virtual machine. This is free for non-commercial use, and works on Windows and Linux systems. You will need to download and install
+
+* [VMware Workstation Player](https://www.vmware.com/uk/products/workstation-player.html)
+* The [Vagrant VMware utility](https://www.vagrantup.com/vmware/downloads)
+* The Vagrant VMware plugin by running the command `vagrant plugin install vagrant-vmware-desktop`
+
+The configuration settings can be found in the [Vagrantfile.vmware_ubuntu-1804](Vagrantfile.vmware_ubuntu-1804) file. To bring the box up using VMware, run the command
+```
+vagrant up --provider=vmware_desktop
+```
 
 ## Troubleshooting
 
