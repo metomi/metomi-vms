@@ -114,7 +114,7 @@ Then use the `cd` command to navigate to the directory where you have extracted 
 
 ## VMware
 
-As an alternative to VirtualBox, [VMware Workstation Player](https://www.vmware.com/uk/products/workstation-player.html) can be used as an alternative to host the virtual machine. This is free for non-commercial use, and works on Windows and Linux systems. You will need to download and install
+As an alternative to VirtualBox, [VMware Workstation Player](https://www.vmware.com/uk/products/workstation-player.html) can be used as an alternative to host the virtual machine. This is free for non-commercial use, and works on Windows and Linux systems ([VMware Fusion](https://www.vmware.com/uk/products/fusion.html) is a similar product for macOS). As a minimum you will need to download and install
 
 * [VMware Workstation Player](https://www.vmware.com/uk/products/workstation-player.html)
 * The [Vagrant VMware utility](https://www.vagrantup.com/vmware/downloads)
@@ -124,6 +124,7 @@ The configuration settings can be found in the [Vagrantfile.vmware_ubuntu-1804](
 ```
 vagrant up --provider=vmware_desktop
 ```
+You may have issues with both VMware and VirtualBox installed, or if the Hyper-V hypervisor is also running.
 
 ## Troubleshooting
 
