@@ -21,7 +21,7 @@ Table of contents:
 
 In order to use a virtual machine (VM), you must first install:
  * [VirtualBox](https://www.virtualbox.org/), software that enables running of virtual machines (version 5.1.x or later required).
-   * As an alternative, [VMware Workstation Player](https://www.vmware.com/uk/products/workstation-player.html) or [VMware Fusion](https://www.vmware.com/uk/products/fusion.html) can also be used to run the virtual machine. See the [VMware section](#vmware) for further information.
+   * As an alternative, [VMware Workstation Player](https://www.vmware.com/uk/products/workstation-player.html) (version 16 or later) or [VMware Fusion Player](https://www.vmware.com/uk/products/fusion.html) (version 12 or later) can also be used to run the virtual machine. See the [VMware section](#vmware) for further information.
  * [Vagrant](https://www.vagrantup.com/), software that allows easy configuration of virtual machines (version 2.0.x or later required).
 
 These applications provide point-and-click installers for Windows and can usually be installed via the package manager on Linux systems.
@@ -114,11 +114,11 @@ Then use the `cd` command to navigate to the directory where you have extracted 
 
 ## VMware
 
-As an alternative to VirtualBox, [VMware Workstation Player](https://www.vmware.com/uk/products/workstation-player.html) (Windows, Linux) or ([VMware Fusion](https://www.vmware.com/uk/products/fusion.html) (macOS) can be used to host the virtual machine. VMware Workstation Player is free for non-commercial use.
+As an alternative to VirtualBox, [VMware Workstation Player](https://www.vmware.com/uk/products/workstation-player.html) (Windows, Linux) or ([VMware Fusion Player](https://www.vmware.com/uk/products/fusion.html) (macOS) can be used to host the virtual machine. VMware Workstation Player is free for non-commercial use and VMware Fusion Player is free with a Personal Use License.
 
 You will need to download and install
 
-* [VMware Workstation Player](https://www.vmware.com/uk/products/workstation-player.html) **or** [VMware Fusion](https://www.vmware.com/uk/products/fusion.html)
+* [VMware Workstation Player](https://www.vmware.com/uk/products/workstation-player.html) (version 16 or later) **or** [VMware Fusion Player](https://www.vmware.com/uk/products/fusion.html) (version 12 or later)
 * The [Vagrant VMware utility](https://www.vagrantup.com/vmware/downloads)
 * The Vagrant VMware plugin by running the command `vagrant plugin install vagrant-vmware-desktop`
 
