@@ -4,16 +4,22 @@ if [[ $dist == redhat ]]; then
   perl -pi -e 's/^SELINUX=enforcing/SELINUX=disabled/;' /etc/selinux/config
 fi
 
-if [[ $dist == redhat && $release == fedora* ]]; then
+if [[ $dist == redhat && $release != centos7 ]]; then
   #### Enable X applications to open the display
   yum install -y xauth || error
 fi
 
 #### Install commonly used editors
 if [[ $dist == ubuntu ]]; then
-  apt-get install -q -y leafpad vim-gtk emacs || error
+  apt-get install -q -y vim-gtk emacs || error
   # Set the default editor in .profile
-  echo "export EDITOR=leafpad" >>.profile
+  if [[ $release != 2204 ]]; then
+    apt-get install -q -y leafpad || error
+    echo "export EDITOR=leafpad" >>.profile
+  else
+    apt-get install -q -y featherpad || error
+    echo "export EDITOR=featherpad" >>.profile
+  fi
 elif [[ $dist == redhat ]]; then
   yum install -y gvim emacs || error
   # Set the default editor in .bash_profile
@@ -57,7 +63,18 @@ fi
 
 #### Install Cylc dependencies & configuration
 if [[ $dist == ubuntu ]]; then
-  apt-get install -q -y graphviz python-jinja2 python-pygraphviz python-gtk2 sqlite3 || error
+  apt-get install -q -y at python-pip  || error
+  service atd start || error
+  if [[ $release != 2204 ]]; then
+    apt-get install -q -y graphviz python-jinja2 python-pygraphviz python-gtk2 sqlite3 || error
+  else
+    apt-get install -q -y graphviz graphviz-dev python2-dev sqlite3 || error
+    pip2 install jinja2 || error
+    pip2 install "pyOpenSSL<19.1" || error
+    # Provide pygtk via Conda
+    dos2unix -n /vagrant/usr/local/bin/install-pygtk /usr/local/bin/install-pygtk
+    sudo -u $(logname) /usr/local/bin/install-pygtk || error
+  fi
   apt-get install -q -y pep8 || error # used by test-battery
   if [[ $release != 1604 ]]; then
     : # Rose docs build no longer working - disable for the moment
@@ -73,7 +90,7 @@ elif [[ $dist == redhat ]]; then
     yum install -y sqlite || error
   fi
   if [[ $release == centos8 ]]; then
-    yum install -y python2-pip python2-jinja2 xauth || error
+    yum install -y python2-pip python2-jinja2 || error
   else
     yum install -y python-pip python-pep8 python-jinja2 || error
   fi
@@ -101,12 +118,17 @@ dos2unix -n /vagrant/opt/metomi-site/conf/global.rc /opt/metomi-site/conf/global
 #### Install Rose dependencies & configuration
 if [[ $dist == ubuntu ]]; then
   apt-get install -q -y gfortran || error # gfortran is used in the brief tour suite
-  apt-get install -q -y python-pip pcregrep || error
+  apt-get install -q -y pcregrep || error
   apt-get install -q -y lxterminal || error # rose edit is configured to use this
   apt-get install -q -y tidy || error
-  apt-get install -q -y python-requests python-simplejson || error
-  apt-get install -q -y python-virtualenv || error # needed by rose make-docs
-  pip install mock pytest-tap || error # used by test-battery
+  if [[ $release != 2204 ]]; then
+    apt-get install -q -y python-requests python-simplejson || error
+    apt-get install -q -y python-virtualenv || error # needed by rose make-docs
+    pip install mock pytest-tap || error # used by test-battery
+  else
+    pip2 install requests simplejson || error
+    pip2 install mock pytest-tap || error # used by test-battery
+  fi
 elif [[ $dist == redhat ]]; then
   yum install -y rsync xterm || error
   yum install -y gcc-gfortran || error # gfortran is used in the brief tour suite
@@ -136,8 +158,12 @@ elif [[ $dist == redhat ]]; then
 fi
 
 #### Install latest versions of FCM, Cylc & Rose
-dos2unix -n /vagrant/usr/local/bin/install-rose-cylc-fcm /usr/local/bin/install-rose-cylc-fcm
-/usr/local/bin/install-rose-cylc-fcm --set-default --make-docs || error
+dos2unix -n /vagrant/usr/local/bin/install-fcm /usr/local/bin/install-fcm
+dos2unix -n /vagrant/usr/local/bin/install-cylc7 /usr/local/bin/install-cylc7
+dos2unix -n /vagrant/usr/local/bin/install-rose /usr/local/bin/install-rose
+/usr/local/bin/install-fcm --set-default || error
+/usr/local/bin/install-cylc7 --set-default --make-docs || error
+/usr/local/bin/install-rose --set-default --make-docs || error
 
 #### Configure syntax highlighting & bash completion
 sudo -u $(logname) mkdir -p /home/vagrant/.local/share/gtksourceview-3.0/language-specs/
@@ -164,8 +190,21 @@ sudo -u $(logname) bash -c 'echo "application/pdf=firefox.desktop;" >>/home/vagr
 
 #### Configure cylc review & rosie web services (with a local rosie repository)
 if [[ $dist == ubuntu ]]; then
-  apt-get install -q -y apache2 libapache2-mod-wsgi python-cherrypy3 apache2-utils python-sqlalchemy || error
-  if [[ $release != 1804 ]]; then
+  if [[ $release != 2204 ]]; then
+    apt-get install -q -y apache2 libapache2-mod-wsgi python-cherrypy3 apache2-utils python-sqlalchemy || error
+  else
+    apt-get install -q -y apache2 apache2-dev apache2-utils || error
+    pip2 install cherrypy sqlalchemy || error
+    curl -L -s -S https://codeload.github.com/GrahamDumpleton/mod_wsgi/tar.gz/4.9.3 | tar -xz
+    cd mod_wsgi-4.9.3
+    ./configure --with-python=/usr/bin/python2
+    make
+    make install
+    cd ..
+    rm -r mod_wsgi-4.9.3
+    echo "LoadModule wsgi_module /usr/lib/apache2/modules/mod_wsgi.so" > /etc/apache2/mods-enabled/wsgi.conf
+  fi
+  if [[ $release == 1604 ]]; then
     apt-get install -q -y libapache2-svn || error
   else
     apt-get install -q -y libapache2-mod-svn || error
@@ -192,6 +231,9 @@ dos2unix -n /vagrant/var/www/html/index.html /var/www/html/index.html
 if [[ $dist == ubuntu ]]; then
   ln -sf /opt/metomi-site/etc/httpd/rosie-wsgi.conf /etc/apache2/conf-enabled/rosie-wsgi.conf
   ln -sf /opt/metomi-site/etc/httpd/svn.conf /etc/apache2/conf-enabled/svn.conf
+  if [[ $release == 2204 ]]; then
+    echo "WSGIPythonPath /usr/local/lib/python2.7/dist-packages:/opt/rose/lib/python" >> /etc/apache2/conf-enabled/rosie-wsgi.conf
+  fi
   service apache2 restart || error
 elif [[ $dist == redhat ]]; then
   ln -sf /opt/metomi-site/etc/httpd/rosie-wsgi.conf /etc/httpd/conf.d/rosie-wsgi.conf
@@ -201,8 +243,10 @@ elif [[ $dist == redhat ]]; then
   ln -sf /opt/metomi-site/etc/httpd/svn.conf /etc/httpd/conf.d/subversion.conf
   service httpd start || error
   chkconfig --level 345 httpd on || error
-  chmod 755 /home/vagrant # cylc review needs to be able to access cylc-run directory
 fi
+# cylc review needs to be able to access cylc-run directory
+chmod 755 /home/vagrant
+sudo -u $(logname) mkdir -p /home/vagrant/cylc-run
 # Setup the rosie repository
 mkdir /srv/svn
 if [[ $dist == ubuntu ]]; then
@@ -213,8 +257,31 @@ elif [[ $dist == redhat ]]; then
   sudo -u apache svnadmin create /srv/svn/roses-tmp
 fi
 htpasswd -b -c /srv/svn/auth.htpasswd vagrant vagrant || error
+# Cache the password
+sudo -u $(logname) mkdir -p /home/vagrant/.subversion/auth/svn.simple
+realm="<http://localhost:80> Subversion repository"
+cache_id=$(echo -n "${realm}" | md5sum | cut -f1 -d " ")
+sudo -u $(logname) bash -c "cat >/home/vagrant/.subversion/auth/svn.simple/${cache_id}" <<EOF
+K 8
+passtype
+V 6
+simple
+K 8
+password
+V 7
+vagrant
+K 15
+svn:realmstring
+V ${#realm}
+${realm}
+K 8
+username
+V 7
+vagrant
+END
+EOF
 cd /home/vagrant
-sudo -H -u $(logname) bash -c 'svn co -q --config-option config:auth:password-stores= --config-option=servers:global:store-plaintext-passwords=yes --password "vagrant" http://localhost/svn/roses-tmp'
+sudo -H -u $(logname) bash -c 'svn co -q http://localhost/svn/roses-tmp'
 sudo -H -u $(logname) bash -c 'svn ps fcm:layout -F - roses-tmp' <<EOF
 depth-project = 5
 depth-branch = 1

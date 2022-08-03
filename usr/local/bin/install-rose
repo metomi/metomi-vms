@@ -1,0 +1,52 @@
+#!/bin/bash
+set -eu
+
+if [[ $USER != root ]]; then
+  echo "Please run this command via sudo"
+  exit 1
+fi
+
+set_default=false
+make_docs=false
+while [[ $# != 0 ]]; do
+  case "$1" in
+      -s|--set-default)
+        set_default=true
+        ;;
+      -d|--make-docs)
+        make_docs=true
+        ;;
+      *)
+        echo [ERROR] Unexpected option: $1
+        exit 1
+  esac
+  shift
+done
+
+# Define software version (use latest releases if not defined)
+ROSE_VERSION=${ROSE_VERSION:-$(curl -L -s -S https://api.github.com/repos/metomi/rose/releases|\
+  grep tag_name|sort|grep '"201'|tail -1|sed -e 's/^.*: "//' -e 's/".*$//')}
+if [[ -z $ROSE_VERSION ]]; then
+  ROSE_VERSION=2019.01.8
+  echo "[WARNING] Can't determine Rose version - defaulting to $ROSE_VERSION"
+fi
+
+#### Install Rose
+if [[ -e /opt/rose-$ROSE_VERSION ]]; then
+  echo Rose version $ROSE_VERSION already installed
+else
+  echo Installing Rose version $ROSE_VERSION
+  # Get Rose from github
+  curl -L -s -S https://github.com/metomi/rose/archive/$ROSE_VERSION.tar.gz | tar -xz -C /opt
+  # Configure Rose
+  ln -sf /opt/metomi-site/etc/rose.conf /opt/rose-$ROSE_VERSION/etc/rose.conf
+  # Build the documentation if possible
+  if [[ "$make_docs" == true && -e /usr/bin/convert && -e /usr/bin/virtualenv ]]; then
+    /opt/rose-$ROSE_VERSION/bin/rose make-docs --venv --dev
+  fi
+fi
+if $set_default; then
+  echo Setting the default Rose version to $ROSE_VERSION
+  rm -f /opt/rose
+  ln -sf /opt/rose-$ROSE_VERSION /opt/rose
+fi
