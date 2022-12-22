@@ -27,4 +27,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     v.smp = "8"
   end
 
+  # sync folder - need to use rsync
+  config.vm.synced_folder ".", "/vagrant", type: "rsync", rsync__exclude: ".git/"
+  
 end
