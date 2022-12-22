@@ -1,4 +1,4 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-load 'Vagrantfile.qemu_ubuntu-1804'
+load 'Vagrantfile.libvirt_ubuntu-1804'
