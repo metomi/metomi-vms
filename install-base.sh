@@ -214,7 +214,7 @@ elif [[ $dist == redhat ]]; then
 fi
 htpasswd -b -c /srv/svn/auth.htpasswd vagrant vagrant || error
 cd /home/vagrant
-sudo -H -u $(logname) bash -c 'svn co -q --config-option config:auth:password-stores= --config-option=servers:global:store-plaintext-passwords=yes --password "$(logname)" http://localhost/svn/roses-tmp'
+sudo -H -u $(logname) bash -c 'svn co -q --config-option config:auth:password-stores= --config-option=servers:global:store-plaintext-passwords=yes --password "vagrant" http://localhost/svn/roses-tmp'
 sudo -H -u $(logname) bash -c 'svn ps fcm:layout -F - roses-tmp' <<EOF
 depth-project = 5
 depth-branch = 1
