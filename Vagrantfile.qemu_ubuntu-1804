@@ -1,0 +1,30 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+VAGRANTFILE_API_VERSION = "2"
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  config.vm.define "metomi-vm-ubuntu-1804"
+  # amd64-based system for QEMU
+  config.vm.box = "generic/ubuntu1804"
+  # Remove "mosrs" from the args below if not accessing the Met Office Science Repository Service
+  config.vm.provision :shell, path: "install.sh", args: "ubuntu 1804 desktop mosrs"
+  config.ssh.forward_x11 = true
+
+  config.vm.provider "qemu" do |v|
+    # 64-bit OS (amd64)
+    v.arch = "x86_64"
+    # details from qemu-system-x86_64 command
+    # "Standard PC (Q35 + ICH9, 2009) (alias of pc-q35-4.2)"
+    v.machine = "q35"
+    v.cpu = "max"
+    v.net_device = "virtio-net-pci"
+    v.extra_qemu_args = %w(-vga std)
+    v.qemu_dir = "/usr/share/qemu"
+    # the memory of the VM, default is 4G if not specified
+    v.memory = "32G"
+    # the number of cores, default is 2 if not specified
+    v.smp = "8"
+  end
+
+end
