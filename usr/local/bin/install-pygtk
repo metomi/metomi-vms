@@ -1,0 +1,25 @@
+#!/bin/bash -l
+set -eu
+
+# Make sure Mambaforge is installed and up to date
+mambaforge_dir=~/mambaforge
+if [[ ! -d $mambaforge_dir ]]; then
+  wget -O Mambaforge.sh https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh
+  bash Mambaforge.sh -p $mambaforge_dir -b
+  rm Mambaforge.sh
+fi
+. "${mambaforge_dir}/etc/profile.d/conda.sh"
+
+conda_env=pygtk
+mamba env remove -n ${conda_env}
+mamba create -q -v -y -n ${conda_env}
+conda activate ${conda_env}
+mamba install -q -v -y python=2.7
+mamba install -q -v -y -c biobuilds py2cairo
+mamba install -q -v -y -c jochym pygtk2
+ln -s libffi.so ${mambaforge_dir}/envs/${conda_env}/lib/libffi.so.6
+pip install jinja2
+pip install requests
+pip install pygraphviz \
+  --install-option="--include-path=/usr/include/graphviz" \
+  --install-option="--library-path=/usr/lib/x86_64-linu-gnu"

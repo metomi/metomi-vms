@@ -1,0 +1,50 @@
+#!/bin/bash
+set -eu
+
+if [[ $USER != root ]]; then
+  echo "Please run this command via sudo"
+  exit 1
+fi
+
+set_default=false
+while [[ $# != 0 ]]; do
+  case "$1" in
+      -s|--set-default)
+        set_default=true
+        ;;
+      *)
+        echo [ERROR] Unexpected option: $1
+        exit 1
+  esac
+  shift
+done
+
+# Define software version (use latest releases if not defined)
+FCM_VERSION=${FCM_VERSION:-$(curl -L -s -S https://api.github.com/repos/metomi/fcm/releases|\
+  grep tag_name|sort|tail -1|sed -e 's/^.*: "//' -e 's/".*$//')}
+if [[ -z $FCM_VERSION ]]; then
+  FCM_VERSION=2021.05.0
+  echo "[WARNING] Can't determine FCM version - defaulting to $FCM_VERSION"
+fi
+
+#### Install FCM
+if [[ -e /opt/fcm-$FCM_VERSION ]]; then
+  echo FCM version $FCM_VERSION already installed
+else
+  echo Installing FCM version $FCM_VERSION
+  # Get FCM from github
+  curl -L -s -S https://github.com/metomi/fcm/archive/$FCM_VERSION.tar.gz | tar -xz -C /opt
+  # Configure FCM diff and merge viewers
+  if [[ -r /opt/metomi-site/etc/fcm/external.cfg ]]; then
+    ln -sf /opt/metomi-site/etc/fcm/external.cfg /opt/fcm-$FCM_VERSION/etc/fcm/external.cfg
+  fi
+  # Set up FCM keywords
+  if [[ -r /opt/metomi-site/etc/fcm/keyword.cfg ]]; then
+    ln -sf /opt/metomi-site/etc/fcm/keyword.cfg /opt/fcm-$FCM_VERSION/etc/fcm/keyword.cfg
+  fi
+fi
+if $set_default; then
+  echo Setting the default FCM version to $FCM_VERSION
+  rm -f /opt/fcm
+  ln -sf /opt/fcm-$FCM_VERSION /opt/fcm
+fi

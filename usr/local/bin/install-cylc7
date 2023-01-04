@@ -1,0 +1,59 @@
+#!/bin/bash
+set -eu
+
+if [[ $USER != root ]]; then
+  echo "Please run this command via sudo"
+  exit 1
+fi
+
+set_default=false
+make_docs=false
+while [[ $# != 0 ]]; do
+  case "$1" in
+      -s|--set-default)
+        set_default=true
+        ;;
+      -d|--make-docs)
+        make_docs=true
+        ;;
+      *)
+        echo [ERROR] Unexpected option: $1
+        exit 1
+  esac
+  shift
+done
+
+# Define software version (use latest releases if not defined)
+CYLC_VERSION=${CYLC_VERSION:-$(curl -L -s -S https://api.github.com/repos/cylc/cylc/releases|\
+  grep tag_name|sort|grep '"7\.'|tail -1|sed -e 's/^.*: "//' -e 's/".*$//')}
+if [[ -z $CYLC_VERSION ]]; then
+  CYLC_VERSION=7.9.7
+  echo "[WARNING] Can't determine Cylc version - defaulting to $CYLC_VERSION"
+fi
+
+#### Install Cylc
+if [[ -e /opt/cylc-$CYLC_VERSION ]]; then
+  echo Cylc version $CYLC_VERSION already installed
+else
+  echo Installing Cylc version $CYLC_VERSION
+  # Get Cylc from github
+  curl -L -s -S https://github.com/cylc/cylc/archive/$CYLC_VERSION.tar.gz | tar -xz  --transform="s#^cylc-flow#cylc#" -C /opt
+  # Create the version file and build the documentation if possible
+  cd /opt/cylc-$CYLC_VERSION
+  make version
+  if [[ "$make_docs" == true && -e /usr/bin/convert && -e /usr/bin/virtualenv ]]; then
+    set +u
+    . /opt/rose-$ROSE_VERSION/venv/bin/activate
+    set -u
+    ./bin/cylc make-docs
+    deactivate
+    rm -rf /opt/rose-$ROSE_VERSION/venv
+  fi
+  # Configure additional copyable environment variables
+  ln -sf /opt/metomi-site/conf/global.rc /opt/cylc-$CYLC_VERSION/conf/global.rc
+fi
+if $set_default; then
+  echo Setting the default Cylc version to $CYLC_VERSION
+  rm  -f /opt/cylc
+  ln -sf /opt/cylc-$CYLC_VERSION /opt/cylc
+fi

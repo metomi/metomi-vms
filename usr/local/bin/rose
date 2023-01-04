@@ -6,4 +6,13 @@ if [[ -z ${ROSE_HOME:-} ]]; then
         ROSE_HOME=$ROSE_HOME_ROOT/rose-$ROSE_VERSION
     fi
 fi
+
+if [[ ${1:-} == "edit" || ${1:-} == "config-edit" || ${0##*/} == "rosie" ]]; then
+  # Use Conda environment to provide pygtk on Ubuntu 22.04
+  if [[ -r ~/mambaforge/envs/pygtk ]]; then
+    . ~/mambaforge/etc/profile.d/conda.sh
+    conda activate pygtk
+  fi
+fi
+
 exec $ROSE_HOME/bin/$(basename $0) "$@"
