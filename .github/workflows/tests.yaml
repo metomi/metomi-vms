@@ -41,4 +41,6 @@ jobs:
                           rose version && \
                           fcm version && \
                           svn --version && \
+                          gfortran --version | grep 4.8.5 || fcm test-battery t/fcm-make && \
+                          fcm test-battery t/fcm-conflicts && \
                           which at"
