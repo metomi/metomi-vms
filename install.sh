@@ -81,6 +81,8 @@ echo
 
 if [[ $ERROR_COUNT != "0" ]]; then
   echo "[ERROR] $ERROR_COUNT errors occurred during installation"
+else
+  echo "[INFO] No errors detected"
 fi
 
 if [[ $collections =~ desktop ]]; then

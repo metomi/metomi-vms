@@ -7,7 +7,7 @@ if [[ $dist == ubuntu ]]; then
     apt-get install -q -y lxde xinput || error
   fi
   apt-get remove -q -y --auto-remove --purge xscreensaver xscreensaver-data gnome-keyring || error
-  if [[ $release == 1804 ]]; then
+  if [[ $release != 1604 ]]; then
     apt-get remove -q -y --auto-remove --purge gnome-screensaver lxlock light-locker network-manager-gnome gnome-online-accounts || error
   fi
   # Set language
@@ -29,7 +29,7 @@ elif [[ $dist == redhat ]]; then
   localectl set-x11-keymap gb || error
 fi
 # Enable auto login
-if [[ $dist == ubuntu && $release == 1804 ]]; then
+if [[ $dist == ubuntu && $release != 1604 ]]; then
   echo "[SeatDefaults]" >> /usr/share/lightdm/lightdm.conf.d/lxde.conf
   echo "user-session=LXDE" >> /usr/share/lightdm/lightdm.conf.d/lxde.conf
   echo "autologin-user=vagrant" >> /usr/share/lightdm/lightdm.conf.d/lxde.conf
@@ -55,8 +55,13 @@ sudo -u $(logname) mkdir -p /home/vagrant/.config/clipit
 sudo -u $(logname) bash -c 'echo "[rc]" >/home/vagrant/.config/clipit/clipitrc'
 sudo -u $(logname) bash -c 'echo "offline_mode=false" >>/home/vagrant/.config/clipit/clipitrc'
 # Setup desktop background colour
-if [[ $dist == ubuntu && $release == 1804 ]]; then
+if [[ $dist == ubuntu && $release != 1604 ]]; then
   sudo -u $(logname) mkdir -p /home/vagrant/.config/pcmanfm/LXDE
   sudo -u $(logname) bash -c 'echo "[*]" >/home/vagrant/.config/pcmanfm/LXDE/desktop-items-0.conf'
   sudo -u $(logname) bash -c 'echo "desktop_bg=#2f4266" >>/home/vagrant/.config/pcmanfm/LXDE/desktop-items-0.conf'
+fi
+if [[ $dist == ubuntu && $release == 2204 ]]; then
+  sudo -u $(logname) mkdir -p /home/vagrant/.config/libfm
+  sudo -u $(logname) bash -c 'echo "[config]" >/home/vagrant/.config/libfm/libfm.conf'
+  sudo -u $(logname) bash -c 'echo "quick_exec=1" >>/home/vagrant/.config/libfm/libfm.conf'
 fi

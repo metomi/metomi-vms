@@ -2,7 +2,7 @@
 if [[ $dist == ubuntu || ($dist == redhat && $release != centos7) ]]; then
   if [[ $dist == ubuntu ]]; then
     apt-get install -q -y libgpg-error-dev libgcrypt20-dev libassuan-dev libksba-dev libpth-dev zlib1g-dev || error
-    if [[ $release == 1804 ]]; then
+    if [[ $release != 1604 ]]; then
       apt-get remove -q -y --auto-remove --purge gpg-agent || error
     fi
   else
@@ -17,13 +17,17 @@ if [[ $dist == ubuntu || ($dist == redhat && $release != centos7) ]]; then
     cd ..
     rm -r pth-2.0.7
   fi
-  curl -L -s -S https://www.gnupg.org/ftp/gcrypt/gnupg/gnupg-2.0.30.tar.bz2 | tar -xj || error
-  cd gnupg-2.0.30
-  ./configure || error
+  curl -L -s -S https://www.gnupg.org/ftp/gcrypt/gnupg/gnupg-2.0.31.tar.bz2 | tar -xj || error
+  cd gnupg-2.0.31
+  if [[ $release != 2204 ]]; then
+    ./configure || error
+  else
+    ./configure CFLAGS="-fcommon" || error
+  fi
   make || error
   make install || error
   cd ..
-  rm -r gnupg-2.0.30
+  rm -r gnupg-2.0.31
 fi
 # Add script that caches the user's Science Repository Service password for the session
 dos2unix -n /vagrant/usr/local/bin/mosrs-cache-password /usr/local/bin/mosrs-cache-password

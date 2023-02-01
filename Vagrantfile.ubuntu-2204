@@ -4,15 +4,15 @@
 VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-  config.vm.define "metomi-vm-ubuntu-1804"
-  config.vm.box = "bento/ubuntu-18.04"
+  config.vm.define "metomi-vm-ubuntu-2204"
+  config.vm.box = "bento/ubuntu-22.04"
   # Remove "desktop" from the args below if only accessing via SSH
   # Remove "mosrs" from the args below if not accessing the Met Office Science Repository Service
-  config.vm.provision :shell, path: "install.sh", args: "ubuntu 1804 desktop mosrs"
+  config.vm.provision :shell, path: "install.sh", args: "ubuntu 2204 desktop mosrs"
   config.ssh.forward_x11 = true
 
   config.vm.provider "virtualbox" do |v|
-    v.name = "metomi-vm-ubuntu-1804"
+    v.name = "metomi-vm-ubuntu-2204"
     v.customize ["modifyvm", :id, "--vram", "32"]
     v.customize ["modifyvm", :id, "--graphicscontroller", "vmsvga"]
     # Comment out the line below if only accessing via SSH
