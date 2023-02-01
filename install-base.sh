@@ -122,11 +122,11 @@ if [[ $dist == ubuntu ]]; then
   apt-get install -q -y lxterminal || error # rose edit is configured to use this
   apt-get install -q -y tidy || error
   if [[ $release != 2204 ]]; then
-    apt-get install -q -y python-requests python-simplejson || error
+    apt-get install -q -y python-requests || error
     apt-get install -q -y python-virtualenv || error # needed by rose make-docs
     pip install mock pytest-tap || error # used by test-battery
   else
-    pip2 install requests simplejson || error
+    pip2 install requests || error
     pip2 install mock pytest-tap || error # used by test-battery
   fi
 elif [[ $dist == redhat ]]; then
@@ -134,10 +134,9 @@ elif [[ $dist == redhat ]]; then
   yum install -y gcc-gfortran || error # gfortran is used in the brief tour suite
   if [[ $release == centos8 ]]; then
     yum install -y python2-requests || error
-    pip2 install simplejson || error
     pip2 install mock pytest-tap || error # used by test-battery
   else
-    yum install -y python-simplejson python-requests || error
+    yum install -y python-requests || error
     yum install -y pcre-tools || error
     pip install mock pytest-tap || error # used by test-battery
   fi
