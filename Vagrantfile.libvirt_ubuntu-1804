@@ -14,6 +14,17 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provider "libvirt" do |v|
     v.cpus = 10
     v.memory = 32768
+
+    # enable GPU passthrough
+    # VGA controller on 65:00.0
+    v.pci :domain => '0x0000', :bus => '0x65', :slot => '0x00', :function => '0x0'
+    # Audio controller on 65:00.1
+    v.pci :domain => '0x0000', :bus => '0x65', :slot => '0x00', :function => '0x1'
+    # USB controller on 65:00.2
+    v.pci :domain => '0x0000', :bus => '0x65', :slot => '0x00', :function => '0x2'
+    # Serial bus controller on 65:00.3
+    v.pci :domain => '0x0000', :bus => '0x65', :slot => '0x00', :function => '0x3'
+
   end
 
   # sync folder - use rsync

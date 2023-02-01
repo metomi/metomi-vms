@@ -1,0 +1,70 @@
+#!/bin/bash
+# Installs select NVIDIA packages and libraries for the UM
+set -eu
+
+ubuntu_major=$(lsb_release -rs | cut -d. -f1)
+
+function usage {
+  # Print command line options
+  echo 'Usage: install-nvidia'
+  echo
+  echo 'This script will install the nvidia-smi package and NetCDF libraries built using the'
+  echo 'NVIDIA compiler suite. The NVIDIA compilers will need to be installed separately.'
+}
+
+function ereport {
+  # Print an error message, print usage, then exit (non-zero)
+  echo "${1:-Unknown error}"
+  usage
+  exit 1
+}
+
+function process_args {
+  # Parse and process the command line arguments
+  if [ $# -ge 1 ] ; then
+    case "$1" in
+      -h|--help)
+          usage
+          exit 0
+          ;;
+       *) ereport "Unrecognised argument: $1"
+          ;;
+    esac
+    shift
+    # Only 1 option at a time is permitted:
+    if [ $# -gt 1 ]; then
+      ereport "Too many arguments"
+    fi
+  fi
+}
+
+if [[ $USER != root ]]; then
+  echo "Please run this command via sudo"
+  exit 1
+fi
+
+process_args $@
+
+set -x
+
+# Check chosen library is available:
+if [ $ubuntu_major -eq 18 ]; then
+  # install nvidia-smi
+  add-apt-repository ppa:graphics-drivers/ppa --yes
+  apt update
+  # use this version of the driver for Ubuntu 18.04
+  apt install -y nvidia-driver-470
+  echo "nvidia-smi installed"
+  # install pre-built NetCDF libraries
+  wget -q --show-progress https://gws-access.jasmin.ac.uk/public/ukca/nvidia-netcdf_4.5.4-1_amd64.deb
+  apt install ./nvidia-netcdf_4.5.4-1_amd64.deb
+  echo "NetCDF libraries installed to /opt/nvidia/"
+  # clean-up .deb file
+  rm -f nvidia-netcdf_4.5.4-1_amd64.deb
+else
+  echo "This script is only valid for Ubuntu 18.04"
+fi
+
+# need to reboot for nvidia-smi to work
+echo
+echo "Finished. Please reboot your system for changes to take effect."
