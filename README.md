@@ -14,6 +14,7 @@ Table of contents:
   * [Git BASH](#git-bash)
   * [Cygwin](#cygwin)
 * [VMware](#vmware)
+* [libvirt](#libvirt)
 * [Troubleshooting](#troubleshooting)
 * [Amazon AWS](#amazon-aws)
 
@@ -135,6 +136,30 @@ You may have issues if both VMware and VirtualBox are installed, or if the Hyper
 config.vm.box = "uwbbi/bionic-arm64"
 ```
 in the [Vagrantfile.vmware_ubuntu-1804](Vagrantfile.vmware_ubuntu-1804) file as you cannot use an amd64-based installation on Apple Silicon (ARM-based) hardware.
+
+## libvirt
+
+Another alternative to VirtualBox and VMware is to use the [libvirt virtualisation API](https://libvirt.org/index.html), which also has a [Vagrant plugin](https://vagrant-libvirt.github.io/vagrant-libvirt/). You will need to install libvirt on your host system. You should then edit the [Vagrantfile](Vagrantfile) to point to the [Vagrantfile.libvirt_ubuntu-1804](Vagrantfile.libvirt_ubuntu-1804) file
+```
+load 'Vagrantfile.libvirt_ubuntu-1804'
+```
+before running the command
+```
+vagrant up --provider=libvirt
+```
+
+The advantage of this method is that it allows for PCI passthrough, allowing the guest OS to directly access hardware on the host, for instance allowing the gues to access a GPU on the host machine. On a GNU/Linux system you can use the `lspci -v` command to determine the device information, and then include a block such as this within the `config.vm.provider` section of the [Vagrantfile.libvirt_ubuntu-1804](Vagrantfile.libvirt_ubuntu-1804) file:
+```
+    # VGA controller on 65:00.0
+    v.pci :domain => '0x0000', :bus => '0x65', :slot => '0x00', :function => '0x0'
+    # Audio controller on 65:00.1
+    v.pci :domain => '0x0000', :bus => '0x65', :slot => '0x00', :function => '0x1'
+    # USB controller on 65:00.2
+    v.pci :domain => '0x0000', :bus => '0x65', :slot => '0x00', :function => '0x2'
+    # Serial bus controller on 65:00.3
+    v.pci :domain => '0x0000', :bus => '0x65', :slot => '0x00', :function => '0x3'
+```
+This step needs to be done on the initial creation of the VM. The GPU would also need to be isolated from the host system.
 
 ## Troubleshooting
 
