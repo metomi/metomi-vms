@@ -313,6 +313,7 @@ dos2unix -n /vagrant/usr/local/bin/install-jules-benchmark-data /usr/local/bin/i
 dos2unix -n /vagrant/usr/local/bin/install-jules-extras /usr/local/bin/install-jules-extras
 dos2unix -n /vagrant/usr/local/bin/install-jules-gswp2-data /usr/local/bin/install-jules-gswp2-data
 dos2unix -n /vagrant/usr/local/bin/install-master-versions /usr/local/bin/install-master-versions
+dos2unix -n /vagrant/usr/local/bin/install-nvidia /usr/local/bin/install-nvidia
 dos2unix -n /vagrant/usr/local/bin/install-ukca-data /usr/local/bin/install-ukca-data
 dos2unix -n /vagrant/usr/local/bin/install-um-data /usr/local/bin/install-um-data
 dos2unix -n /vagrant/usr/local/bin/install-um-extras /usr/local/bin/install-um-extras
