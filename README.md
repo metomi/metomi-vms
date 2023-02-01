@@ -147,8 +147,9 @@ before running the command
 ```
 vagrant up --provider=libvirt
 ```
+to provision the VM. The current [Vagrantfile](Vagrantfile.libvirt_ubuntu-1804) has been used on a GNU/Linux host without a graphical login.
 
-The advantage of this method is that it allows for PCI passthrough, allowing the guest OS to directly access hardware on the host, for instance allowing the gues to access a GPU on the host machine. On a GNU/Linux system you can use the `lspci -v` command to determine the device information, and then include a block such as this within the `config.vm.provider` section of the [Vagrantfile.libvirt_ubuntu-1804](Vagrantfile.libvirt_ubuntu-1804) file:
+The advantage of this method is that it allows for PCI passthrough, allowing the guest OS to directly access hardware on the host, for instance allowing the guest to access a GPU on the host machine. On a GNU/Linux system you can use the `lspci -v` command to determine the device information, and then include a block such as this within the `config.vm.provider` section of the [Vagrantfile.libvirt_ubuntu-1804](Vagrantfile.libvirt_ubuntu-1804) file:
 ```
     # VGA controller on 65:00.0
     v.pci :domain => '0x0000', :bus => '0x65', :slot => '0x00', :function => '0x0'
