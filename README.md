@@ -123,11 +123,7 @@ You will need to download and install
 * The [Vagrant VMware utility](https://www.vagrantup.com/vmware/downloads)
 * The Vagrant VMware plugin by running the command `vagrant plugin install vagrant-vmware-desktop`
 
-The configuration settings can be found in the [Vagrantfile.vmware_ubuntu-1804](Vagrantfile.vmware_ubuntu-1804) file. To bring the box up using VMware, edit the [Vagrantfile](Vagrantfile) to point to the VMware configuration
-```
-load 'Vagrantfile.vmware_ubuntu-1804'
-```
-and run the command
+The configuration settings can be found in the [Vagrantfile.vmware_ubuntu-1804](Vagrantfile.vmware_ubuntu-1804) file. To bring the box up using VMware, you should [set your VAGRANT_VAGRANTFILE](#using-other-virtual-machines) to `Vagrantfile.vmware_ubuntu-1804` before running the command
 ```
 vagrant up --provider=vmware_desktop
 ```
@@ -139,11 +135,7 @@ in the [Vagrantfile.vmware_ubuntu-1804](Vagrantfile.vmware_ubuntu-1804) file as 
 
 ## libvirt
 
-Another alternative to VirtualBox and VMware is to use the [libvirt virtualisation API](https://libvirt.org/index.html), which also has a [Vagrant plugin](https://vagrant-libvirt.github.io/vagrant-libvirt/). You will need to install libvirt on your host system. You should then edit the [Vagrantfile](Vagrantfile) to point to the [Vagrantfile.libvirt_ubuntu-1804](Vagrantfile.libvirt_ubuntu-1804) file
-```
-load 'Vagrantfile.libvirt_ubuntu-1804'
-```
-before running the command
+Another alternative to VirtualBox and VMware is to use the [libvirt virtualisation API](https://libvirt.org/index.html), which also has a [Vagrant plugin](https://vagrant-libvirt.github.io/vagrant-libvirt/). You will need to install libvirt on your host system. You should [set your VAGRANT_VAGRANTFILE](#using-other-virtual-machines) to [Vagrantfile.libvirt_ubuntu-1804](Vagrantfile.libvirt_ubuntu-1804) before running the command
 ```
 vagrant up --provider=libvirt
 ```
