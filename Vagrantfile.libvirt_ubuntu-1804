@@ -1,0 +1,33 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+VAGRANTFILE_API_VERSION = "2"
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  config.vm.define "metomi-vm-ubuntu-1804"
+  # amd64-based system for libvirt
+  config.vm.box = "generic/ubuntu1804"
+  # Remove "mosrs" from the args below if not accessing the Met Office Science Repository Service
+  config.vm.provision :shell, path: "install.sh", args: "ubuntu 1804 desktop mosrs libvirt"
+  config.ssh.forward_x11 = true
+
+  config.vm.provider "libvirt" do |v|
+    v.cpus = 2
+    v.memory = 1024
+
+    ## example of enabling GPU passthrough
+    ## VGA controller on 65:00.0
+    #v.pci :domain => '0x0000', :bus => '0x65', :slot => '0x00', :function => '0x0'
+    ## Audio controller on 65:00.1
+    #v.pci :domain => '0x0000', :bus => '0x65', :slot => '0x00', :function => '0x1'
+    ## USB controller on 65:00.2
+    #v.pci :domain => '0x0000', :bus => '0x65', :slot => '0x00', :function => '0x2'
+    ## Serial bus controller on 65:00.3
+    #v.pci :domain => '0x0000', :bus => '0x65', :slot => '0x00', :function => '0x3'
+
+  end
+
+  # sync folder - use rsync
+  config.vm.synced_folder ".", "/vagrant", type: "rsync", rsync__exclude: ".git/"
+  
+end

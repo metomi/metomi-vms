@@ -14,6 +14,7 @@ Table of contents:
   * [Git BASH](#git-bash)
   * [Cygwin](#cygwin)
 * [VMware](#vmware)
+* [libvirt](#libvirt)
 * [Troubleshooting](#troubleshooting)
 * [Amazon AWS](#amazon-aws)
 
@@ -122,11 +123,7 @@ You will need to download and install
 * The [Vagrant VMware utility](https://www.vagrantup.com/vmware/downloads)
 * The Vagrant VMware plugin by running the command `vagrant plugin install vagrant-vmware-desktop`
 
-The configuration settings can be found in the [Vagrantfile.vmware_ubuntu-1804](Vagrantfile.vmware_ubuntu-1804) file. To bring the box up using VMware, edit the [Vagrantfile](Vagrantfile) to point to the VMware configuration
-```
-load 'Vagrantfile.vmware_ubuntu-1804'
-```
-and run the command
+The configuration settings can be found in the [Vagrantfile.vmware_ubuntu-1804](Vagrantfile.vmware_ubuntu-1804) file. To bring the box up using VMware, you should [set your VAGRANT_VAGRANTFILE](#using-other-virtual-machines) to `Vagrantfile.vmware_ubuntu-1804` before running the command
 ```
 vagrant up --provider=vmware_desktop
 ```
@@ -135,6 +132,27 @@ You may have issues if both VMware and VirtualBox are installed, or if the Hyper
 config.vm.box = "uwbbi/bionic-arm64"
 ```
 in the [Vagrantfile.vmware_ubuntu-1804](Vagrantfile.vmware_ubuntu-1804) file as you cannot use an amd64-based installation on Apple Silicon (ARM-based) hardware.
+
+## libvirt
+
+Another alternative to VirtualBox and VMware is to use the [libvirt virtualisation API](https://libvirt.org/index.html), which also has a [Vagrant plugin](https://vagrant-libvirt.github.io/vagrant-libvirt/). You will need to install libvirt on your host system. You should [set your VAGRANT_VAGRANTFILE](#using-other-virtual-machines) to [Vagrantfile.libvirt_ubuntu-1804](Vagrantfile.libvirt_ubuntu-1804) before running the command
+```
+vagrant up --provider=libvirt
+```
+to provision the VM. The current [Vagrantfile](Vagrantfile.libvirt_ubuntu-1804) has been used on a GNU/Linux host without a graphical login.
+
+The advantage of this method is that it allows for PCI passthrough, allowing the guest OS to directly access hardware on the host, for instance allowing the guest to access a GPU on the host machine. On a GNU/Linux system you can use the `lspci -v` command to determine the device information, and then include a block such as this within the `config.vm.provider` section of the [Vagrantfile.libvirt_ubuntu-1804](Vagrantfile.libvirt_ubuntu-1804) file:
+```
+    # VGA controller on 65:00.0
+    v.pci :domain => '0x0000', :bus => '0x65', :slot => '0x00', :function => '0x0'
+    # Audio controller on 65:00.1
+    v.pci :domain => '0x0000', :bus => '0x65', :slot => '0x00', :function => '0x1'
+    # USB controller on 65:00.2
+    v.pci :domain => '0x0000', :bus => '0x65', :slot => '0x00', :function => '0x2'
+    # Serial bus controller on 65:00.3
+    v.pci :domain => '0x0000', :bus => '0x65', :slot => '0x00', :function => '0x3'
+```
+This step needs to be done on the initial creation of the VM. The GPU would also need to be isolated from the host system.
 
 ## Troubleshooting
 
