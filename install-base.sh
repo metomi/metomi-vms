@@ -157,6 +157,10 @@ elif [[ $dist == redhat ]]; then
 fi
 
 #### Install latest versions of FCM, Cylc & Rose
+if [[ $dist == ubuntu ]]; then
+  # Ensure curl is installed
+  apt-get install -q -y curl || error
+fi
 dos2unix -n /vagrant/usr/local/bin/install-fcm /usr/local/bin/install-fcm
 dos2unix -n /vagrant/usr/local/bin/install-cylc7 /usr/local/bin/install-cylc7
 dos2unix -n /vagrant/usr/local/bin/install-rose /usr/local/bin/install-rose
