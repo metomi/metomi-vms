@@ -113,7 +113,7 @@ fi
 set -x
 
 echo "Installing UM and mule dependencies..."
-apt-get install -y mpich libnetcdf-dev libhdf5-serial-dev netcdf-bin libnetcdff-dev libnetcdff6 python-numpy python-dev python-mock zenity $grib_library
+apt-get install -y mpich libnetcdf-dev libhdf5-serial-dev netcdf-bin libnetcdff-dev libnetcdff6 python-numpy python-dev python-mock zenity libio-stringy-perl libipc-run-perl libperl-critic-perl $grib_library
 
 echo
 echo "Adding mule to the installed python packages..."
