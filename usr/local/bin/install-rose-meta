@@ -31,6 +31,7 @@ if [[ $? != 0 ]]; then
 fi
 
 # Checkout a working copy for each metadata configuration directory
+NAMES=
 for PROJECT in $(rose config -f $meta_file -k); do
     echo [info] Installing / updating metadata for $PROJECT ...
     URL=$(rose config -f $meta_file $PROJECT)
@@ -38,10 +39,32 @@ for PROJECT in $(rose config -f $meta_file -k); do
     if [[ $? != 0 ]]; then
         echo "[WARN] Unable to access $URL, skipping $PROJECT ..."
     else
-        for NAME in $(svn ls --non-interactive $URL); do
-            echo "  $NAME"
-            svn checkout --non-interactive -q $URL/$NAME
+        for NAME in $(svn ls --non-interactive $URL | sed 's#/$##'); do
+            NAMES="${NAMES}${NAME}\n"
+            if [[ -d "${NAME}" ]]; then
+                OLD_URL=$(svn info "${NAME}" | awk -F': ' '$1 == "URL" {print $2}')
+                if [[ "${OLD_URL}" != "${URL}/${NAME}" ]]; then
+                    rm -rf "${NAME}"
+                    echo "  ${NAME}: deleted (URL changed)"
+                fi
+            fi
+            if [[ -d "${NAME}" ]]; then
+                echo "  $NAME: updated"
+                svn update --non-interactive -q "$NAME"
+            else
+                echo "  $NAME: created"
+                svn checkout --non-interactive -q "$URL/$NAME"
+            fi
         done
     fi
 done
+# Remove unknown directories
+for NAME in $(ls); do
+    if [[ -d "${NAME}" ]] && ! grep -q "^${NAME}$" <<<"$(echo -e "${NAMES}")"
+    then
+        rm -rf "${NAME}"
+        echo "[info] ${NAME}: deleted"
+    fi
+done
+
 echo [info] Done.
