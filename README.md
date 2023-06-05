@@ -13,6 +13,7 @@ Table of contents:
 * [Optional Windows Software](#optional-windows-software)
   * [Git BASH](#git-bash)
   * [Cygwin](#cygwin)
+* [Ubuntu Pro](#ubuntu-pro)
 * [VMware](#vmware)
 * [libvirt](#libvirt)
 * [Troubleshooting](#troubleshooting)
@@ -112,6 +113,23 @@ Then, instead of using a normal command window for launching the VM, you should 
 In Cygwin-X terminals, you can use many common Unix commands (e.g. cd, ls).
 Firstly run the command  `cd /cygdrive` followed by `ls` and you should see your Windows drives.
 Then use the `cd` command to navigate to the directory where you have extracted the setup files (e.g. `c/Users/User/metomi-vms-master`).
+
+## Ubuntu Pro
+
+While Ubuntu 18.04 LTS went end-of-life in May 2023, an [Ubuntu Pro](https://ubuntu.com/pro) subscription can be used to get security updates for a further 5 years. This is free for personal use for up to 5 machines.
+
+However, care needs to be taken when following the [Tutorial](https://ubuntu.com/pro/tutorial). Before running the `sudo apt update && sudo apt upgrade` commands, you should first
+```
+sudo apt-mark hold gpg-agent
+```
+When you reboot your VM you may get the error "Vagrant was unable to mount VirtualBox shared folders". This can be fixed by [re-installing the VirtualBox guest additions](https://www.virtualbox.org/manual/ch04.html#guestadd-install), which can be done via the command-line by
+```
+sudo apt install virtualbox-guest-additions-iso
+sudo mount -o loop /usr/share/virtualbox/VBoxGuestAdditions.iso /media/cdrom
+sudo /media/cdrom/VBoxLinuxAdditions.run
+sudo umount /media/cdrom
+```
+and then rebooting the VM.
 
 ## VMware
 
