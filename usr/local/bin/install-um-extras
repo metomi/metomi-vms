@@ -18,8 +18,10 @@ function usage {
   echo "The packages required for the UM's GRIB functionality vary by UM version:"
   echo ' - UM 11.1 or earlier requires the GRIB-API library.'
   echo ' - UM 11.2 or later requires the EcCodes library.'
-  echo ' - UM 13.3 or later requires the use of Ubuntu 22.04 and installs eCcodes from source.'
   echo 'These two libraries are mutually exclusive and cannot be installed together.'
+  echo
+  echo 'UM 13.3 or later requires the use of Ubuntu 22.04 and installs eCcodes and'
+  echo 'MPICH3 from source.'
   echo
   echo 'Use the -v argument to automatically install the correct packages, e.g.:'
   echo '  install-um-extras -v 11.2'
