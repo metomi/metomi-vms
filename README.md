@@ -134,7 +134,7 @@ sudo make install
 
 When you reboot your VM you may get the error "Vagrant was unable to mount VirtualBox shared folders". This can be fixed by [re-installing the VirtualBox guest additions](https://www.virtualbox.org/manual/ch04.html#additions-linux), which can be done via the command-line by
 ```
-sudo apt install virtualbox-guest-additions-iso
+sudo apt install -y virtualbox-guest-additions-iso
 sudo mount -o loop /usr/share/virtualbox/VBoxGuestAdditions.iso /media/cdrom
 sudo /media/cdrom/VBoxLinuxAdditions.run
 sudo umount /media/cdrom
