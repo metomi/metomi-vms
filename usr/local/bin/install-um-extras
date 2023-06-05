@@ -18,6 +18,7 @@ function usage {
   echo "The packages required for the UM's GRIB functionality vary by UM version:"
   echo ' - UM 11.1 or earlier requires the GRIB-API library.'
   echo ' - UM 11.2 or later requires the EcCodes library.'
+  echo ' - UM 13.3 or later requires the use of Ubuntu 22.04 and installs eCcodes from source.'
   echo 'These two libraries are mutually exclusive and cannot be installed together.'
   echo
   echo 'Use the -v argument to automatically install the correct packages, e.g.:'
@@ -108,19 +109,72 @@ if [ $ubuntu_major -lt 18 ]; then
     ereport "The EcCodes library is not available at this Ubuntu release.
 Upgrade to Ubuntu 18.04 or later, or supply -v <x.y> to use UM 11.1 or earlier."
   fi
+
+elif [ $ubuntu_major -eq 18 ]; then
+    # Settings for Ubuntu 18.04
+    
+    set -x
+
+    echo "Installing UM and mule dependencies..."
+    apt-get install -y mpich libnetcdf-dev libhdf5-serial-dev netcdf-bin libnetcdff-dev libnetcdff6 python-numpy python-dev python-mock zenity libio-stringy-perl libipc-run-perl libperl-critic-perl $grib_library
+
+    echo
+    echo "Adding mule to the installed python packages..."
+    echo "$HOME/umdir/mule/lib" > /usr/lib/python2.7/dist-packages/mule.pth
+    
+    echo
+    echo "Installing UMDP dependencies..."
+    apt-get install -y texlive texlive-latex-extra texlive-generic-extra texlive-science
+    echo
+    echo "Finished."
+
+elif [ $ubuntu_major -eq 22 ]; then
+    # Settings for Ubuntu 22.04
+
+    echo "Installing UM and mule dependencies..."
+    apt-get install -y libnetcdf-dev libhdf5-dev netcdf-bin libnetcdff-dev libnetcdff7 $grib_library
+
+    echo
+    echo "Configuring UM python settings..."
+    update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+    update-alternatives --install /usr/bin/python python /usr/bin/python2 2
+    pip2 install numpy mock
+    echo
+    echo "Adding mule to the installed python packages..."
+    echo "$HOME/umdir/mule/lib" > /usr/lib/python2.7/dist-packages/mule.pth
+    
+    echo
+    echo "Installing UMDP dependencies..."
+    apt-get install -y texlive texlive-latex-extra texlive-science
+
+    echo
+    echo "Installing eCcodes from source..."
+    sudo apt-get install libnetcdff-dev libopenjp2-7-dev gfortran make unzip git cmake wget
+    cd
+    wget https://confluence.ecmwf.int/download/attachments/45757960/eccodes-2.30.2-Source.tar.gz
+    tar -xzf eccodes-2.30.2-Source.tar.gz
+    cd eccodes-2.30.2-Source
+    mkdir build && cd build
+    mkdir /usr/src/eccodes
+    cmake -DCMAKE_INSTALL_PREFIX=/usr/src/eccodes -DENABLE_JPG=ON ../eccodes-2.30.2-Source
+    make
+    ctest
+    make install
+    cp -r /usr/src/eccodes/bin/* /usr/bin/.
+    cp /usr/src/eccodes/lib/libeccodes.so /usr/lib/.
+    cp /usr/src/eccodes/include/* /usr/include/.
+
+    echo
+    echo "Installing MPICH3 from source..."
+    cd
+    wget https://www.mpich.org/static/downloads/3.4.3/mpich-3.4.3.tar.gz
+    tar -xzf mpich-3.4.3.tar.gz
+    cd mpich-3.4.3
+    ./configure --build=x86_64-linux-gnu --prefix=/usr --includedir=\${prefix}/include --mandir=\${prefix}/share/man --infodir=\${prefix}/share/info --sysconfdir=/etc --localstatedir=/var --disable-option-checking --disable-silent-rules --libdir=\${prefix}/lib/x86_64-linux-gnu --disable-maintainer-mode --disable-dependency-tracking --with-libfabric=/usr --with-device=ch3 --with-pm=hydra --with-slurm=/usr --with-hwloc-prefix=/usr --with-wrapper-dl-type=none --enable-shared --without-yaksa --prefix=/usr --enable-fortran=all --disable-rpath --disable-wrapper-rpath --sysconfdir=/etc/mpich --libdir=/usr/lib/x86_64-linux-gnu --includedir=/usr/include/x86_64-linux-gnu/mpich --docdir=/usr/share/doc/mpich CPPFLAGS= CFLAGS= CXXFLAGS= "FFLAGS=-O2 -flto=auto -ffat-lto-objects -fstack-protector-strong  -fallow-invalid-boz -fallow-argument-mismatch" "FCFLAGS=-O2 -flto=auto -ffat-lto-objects -fstack-protector-strong  -fallow-invalid-boz -fallow-argument-mismatch" BASH_SHELL=/bin/bash | tee c.txt
+    make 2>&1 | tee m.txt
+    make install 2>&1 | tee mi.txt
+
+    echo
+    echo "Finished."
+    
 fi
-
-set -x
-
-echo "Installing UM and mule dependencies..."
-apt-get install -y mpich libnetcdf-dev libhdf5-serial-dev netcdf-bin libnetcdff-dev libnetcdff6 python-numpy python-dev python-mock zenity libio-stringy-perl libipc-run-perl libperl-critic-perl $grib_library
-
-echo
-echo "Adding mule to the installed python packages..."
-echo "$HOME/umdir/mule/lib" > /usr/lib/python2.7/dist-packages/mule.pth
-
-echo
-echo "Installing UMDP dependencies..."
-apt-get install -y texlive texlive-latex-extra texlive-generic-extra texlive-science
-echo
-echo "Finished."
