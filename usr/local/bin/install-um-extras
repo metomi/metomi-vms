@@ -143,7 +143,7 @@ elif [ $ubuntu_major -eq 22 ]; then
     pip2 install numpy mock
     echo
     echo "Adding mule to the installed python packages..."
-    echo "$HOME/umdir/mule/lib" > /usr/lib/python2.7/dist-packages/mule.pth
+    echo "/home/${SUDO_USER}/umdir/mule/lib" > /usr/lib/python2.7/dist-packages/mule.pth
     
     echo
     echo "Installing UMDP dependencies..."
