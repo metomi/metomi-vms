@@ -122,7 +122,7 @@ However, care needs to be taken when following the [Tutorial](https://ubuntu.com
 ```
 sudo apt-mark hold gpg-agent
 ```
-When you reboot your VM you may get the error "Vagrant was unable to mount VirtualBox shared folders". This can be fixed by [re-installing the VirtualBox guest additions](https://www.virtualbox.org/manual/ch04.html#guestadd-install), which can be done via the command-line by
+When you reboot your VM you may get the error "Vagrant was unable to mount VirtualBox shared folders". This can be fixed by [re-installing the VirtualBox guest additions](https://www.virtualbox.org/manual/ch04.html#additions-linux), which can be done via the command-line by
 ```
 sudo apt install virtualbox-guest-additions-iso
 sudo mount -o loop /usr/share/virtualbox/VBoxGuestAdditions.iso /media/cdrom
