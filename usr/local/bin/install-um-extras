@@ -162,6 +162,7 @@ elif [ $ubuntu_major -eq 22 ]; then
     make
     ctest
     make install
+    # now copy necessary files into /usr
     cp /usr/src/eccodes/bin/* /usr/bin/.
     cp /usr/src/eccodes/lib/*.so /usr/lib/.
     cp /usr/src/eccodes/include/* /usr/include/.
