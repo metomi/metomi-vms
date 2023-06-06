@@ -118,16 +118,16 @@ Then use the `cd` command to navigate to the directory where you have extracted 
 
 While Ubuntu 18.04 LTS went end-of-life in May 2023, an [Ubuntu Pro](https://ubuntu.com/pro) subscription can be used to get security updates for a further 5 years. This is free for personal use for up to 5 machines.
 
-However, care needs to be taken when following the [Tutorial](https://ubuntu.com/pro/tutorial). Before running the `sudo apt update && sudo apt upgrade` commands, you should first
+However, care needs to be taken when following the [Tutorial](https://ubuntu.com/pro/tutorial). Before running the `sudo apt update && sudo apt upgrade` commands, you should first try
 ```
 sudo apt-mark hold gpg-agent
 ```
-If you get the error `gpg-preset-passphrase: caching passphrase failed: Not supported` you will need to re-install gpg-agent manually, as is done in the [install-mosrs](install-mosrs.sh) script:
+If you get the error `gpg-preset-passphrase: caching passphrase failed: Not supported` you will need to re-install gpg-agent manually, in a similar way to how it is originally installed in the [install-mosrs](install-mosrs.sh) script:
 ```
 sudo apt-get remove -q -y --auto-remove --purge gpg-agent
 curl -L -s -S https://www.gnupg.org/ftp/gcrypt/gnupg/gnupg-2.0.31.tar.bz2 | tar -xj
 cd gnupg-2.0.31/
-./configure
+./configure CFLAGS="-fcommon"
 make
 sudo make install
 ```
