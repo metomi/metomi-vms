@@ -153,32 +153,26 @@ elif [ $ubuntu_major -eq 22 ]; then
     echo "Installing eCcodes from source..."
     apt-get install -y libopenjp2-7-dev cmake
     cd /home/${SUDO_USER}
-    wget https://confluence.ecmwf.int/download/attachments/45757960/eccodes-2.30.2-Source.tar.gz
-    tar -xzf eccodes-2.30.2-Source.tar.gz
+    curl -L -s -S https://confluence.ecmwf.int/download/attachments/45757960/eccodes-2.30.2-Source.tar.gz | tar -xz
     cd eccodes-2.30.2-Source
     mkdir -p build && cd build
-    mkdir -p /usr/src/eccodes
-    cmake -DCMAKE_INSTALL_PREFIX=/usr/src/eccodes -DENABLE_JPG=ON ../.
+    cmake -DCMAKE_INSTALL_PREFIX=/usr -DENABLE_JPG=ON ../.
     make
     ctest
     make install
-    cp /usr/src/eccodes/bin/* /usr/bin/.
-    cp /usr/src/eccodes/lib/*.so /usr/lib/.
-    cp /usr/src/eccodes/include/* /usr/include/.
     cd /home/${SUDO_USER}
-    rm -rf eccodes-2.30.2-Source eccodes-2.30.2-Source.tar.gz
+    rm -rf eccodes-2.30.2-Source
 
     echo
     echo "Installing MPICH3 from source..."
     cd /home/${SUDO_USER}
-    wget https://www.mpich.org/static/downloads/3.4.3/mpich-3.4.3.tar.gz
-    tar -xzf mpich-3.4.3.tar.gz
+    curl -L -s -S https://www.mpich.org/static/downloads/3.4.3/mpich-3.4.3.tar.gz | tar -xz
     cd mpich-3.4.3
     ./configure --build=x86_64-linux-gnu --prefix=/usr --includedir=\${prefix}/include --mandir=\${prefix}/share/man --infodir=\${prefix}/share/info --sysconfdir=/etc --localstatedir=/var --disable-option-checking --disable-silent-rules --libdir=\${prefix}/lib/x86_64-linux-gnu --disable-maintainer-mode --disable-dependency-tracking --with-libfabric=/usr --with-device=ch3 --with-pm=hydra --with-slurm=/usr --with-hwloc-prefix=/usr --with-wrapper-dl-type=none --enable-shared --without-yaksa --prefix=/usr --enable-fortran=all --disable-rpath --disable-wrapper-rpath --sysconfdir=/etc/mpich --libdir=/usr/lib/x86_64-linux-gnu --includedir=/usr/include/x86_64-linux-gnu/mpich --docdir=/usr/share/doc/mpich CPPFLAGS= CFLAGS= CXXFLAGS= "FFLAGS=-O2 -flto=auto -ffat-lto-objects -fstack-protector-strong  -fallow-invalid-boz -fallow-argument-mismatch" "FCFLAGS=-O2 -flto=auto -ffat-lto-objects -fstack-protector-strong  -fallow-invalid-boz -fallow-argument-mismatch" BASH_SHELL=/bin/bash | tee c.txt
     make 2>&1 | tee m.txt
     make install 2>&1 | tee mi.txt
     cd /home/${SUDO_USER}
-    rm -rf mpich-3.4.3 mpich-3.4.3.tar.gz
+    rm -rf mpich-3.4.3
 
     echo
     echo "Finished."
