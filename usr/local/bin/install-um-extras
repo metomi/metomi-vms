@@ -156,6 +156,7 @@ elif [ $ubuntu_major -eq 22 ]; then
     curl -L -s -S https://confluence.ecmwf.int/download/attachments/45757960/eccodes-2.30.2-Source.tar.gz | tar -xz
     cd eccodes-2.30.2-Source
     mkdir -p build && cd build
+    # can't put directly into /usr
     mkdir -p /usr/src/eccodes
     cmake -DCMAKE_INSTALL_PREFIX=/usr/src/eccodes -DENABLE_JPG=ON ../.
     make
