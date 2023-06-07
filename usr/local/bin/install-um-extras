@@ -134,7 +134,7 @@ elif [ $ubuntu_major -eq 22 ]; then
     # Settings for Ubuntu 22.04
 
     echo "Installing UM and mule dependencies..."
-    apt-get install -y libnetcdf-dev libhdf5-dev netcdf-bin libnetcdff-dev libnetcdff7
+    apt-get install -y libnetcdf-dev libhdf5-dev netcdf-bin libnetcdff-dev libnetcdff7 libio-stringy-perl libipc-run-perl libperl-critic-perl
 
     echo
     echo "Configuring UM python settings..."
