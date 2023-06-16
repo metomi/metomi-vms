@@ -71,9 +71,19 @@ if [[ $dist == ubuntu ]]; then
     apt-get install -q -y graphviz graphviz-dev python2-dev sqlite3 || error
     pip2 install jinja2 || error
     pip2 install "pyOpenSSL<19.1" || error
-    # Provide pygtk via Conda
-    dos2unix -n /vagrant/usr/local/bin/install-pygtk /usr/local/bin/install-pygtk
-    sudo -u $(logname) /usr/local/bin/install-pygtk || error
+    pip2 install pygraphviz \
+      --install-option="--include-path=/usr/include/graphviz" \
+      --install-option="--library-path=/usr/lib/x86_64-linu-gnu" || error
+    # Provide pygtk
+    wget http://archive.ubuntu.com/ubuntu/pool/universe/p/pycairo/python-cairo_1.16.2-2ubuntu2_amd64.deb
+    wget http://archive.ubuntu.com/ubuntu/pool/universe/p/pygobject-2/python-gobject-2_2.28.6-14ubuntu1_amd64.deb
+    wget http://archive.ubuntu.com/ubuntu/pool/universe/p/pygtk/python-gtk2_2.24.0-5.1ubuntu2_amd64.deb
+    dpkg-deb -x python-gtk2_2.24.0-5.1ubuntu2_amd64.deb PackageFolder
+    dpkg-deb --control python-gtk2_2.24.0-5.1ubuntu2_amd64.deb PackageFolder/DEBIAN
+    sed -i 's/Depends: .*$/Depends: /' PackageFolder/DEBIAN/control
+    dpkg -b PackageFolder python-gtk2_2.24.0-5.1ubuntu2_amd64-nodep.deb
+    apt-get install -q -y ./python-gtk2_2.24.0-5.1ubuntu2_amd64-nodep.deb ./python-cairo_1.16.2-2ubuntu2_amd64.deb ./python-gobject-2_2.28.6-14ubuntu1_amd64.deb || error
+    rm -rf PackageFolder *.deb
   fi
   apt-get install -q -y pep8 || error # used by test-battery
   if [[ $release != 1604 ]]; then
