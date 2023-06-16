@@ -13,6 +13,7 @@ Table of contents:
 * [Optional Windows Software](#optional-windows-software)
   * [Git BASH](#git-bash)
   * [Cygwin](#cygwin)
+* [Ubuntu Pro](#ubuntu-pro)
 * [VMware](#vmware)
 * [libvirt](#libvirt)
 * [Troubleshooting](#troubleshooting)
@@ -112,6 +113,35 @@ Then, instead of using a normal command window for launching the VM, you should 
 In Cygwin-X terminals, you can use many common Unix commands (e.g. cd, ls).
 Firstly run the command  `cd /cygdrive` followed by `ls` and you should see your Windows drives.
 Then use the `cd` command to navigate to the directory where you have extracted the setup files (e.g. `c/Users/User/metomi-vms-master`).
+
+## Ubuntu Pro
+
+While Ubuntu 18.04 LTS went end-of-life in May 2023, an [Ubuntu Pro](https://ubuntu.com/pro) subscription can be used to get security updates for a further 5 years. This is free for personal use for up to 5 machines and the process is documented in a [Tutorial](https://ubuntu.com/pro/tutorial). Before you run the `sudo apt update && sudo apt upgrade` commands, you should first
+```
+sudo apt-mark hold gpg-agent
+```
+
+After rebooting, you may get the error "gpg-preset-passphrase: caching passphrase failed: Not supported". Here you will need to re-install gpg-agent manually, in a similar way to how it is originally installed in the [install-mosrs](install-mosrs.sh) script:
+```
+sudo apt-get remove -q -y --auto-remove --purge gpg-agent
+curl -L -s -S https://www.gnupg.org/ftp/gcrypt/gnupg/gnupg-2.0.31.tar.bz2 | tar -xj
+cd gnupg-2.0.31/
+./configure CFLAGS="-fcommon"
+make
+sudo make install
+```
+
+When you reboot your VM you may also get the error "Vagrant was unable to mount VirtualBox shared folders". This can be fixed by [re-installing the VirtualBox guest additions](https://www.virtualbox.org/manual/ch04.html#additions-linux), which can be done via the command-line by
+```
+sudo apt install -y virtualbox-guest-additions-iso
+```
+You may find that this is sufficient to fix the error after rebooting. If it is not, you can manually install them by
+```
+sudo mount -o loop /usr/share/virtualbox/VBoxGuestAdditions.iso /media/cdrom
+sudo /media/cdrom/VBoxLinuxAdditions.run
+sudo umount /media/cdrom
+```
+and then rebooting the VM.
 
 ## VMware
 

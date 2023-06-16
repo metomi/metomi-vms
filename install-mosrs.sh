@@ -19,10 +19,10 @@ if [[ $dist == ubuntu || ($dist == redhat && $release != centos7) ]]; then
   fi
   curl -L -s -S https://www.gnupg.org/ftp/gcrypt/gnupg/gnupg-2.0.31.tar.bz2 | tar -xj || error
   cd gnupg-2.0.31
-  if [[ $release != 2204 ]]; then
-    ./configure || error
-  else
+  if [[ ($dist == ubuntu && $release != 1604) ]]; then
     ./configure CFLAGS="-fcommon" || error
+  else
+    ./configure || error
   fi
   make || error
   make install || error
