@@ -27,7 +27,7 @@ done
 CYLC_VERSION=${CYLC_VERSION:-$(curl -L -s -S https://api.github.com/repos/cylc/cylc/releases|\
   grep tag_name|sort|grep '"7\.'|tail -1|sed -e 's/^.*: "//' -e 's/".*$//')}
 if [[ -z $CYLC_VERSION ]]; then
-  CYLC_VERSION=7.9.7
+  CYLC_VERSION=7.9.9
   echo "[WARNING] Can't determine Cylc version - defaulting to $CYLC_VERSION"
 fi
 
@@ -53,7 +53,7 @@ else
   ln -sf /opt/metomi-site/conf/global.rc /opt/cylc-$CYLC_VERSION/conf/global.rc
 fi
 if $set_default; then
-  echo Setting the default Cylc version to $CYLC_VERSION
-  rm  -f /opt/cylc
-  ln -sf /opt/cylc-$CYLC_VERSION /opt/cylc
+  echo Setting the default Cylc 7 version to $CYLC_VERSION
+  rm  -f /opt/cylc-7
+  ln -sf /opt/cylc-$CYLC_VERSION /opt/cylc-7
 fi

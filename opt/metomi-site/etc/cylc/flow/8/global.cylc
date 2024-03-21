@@ -1,0 +1,5 @@
+[install]
+    source dirs = ~/cylc-src, ~/roses
+[platforms]
+    [[localhost]]
+        copyable environment variables = FCM_VERSION

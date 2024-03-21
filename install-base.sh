@@ -120,10 +120,17 @@ fi
 # Add the Cylc wrapper scripts
 dos2unix -n /vagrant/usr/local/bin/cylc /usr/local/bin/cylc
 cd /usr/local/bin
+ln -sf cylc isodatetime
 ln -sf cylc gcylc
 # Configure additional copyable environment variables
 mkdir -p /opt/metomi-site/conf
 dos2unix -n /vagrant/opt/metomi-site/conf/global.rc /opt/metomi-site/conf/global.rc
+mkdir -p /opt/metomi-site/etc/cylc/flow/8
+dos2unix -n /vagrant/opt/metomi-site/etc/cylc/flow/8/global.cylc /opt/metomi-site/etc/cylc/flow/8/global.cylc
+# Insecure workaround for Firefox permissions error
+# See https://stackoverflow.com/questions/70753768/jupyter-notebook-access-to-the-file-was-denied
+mkdir -p /opt/metomi-site/etc/cylc/uiserver
+dos2unix -n /vagrant/opt/metomi-site/etc/cylc/uiserver/jupyter_config.py /opt/metomi-site/etc/cylc/uiserver/jupyter_config.py
 
 #### Install Rose dependencies & configuration
 if [[ $dist == ubuntu ]]; then
@@ -155,9 +162,9 @@ elif [[ $dist == redhat ]]; then
   fi
 fi
 # Add the Rose wrapper scripts
-dos2unix -n /vagrant/usr/local/bin/rose /usr/local/bin/rose
 cd /usr/local/bin
-ln -sf rose rosie
+ln -sf cylc rose
+ln -sf cylc rosie
 # Configure Rose
 mkdir -p /opt/metomi-site/etc
 if [[ $dist == ubuntu ]]; then
@@ -165,6 +172,8 @@ if [[ $dist == ubuntu ]]; then
 elif [[ $dist == redhat ]]; then
   dos2unix -n /vagrant/opt/metomi-site/etc/rose.conf.redhat /opt/metomi-site/etc/rose.conf
 fi
+mkdir -p /opt/metomi-site/etc/rose
+dos2unix -n /vagrant/opt/metomi-site/etc/rose/rose.conf /opt/metomi-site/etc/rose/rose.conf
 
 #### Install latest versions of FCM, Cylc & Rose
 if [[ $dist == ubuntu ]]; then
@@ -173,10 +182,14 @@ if [[ $dist == ubuntu ]]; then
 fi
 dos2unix -n /vagrant/usr/local/bin/install-fcm /usr/local/bin/install-fcm
 dos2unix -n /vagrant/usr/local/bin/install-cylc7 /usr/local/bin/install-cylc7
+dos2unix -n /vagrant/usr/local/bin/install-cylc8 /usr/local/bin/install-cylc8
 dos2unix -n /vagrant/usr/local/bin/install-rose /usr/local/bin/install-rose
 /usr/local/bin/install-fcm --set-default || error
 /usr/local/bin/install-cylc7 --set-default --make-docs || error
+/usr/local/bin/install-cylc8 || error
 /usr/local/bin/install-rose --set-default --make-docs || error
+# Set the default to Cylc 7
+ln -sf /opt/cylc-7 /opt/cylc
 
 #### Configure syntax highlighting & bash completion
 sudo -u $(logname) mkdir -p /home/vagrant/.local/share/gtksourceview-3.0/language-specs/
@@ -244,9 +257,6 @@ dos2unix -n /vagrant/var/www/html/index.html /var/www/html/index.html
 if [[ $dist == ubuntu ]]; then
   ln -sf /opt/metomi-site/etc/httpd/rosie-wsgi.conf /etc/apache2/conf-enabled/rosie-wsgi.conf
   ln -sf /opt/metomi-site/etc/httpd/svn.conf /etc/apache2/conf-enabled/svn.conf
-  if [[ $release == 2204 ]]; then
-    echo "WSGIPythonPath /usr/local/lib/python2.7/dist-packages:/opt/rose/lib/python" >> /etc/apache2/conf-enabled/rosie-wsgi.conf
-  fi
   service apache2 restart || error
 elif [[ $dist == redhat ]]; then
   ln -sf /opt/metomi-site/etc/httpd/rosie-wsgi.conf /etc/httpd/conf.d/rosie-wsgi.conf
