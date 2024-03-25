@@ -33,7 +33,8 @@ fi
 
 #### Install FCM dependencies & configuration
 if [[ $dist == ubuntu ]]; then
-  apt-get install -q -y subversion firefox tkcvs tk libxml-parser-perl || error
+  apt-get install -q -y subversion chromium-browser tkcvs tk libxml-parser-perl || error
+  xdg-settings set default-web-browser chromium-browser.desktop
   apt-get install -q -y m4 libconfig-inifiles-perl libdbi-perl g++ libsvn-perl || error
   apt-get install -q -y xxdiff || error
 elif [[ $dist == redhat ]]; then
@@ -127,7 +128,7 @@ mkdir -p /opt/metomi-site/conf
 dos2unix -n /vagrant/opt/metomi-site/conf/global.rc /opt/metomi-site/conf/global.rc
 mkdir -p /opt/metomi-site/etc/cylc/flow/8
 dos2unix -n /vagrant/opt/metomi-site/etc/cylc/flow/8/global.cylc /opt/metomi-site/etc/cylc/flow/8/global.cylc
-# Insecure workaround for Firefox permissions error
+# Insecure workaround for browser permissions error
 # See https://stackoverflow.com/questions/70753768/jupyter-notebook-access-to-the-file-was-denied
 mkdir -p /opt/metomi-site/etc/cylc/uiserver
 dos2unix -n /vagrant/opt/metomi-site/etc/cylc/uiserver/jupyter_config.py /opt/metomi-site/etc/cylc/uiserver/jupyter_config.py
@@ -208,11 +209,6 @@ if [[ $dist == redhat ]]; then
 fi
 echo "[[ -f /opt/rose/etc/rose-bash-completion ]] && . /opt/rose/etc/rose-bash-completion" >>/home/vagrant/.bashrc
 echo "[[ -f /opt/cylc/conf/cylc-bash-completion ]] && . /opt/cylc/conf/cylc-bash-completion" >>/home/vagrant/.bashrc
-
-#### Configure firefox as the default PDF viewer
-sudo -u $(logname) mkdir -p /home/vagrant/.local/share/applications
-sudo -u $(logname) bash -c 'echo "[Added Associations]" >/home/vagrant/.local/share/applications/mimeapps.list'
-sudo -u $(logname) bash -c 'echo "application/pdf=firefox.desktop;" >>/home/vagrant/.local/share/applications/mimeapps.list'
 
 #### Configure cylc review & rosie web services (with a local rosie repository)
 if [[ $dist == ubuntu ]]; then
