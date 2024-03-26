@@ -14,8 +14,7 @@ jobs:
     steps:
       - name: Install pre requisites
         run: sudo apt install virtualbox vagrant
-        #run: sudo apt update && sudo apt install virtualbox vagrant
-
+ 
       - name: Open up network interfaces for VM
         run: |
           sudo mkdir -p /etc/vbox/
@@ -37,6 +36,12 @@ jobs:
       - name: Show Vagrant version
         run: vagrant --version
 
+#      - name: Free up space
+#        run: |
+#          df -h
+#          sudo rm -rf /usr/share/dotnet /usr/local/lib/android
+#          df -h
+
       - name: Run vagrant up
         run: |
           export VAGRANT_VAGRANTFILE=Vagrantfile.${{ matrix.os }}
@@ -45,11 +50,12 @@ jobs:
       - name: Check for errors
         run: |
           export VAGRANT_VAGRANTFILE=Vagrantfile.${{ matrix.os }}
-          vagrant up
           vagrant ssh -c "grep 'errors occurred during installation' /var/log/install.log || true"
           vagrant ssh -c "grep -q 'No errors detected' /var/log/install.log && \
                           cylc version --long && \
+                          CYLC_VERSION=8 cylc version --long && \
                           rose version && \
+                          CYLC_VERSION=8 rose version && \
                           fcm version && \
                           svn --version && \
                           gfortran --version | grep 4.8.5 || fcm test-battery t/fcm-make && \
