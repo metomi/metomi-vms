@@ -8,15 +8,26 @@ jobs:
     strategy:
       fail-fast: False
       matrix:
-        os: ['ubuntu-1804', 'ubuntu-2204', 'centos-7', 'centos-8']
+        os: ['ubuntu-1804-headless', 'ubuntu-2204-headless', 'centos-8']
     name: ${{ matrix.os }}
-    runs-on: macos-12
+    runs-on: ubuntu-latest
     steps:
+      - name: Install pre requisites
+        run: sudo apt install virtualbox vagrant
+        #run: sudo apt update && sudo apt install virtualbox vagrant
+
+      - name: Open up network interfaces for VM
+        run: |
+          sudo mkdir -p /etc/vbox/
+          sudo touch /etc/vbox/networks.conf
+          sudo sh -c "echo '* 192.168.0.0/16' > /etc/vbox/networks.conf"
+          sudo sh -c "echo '* 3001::/64' >> /etc/vbox/networks.conf"
+
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Cache Vagrant boxes
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.vagrant.d/boxes
           key: ${{ runner.os }}-vagrant-${{ matrix.os }}
