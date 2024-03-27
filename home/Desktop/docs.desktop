@@ -1,5 +1,5 @@
 [Desktop Entry]
-Name=Local Docs
-Exec=firefox http://localhost/
+Name=Documentation
+Exec=xdg-open http://localhost/
 Type=Application
-Icon=firefox
+Icon=browser

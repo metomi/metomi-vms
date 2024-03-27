@@ -1,9 +1,19 @@
-#!/bin/bash
-if [[ -z ${FCM_HOME:-} ]]; then
-    FCM_HOME_ROOT=${FCM_HOME_ROOT:-/opt}
-    FCM_HOME=$FCM_HOME_ROOT/fcm
-    if [[ -n ${FCM_VERSION:-} && -d $FCM_HOME_ROOT/fcm-$FCM_VERSION ]]; then
-        FCM_HOME=$FCM_HOME_ROOT/fcm-$FCM_VERSION
+#!/usr/bin/env bash
+
+# Centrally installed FCM releases:
+FCM_HOME_ROOT="${FCM_HOME_ROOT:-/opt}"
+
+if [[ -z "${FCM_HOME}" ]]; then
+    if [[ -n "${FCM_VERSION}" ]]; then
+        FCM_HOME="${FCM_HOME_ROOT}/fcm-${FCM_VERSION}"
+    else
+        # Use default version (symlink)
+        FCM_HOME="${FCM_HOME_ROOT}/fcm"
     fi
 fi
-exec $FCM_HOME/bin/$(basename $0) "$@"
+if [[ ! -x "${FCM_HOME}/bin/fcm" ]]; then
+    echo 1>&2 "ERROR: fcm not found in ${FCM_HOME}"
+    exit 1
+fi
+
+exec "${FCM_HOME}/bin/fcm" "$@"
