@@ -20,6 +20,8 @@ if [[ $collections =~ desktop ]]; then
 fi
 
 if [[ $dist == redhat && $release == centos* ]]; then
+  # Stream 8 now EOL
+  sed -i -e "s|mirrorlist=|#mirrorlist=|g" -e "s|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g" /etc/yum.repos.d/CentOS-*
   # Add the EPEL repository
   yum install -y epel-release || error
 fi
