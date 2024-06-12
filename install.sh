@@ -85,10 +85,10 @@ else
   echo "[INFO] No errors detected"
 fi
 
-if [[ $collections =~ desktop ]]; then
+rm -f /etc/nologin
+if [[ $collections =~ desktop && ! $collections =~ skip-shutdown ]]; then
   echo Shutting down the system.
   echo Please run vagrant up to restart it.
-  rm /etc/nologin
   sudo shutdown -h now
 else
   echo Please run vagrant ssh to connect.

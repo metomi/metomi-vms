@@ -1,0 +1,60 @@
+#!/bin/bash
+set -eu
+
+if [[ $USER != root ]]; then
+  echo "Please run this command via sudo"
+  exit 1
+fi
+
+echo "[INFO] Installing latest Cylc 8 version"
+
+ROOTDIR=/opt/deployment
+PACKDIR=${ROOTDIR}/packed-environments
+mkdir -p "${PACKDIR}"
+
+# Make sure Mambaforge is installed
+MAMBAFORGE_DIR="${ROOTDIR}/mambaforge"
+unset CONDA_SHLVL
+if [[ ! -d ${MAMBAFORGE_DIR} ]]; then
+  wget -O ${ROOTDIR}/Mambaforge.sh https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh
+  bash ${ROOTDIR}/Mambaforge.sh -p ${MAMBAFORGE_DIR} -b
+  rm ${ROOTDIR}/Mambaforge.sh
+  . "${MAMBAFORGE_DIR}/etc/profile.d/conda.sh"
+  mamba install -q -y conda-pack
+else
+  . "${MAMBAFORGE_DIR}/etc/profile.d/conda.sh"
+fi
+
+# Log all subsequent output
+exec > >(tee -a "${PACKDIR}/cylc-8_$(date +%FT%H:%M).log") 2>&1
+mamba --version
+
+LABEL="cylc-8"
+conda_env=cylc-full-build
+mamba env remove -n "${conda_env}"
+echo "[INFO] Creating full build using latest versions for Cylc 8 ..."
+mamba create -v -y -n "${conda_env}"
+conda activate "${conda_env}"
+# Include numpy & netcdf for use by rose ana
+mamba install -v -y --override-channels --channel=conda-forge \
+  jupyterlab \
+  "numpy=1" \
+  "netCDF4=1" \
+  cylc-flow \
+  cylc-uiserver-base \
+  cylc-rose \
+  metomi-rose
+mamba env export -f "${PACKDIR}/${LABEL}.yml"
+echo "[INFO] Packing conda environment"
+dest=/opt/cylc-8
+rm -f ${PACKDIR}/cylc-8.tgz
+conda pack -q --dest-prefix=${dest} -o "${PACKDIR}/cylc-8.tgz"
+if [[ -e ${dest} ]]; then
+  echo "[INFO] Removing existing Cylc 8 installation"
+  rm -rf ${dest}
+fi
+echo "[INFO] Installing"
+mkdir ${dest}
+tar --directory=${dest} -xf ${PACKDIR}/cylc-8.tgz
+
+echo '[INFO] Finished'

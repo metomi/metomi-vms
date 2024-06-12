@@ -59,6 +59,13 @@ Once the installation is complete the VM will shutdown.
 Run the command `vagrant up` to launch the VM.
 A separate window should open containing a lightweight Linux desktop environment ([LXDE](http://lxde.org/)) with a terminal already opened.
 
+Both Cylc 7 and Cylc 8 are installed ([see the migration guide](https://cylc.github.io/cylc-doc/stable/html/7-to-8/index.html)).
+Cylc 7 is currently the default.
+To use Cylc 8, run the following command before running any Cylc or Rose commands:
+```
+export CYLC_VERSION=8
+```
+
 If your VM includes support for the Met Office Science Repository Service then you will be prompted for your password (and also your user name the first time you use the VM).
 If you get your username or password wrong and Subversion fails to connect, just run `mosrs-cache-password` to try again.
 
