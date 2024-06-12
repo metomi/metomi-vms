@@ -97,7 +97,7 @@ Note that they are not as well tested as the default VM and may not include a de
 To use a different VM, modify the file which is loaded in the default `Vagrantfile` before running `vagrant up`.
 Alternatively you can set the environment variable `VAGRANT_VAGRANTFILE`, for example:
 ```
-export VAGRANT_VAGRANTFILE=Vagrantfile.ubuntu-1604
+export VAGRANT_VAGRANTFILE=Vagrantfile.ubuntu-2204
 ```
 (use `set` in place of `export` when using the command window on Windows).
 

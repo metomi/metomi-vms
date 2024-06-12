@@ -19,24 +19,13 @@ if [[ $collections =~ desktop ]]; then
   echo "Installation in progress, please wait" > /etc/nologin
 fi
 
-if [[ $dist == ubuntu && $release == 1604 ]]; then
-  # Address issues some hosts experience with networking (specifically, DNS latency)
-  # See https://github.com/mitchellh/vagrant/issues/1172
-  if [ ! $(grep single-request-reopen /etc/resolvconf/resolv.conf.d/base) ]; then
-    echo "options single-request-reopen" >> /etc/resolvconf/resolv.conf.d/base && resolvconf -u
-  fi
-fi
-
 if [[ $dist == redhat && $release == centos* ]]; then
   # Add the EPEL repository
   yum install -y epel-release || error
 fi
 
 # Use the WANdisco subversion packages
-if [[ $dist == ubuntu && $release == 1604 ]]; then
-  add-apt-repository 'deb http://opensource.wandisco.com/ubuntu xenial svn110' || error
-  wget -q http://opensource.wandisco.com/wandisco-debian.gpg -O- | sudo apt-key add - || error
-elif [[ $dist == redhat && $release == centos7 ]]; then
+if [[ $dist == redhat && $release == centos7 ]]; then
   cat  > /etc/yum.repos.d/WANdisco-svn.repo <<EOF
 [WANdisco-svn]
 name=WANdisco SVN Repo

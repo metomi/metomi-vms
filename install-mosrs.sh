@@ -2,9 +2,7 @@
 if [[ $dist == ubuntu || ($dist == redhat && $release != centos7) ]]; then
   if [[ $dist == ubuntu ]]; then
     apt-get install -q -y libgpg-error-dev libgcrypt20-dev libassuan-dev libksba-dev libpth-dev zlib1g-dev || error
-    if [[ $release != 1604 ]]; then
-      apt-get remove -q -y --auto-remove --purge gpg-agent || error
-    fi
+    apt-get remove -q -y --auto-remove --purge gpg-agent || error
   else
     yum install -y zlib-devel libgpg-error-devel libgcrypt-devel libassuan-devel libksba-devel || error
     wget -q ftp://ftp.gnu.org/gnu/pth/pth-2.0.7.tar.gz || error
@@ -19,7 +17,7 @@ if [[ $dist == ubuntu || ($dist == redhat && $release != centos7) ]]; then
   fi
   curl -L -s -S https://www.gnupg.org/ftp/gcrypt/gnupg/gnupg-2.0.31.tar.bz2 | tar -xj || error
   cd gnupg-2.0.31
-  if [[ ($dist == ubuntu && $release != 1604) ]]; then
+  if [[ $dist == ubuntu ]]; then
     ./configure CFLAGS="-fcommon" || error
   else
     ./configure || error
