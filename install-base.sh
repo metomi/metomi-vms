@@ -23,12 +23,7 @@ if [[ $dist == ubuntu ]]; then
 elif [[ $dist == redhat ]]; then
   yum install -y gvim emacs || error
   # Set the default editor in .bash_profile
-  if [[ $release == fedora* ]]; then
-    yum install -y leafpad || error
-    echo "export EDITOR=leafpad" >>.bash_profile
-  else
-    echo "export EDITOR=emacs" >>.bash_profile
-  fi
+  echo "export EDITOR=emacs" >>.bash_profile
 fi
 
 #### Install FCM dependencies & configuration
@@ -44,10 +39,7 @@ elif [[ $dist == redhat ]]; then
   fi
   yum install -y perl-Config-IniFiles subversion-perl || error
   yum install -y gcc-c++ || error  # used by fcm test-battery
-  if [[ $release == fedora* ]]; then
-    yum install -y m4 perl-DBI || error
-    yum install -y tkcvs xxdiff || error
-  elif [[ $release == centos7 ]]; then
+  if [[ $release == centos7 ]]; then
     yum install -y tkcvs kdiff3 || error
   else
     yum install -y perl-DBI || error
@@ -57,7 +49,7 @@ fi
 # Add the fcm wrapper script
 dos2unix -n /vagrant/usr/local/bin/fcm /usr/local/bin/fcm
 # Configure FCM diff and merge viewers
-if [[ $dist == redhat && $release != fedora* ]]; then
+if [[ $dist == redhat ]]; then
   mkdir -p /opt/metomi-site/etc/fcm
   dos2unix -n /vagrant/opt/metomi-site/etc/fcm/external.cfg /opt/metomi-site/etc/fcm/external.cfg
 fi
@@ -90,13 +82,8 @@ if [[ $dist == ubuntu ]]; then
 elif [[ $dist == redhat ]]; then
   yum install -y graphviz at lsof || error
   service atd start || error
-  if [[ $release == fedora* ]]; then
-    yum install -y redhat-rpm-config sqlite || error
-    yum install -y ImageMagick || error
-  elif [[ $release == centos8 ]]; then
-    yum install -y sqlite || error
-  fi
   if [[ $release == centos8 ]]; then
+    yum install -y sqlite || error
     yum install -y python2-pip python2-jinja2 || error
   else
     yum install -y python-pip python-pep8 python-jinja2 || error
@@ -151,7 +138,7 @@ elif [[ $dist == redhat ]]; then
   else
     yum install -y python-requests || error
     yum install -y pcre-tools || error
-    pip install mock pytest-tap || error # used by test-battery
+    #pip install mock pytest-tap || error # used by test-battery
   fi
 fi
 # Add the Rose wrapper scripts
@@ -172,6 +159,9 @@ dos2unix -n /vagrant/opt/metomi-site/etc/rose/rose.conf /opt/metomi-site/etc/ros
 if [[ $dist == ubuntu ]]; then
   # Ensure curl is installed
   apt-get install -q -y curl || error
+elif [[ $dist == redhat ]]; then
+  # Ensure wget is installed
+  yum install -y wget || error
 fi
 dos2unix -n /vagrant/usr/local/bin/install-fcm /usr/local/bin/install-fcm
 dos2unix -n /vagrant/usr/local/bin/install-cylc7 /usr/local/bin/install-cylc7
@@ -326,8 +316,3 @@ dos2unix -n /vagrant/usr/local/bin/install-um-data /usr/local/bin/install-um-dat
 dos2unix -n /vagrant/usr/local/bin/install-um-extras /usr/local/bin/install-um-extras
 dos2unix -n /vagrant/usr/local/bin/run-test-batteries /usr/local/bin/run-test-batteries
 dos2unix -n /vagrant/usr/local/bin/um-setup /usr/local/bin/um-setup
-
-if [[ $dist == redhat && $release == fedora* ]]; then
-  # Allow these commands to be found via sudo
-  echo "Defaults:vagrant secure_path = /sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin" >/etc/sudoers.d/vagrant-path
-fi

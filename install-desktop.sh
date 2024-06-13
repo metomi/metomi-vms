@@ -37,7 +37,7 @@ sudo -u $(logname) dos2unix -n /vagrant/home/Desktop/docs.desktop /home/vagrant/
 sudo -u $(logname) mkdir -p /home/vagrant/.config/autostart
 sudo -u $(logname) cp /usr/share/applications/lxterminal.desktop /home/vagrant/.config/autostart
 # Configure middle button emulation
-if [[ ($dist == ubuntu && $release == 1804) || ($dist == redhat && $release == fedora*) ]]; then
+if [[ $dist == ubuntu && $release == 1804 ]]; then
   sudo -u $(logname) bash -c 'echo "[Desktop Entry]" >/home/vagrant/.config/autostart/xinput.desktop'
   sudo -u $(logname) bash -c 'echo "Exec=xinput set-prop 11 \"libinput Middle Emulation Enabled\" 1" >>/home/vagrant/.config/autostart/xinput.desktop'
 fi
