@@ -1,32 +1,4 @@
 #### Install and configure gpg-agent
-if [[ $dist == ubuntu || ($dist == redhat && $release != centos7) ]]; then
-  if [[ $dist == ubuntu ]]; then
-    apt-get install -q -y libgpg-error-dev libgcrypt20-dev libassuan-dev libksba-dev libpth-dev zlib1g-dev || error
-    apt-get remove -q -y --auto-remove --purge gpg-agent || error
-  else
-    yum install -y zlib-devel libgpg-error-devel libgcrypt-devel libassuan-devel libksba-devel || error
-    wget -q ftp://ftp.gnu.org/gnu/pth/pth-2.0.7.tar.gz || error
-    tar xzf pth-2.0.7.tar.gz
-    rm pth-2.0.7.tar.gz
-    cd pth-2.0.7
-    ./configure --libdir=/usr/lib64 --exec-prefix=/usr || error
-    make || error
-    make install || error
-    cd ..
-    rm -r pth-2.0.7
-  fi
-  curl -L -s -S https://www.gnupg.org/ftp/gcrypt/gnupg/gnupg-2.0.31.tar.bz2 | tar -xj || error
-  cd gnupg-2.0.31
-  if [[ $dist == ubuntu ]]; then
-    ./configure CFLAGS="-fcommon" || error
-  else
-    ./configure || error
-  fi
-  make || error
-  make install || error
-  cd ..
-  rm -r gnupg-2.0.31
-fi
 # Add script that caches the user's Science Repository Service password for the session
 dos2unix -n /vagrant/usr/local/bin/mosrs-cache-password /usr/local/bin/mosrs-cache-password
 # Add script to start gpg-agent and cache the password when needed and source it in .bashrc
