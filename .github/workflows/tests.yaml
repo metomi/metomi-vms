@@ -59,6 +59,7 @@ jobs:
                           fcm version && \
                           svn --version && \
                           fcm test-battery t/fcm-make && \
+                          rosie hello && \
                           gpg-agent --version && \
                           which at"
 
