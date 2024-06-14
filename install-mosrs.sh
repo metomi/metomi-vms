@@ -6,6 +6,11 @@ dos2unix -n /vagrant/usr/local/bin/mosrs-setup-gpg-agent /usr/local/bin/mosrs-se
 echo ". /usr/local/bin/mosrs-setup-gpg-agent" >>/home/vagrant/.bashrc
 # Add script to install Rose meta data
 dos2unix -n /vagrant/usr/local/bin/install-rose-meta /usr/local/bin/install-rose-meta
+# Set gpg-agent options (required when gpg-agent started automatically)
+sudo -u $(logname) mkdir -p /home/vagrant/.gnupg
+sudo -u $(logname) bash -c 'echo "allow-preset-passphrase" >/home/vagrant/.gnupg/gpg-agent.conf'
+sudo -u $(logname) bash -c 'echo "batch" >>/home/vagrant/.gnupg/gpg-agent.conf'
+sudo -u $(logname) bash -c 'echo "max-cache-ttl 43200" >>/home/vagrant/.gnupg/gpg-agent.conf'
 
 #### Configure FCM
 mkdir -p /etc/subversion
