@@ -172,7 +172,7 @@ dos2unix -n /vagrant/usr/local/bin/install-rose /usr/local/bin/install-rose
 /usr/local/bin/install-cylc8 || error
 /usr/local/bin/install-rose --set-default || error
 # Set the default to Cylc 7
-ln -sf /opt/cylc-7 /opt/cylc
+ln -sf cylc-7 /opt/cylc
 
 #### Configure syntax highlighting & bash completion
 sudo -u $(logname) mkdir -p /home/vagrant/.local/share/gtksourceview-3.0/language-specs/

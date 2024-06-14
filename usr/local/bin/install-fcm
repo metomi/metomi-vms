@@ -46,5 +46,5 @@ fi
 if $set_default; then
   echo Setting the default FCM version to $FCM_VERSION
   rm -f /opt/fcm
-  ln -sf /opt/fcm-$FCM_VERSION /opt/fcm
+  ln -sf fcm-$FCM_VERSION /opt/fcm
 fi
