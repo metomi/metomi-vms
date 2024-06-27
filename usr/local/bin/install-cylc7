@@ -55,5 +55,5 @@ fi
 if $set_default; then
   echo Setting the default Cylc 7 version to $CYLC_VERSION
   rm  -f /opt/cylc-7
-  ln -sf /opt/cylc-$CYLC_VERSION /opt/cylc-7
+  ln -sf cylc-$CYLC_VERSION /opt/cylc-7
 fi

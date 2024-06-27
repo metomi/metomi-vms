@@ -23,12 +23,7 @@ if [[ $dist == ubuntu ]]; then
 elif [[ $dist == redhat ]]; then
   yum install -y gvim emacs || error
   # Set the default editor in .bash_profile
-  if [[ $release == fedora* ]]; then
-    yum install -y leafpad || error
-    echo "export EDITOR=leafpad" >>.bash_profile
-  else
-    echo "export EDITOR=emacs" >>.bash_profile
-  fi
+  echo "export EDITOR=emacs" >>.bash_profile
 fi
 
 #### Install FCM dependencies & configuration
@@ -44,10 +39,7 @@ elif [[ $dist == redhat ]]; then
   fi
   yum install -y perl-Config-IniFiles subversion-perl || error
   yum install -y gcc-c++ || error  # used by fcm test-battery
-  if [[ $release == fedora* ]]; then
-    yum install -y m4 perl-DBI || error
-    yum install -y tkcvs xxdiff || error
-  elif [[ $release == centos7 ]]; then
+  if [[ $release == centos7 ]]; then
     yum install -y tkcvs kdiff3 || error
   else
     yum install -y perl-DBI || error
@@ -57,7 +49,7 @@ fi
 # Add the fcm wrapper script
 dos2unix -n /vagrant/usr/local/bin/fcm /usr/local/bin/fcm
 # Configure FCM diff and merge viewers
-if [[ $dist == redhat && $release != fedora* ]]; then
+if [[ $dist == redhat ]]; then
   mkdir -p /opt/metomi-site/etc/fcm
   dos2unix -n /vagrant/opt/metomi-site/etc/fcm/external.cfg /opt/metomi-site/etc/fcm/external.cfg
 fi
@@ -87,20 +79,11 @@ if [[ $dist == ubuntu ]]; then
     rm -rf PackageFolder *.deb
   fi
   apt-get install -q -y pep8 || error # used by test-battery
-  if [[ $release != 1604 ]]; then
-    : # Rose docs build no longer working - disable for the moment
-    #apt-get install -q -y imagemagick || error
-  fi
 elif [[ $dist == redhat ]]; then
   yum install -y graphviz at lsof || error
   service atd start || error
-  if [[ $release == fedora* ]]; then
-    yum install -y redhat-rpm-config sqlite || error
-    yum install -y ImageMagick || error
-  elif [[ $release == centos8 ]]; then
-    yum install -y sqlite || error
-  fi
   if [[ $release == centos8 ]]; then
+    yum install -y sqlite || error
     yum install -y python2-pip python2-jinja2 || error
   else
     yum install -y python-pip python-pep8 python-jinja2 || error
@@ -141,7 +124,6 @@ if [[ $dist == ubuntu ]]; then
   apt-get install -q -y tidy || error
   if [[ $release != 2204 ]]; then
     apt-get install -q -y python-requests || error
-    apt-get install -q -y python-virtualenv || error # needed by rose make-docs
     pip install mock pytest-tap || error # used by test-battery
   else
     pip2 install requests || error
@@ -156,10 +138,7 @@ elif [[ $dist == redhat ]]; then
   else
     yum install -y python-requests || error
     yum install -y pcre-tools || error
-    pip install mock pytest-tap || error # used by test-battery
-  fi
-  if [[ $release == fedora* ]]; then
-    yum install -y python2-virtualenv || error # needed by rose make-docs
+    #pip install mock pytest-tap || error # used by test-battery
   fi
 fi
 # Add the Rose wrapper scripts
@@ -180,17 +159,20 @@ dos2unix -n /vagrant/opt/metomi-site/etc/rose/rose.conf /opt/metomi-site/etc/ros
 if [[ $dist == ubuntu ]]; then
   # Ensure curl is installed
   apt-get install -q -y curl || error
+elif [[ $dist == redhat ]]; then
+  # Ensure wget is installed
+  yum install -y wget || error
 fi
 dos2unix -n /vagrant/usr/local/bin/install-fcm /usr/local/bin/install-fcm
 dos2unix -n /vagrant/usr/local/bin/install-cylc7 /usr/local/bin/install-cylc7
 dos2unix -n /vagrant/usr/local/bin/install-cylc8 /usr/local/bin/install-cylc8
 dos2unix -n /vagrant/usr/local/bin/install-rose /usr/local/bin/install-rose
 /usr/local/bin/install-fcm --set-default || error
-/usr/local/bin/install-cylc7 --set-default --make-docs || error
+/usr/local/bin/install-cylc7 --set-default || error
 /usr/local/bin/install-cylc8 || error
-/usr/local/bin/install-rose --set-default --make-docs || error
+/usr/local/bin/install-rose --set-default || error
 # Set the default to Cylc 7
-ln -sf /opt/cylc-7 /opt/cylc
+ln -sf cylc-7 /opt/cylc
 
 #### Configure syntax highlighting & bash completion
 sudo -u $(logname) mkdir -p /home/vagrant/.local/share/gtksourceview-3.0/language-specs/
@@ -226,11 +208,7 @@ if [[ $dist == ubuntu ]]; then
     rm -r mod_wsgi-4.9.3
     echo "LoadModule wsgi_module /usr/lib/apache2/modules/mod_wsgi.so" > /etc/apache2/mods-enabled/wsgi.conf
   fi
-  if [[ $release == 1604 ]]; then
-    apt-get install -q -y libapache2-svn || error
-  else
-    apt-get install -q -y libapache2-mod-svn || error
-  fi
+  apt-get install -q -y libapache2-mod-svn || error
 elif [[ $dist == redhat ]]; then
   if [[ $release == centos8 ]]; then
     yum install -y mod_dav_svn python2-sqlalchemy httpd-devel || error
@@ -338,8 +316,3 @@ dos2unix -n /vagrant/usr/local/bin/install-um-data /usr/local/bin/install-um-dat
 dos2unix -n /vagrant/usr/local/bin/install-um-extras /usr/local/bin/install-um-extras
 dos2unix -n /vagrant/usr/local/bin/run-test-batteries /usr/local/bin/run-test-batteries
 dos2unix -n /vagrant/usr/local/bin/um-setup /usr/local/bin/um-setup
-
-if [[ $dist == redhat && $release == fedora* ]]; then
-  # Allow these commands to be found via sudo
-  echo "Defaults:vagrant secure_path = /sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin" >/etc/sudoers.d/vagrant-path
-fi

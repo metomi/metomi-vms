@@ -1,15 +1,18 @@
-# If gpg-agent is already running, load its environment into this session
-# Otherwise start it and cache the MOSRS password
+# Define env file for use with gpg-agent v2.0 (ignored for v2.1+)
 envfile="$HOME/.gnupg/gpg-agent.env"
+# Ensure GPG_AGENT_INFO is set for use by rosie
 if [[ -z "$GPG_AGENT_INFO" ]]; then
-  [[ -e "$envfile" ]] && eval "$(cat $envfile)"
+  if [[ -e "$envfile" ]]; then
+    eval "$(cat $envfile)"
+  else
+    GPG_AGENT_INFO=$(gpgconf --list-dirs | sed -n 's/agent-socket:\(.*\)/\1/p')
+  fi
+  export GPG_AGENT_INFO
 fi
-export GPG_AGENT_INFO
+# Start gpg-agent if it is not already running
 if ! gpg-agent 2>/dev/null; then
-  eval "$(gpg-agent --daemon --allow-preset-passphrase --batch --max-cache-ttl 43200 --write-env-file $envfile)"
-  mosrs-cache-password
-else
-  # Check whether the passphrase is already cached
-  echo "GET_PASSPHRASE --no-ask rosie:https:code.metoffice.gov.uk Err Pmt Des" | gpg-connect-agent | grep -q "^OK " || mosrs-cache-password
+  eval "$(gpg-agent --daemon --allow-preset-passphrase --batch --max-cache-ttl 43200 --write-env-file $envfile 2>/dev/null)"
 fi
 unset envfile
+# Check whether the password is already cached
+echo "GET_PASSPHRASE --no-ask rosie:https:code.metoffice.gov.uk Err Pmt Des" | gpg-connect-agent | grep -q "^OK " || mosrs-cache-password
