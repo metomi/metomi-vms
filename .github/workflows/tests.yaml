@@ -10,7 +10,7 @@ jobs:
       matrix:
         os: ['ubuntu-1804-headless', 'ubuntu-2204-headless', 'centos-8']
     name: ${{ matrix.os }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Install pre requisites
         run: |
