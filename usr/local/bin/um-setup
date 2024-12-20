@@ -12,7 +12,7 @@ function usage {
   echo 'Usage: um-setup [-g gcom_path] [-s shumlib_path] [-c GCOM Cylc version]'
   echo
   echo 'Options:'
-  echo '  -c [7/8]   Cylc version to use (7 or 8) for GCOM install (default=7)'
+  echo '  -c [7/8]   Cylc version to use (7 or 8) for GCOM install (default=8)'
   echo '  -g path    GCOM source location (working copy or repository location)'
   echo '  -h         Show this help and exit'
   echo '  -s path    Shumlib source location (working copy or repository location)'
@@ -38,7 +38,7 @@ function process_args {
           if [ -n "$1" ]; then
             cylc_version="$1"
           else
-            cylc_version='7'
+            cylc_version='8'
           fi
           if [ "$cylc_version" -ne "7" ]&&[ "$cylc_version" -ne "8" ]; then
               ereport "Cylc version for GCOM must be 7 or 8"
@@ -121,7 +121,7 @@ function create_keyword {
 
 process_args $@
 
-cylc_version=${cylc_version:-'7'}
+cylc_version=${cylc_version:-'8'}
 gcom_src=${gcom_src:-'fcm:gcom.x/trunk@head'}
 shumlib_src=${shumlib_src:-'fcm:shumlib.x/trunk@head'}
 
