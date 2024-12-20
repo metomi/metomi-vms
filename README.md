@@ -97,7 +97,7 @@ Note that they are not as well tested as the default VM and may not include a de
 To use a different VM, modify the file which is loaded in the default `Vagrantfile` before running `vagrant up`.
 Alternatively you can set the environment variable `VAGRANT_VAGRANTFILE`, for example:
 ```
-export VAGRANT_VAGRANTFILE=Vagrantfile.ubuntu-1604
+export VAGRANT_VAGRANTFILE=Vagrantfile.ubuntu-2204
 ```
 (use `set` in place of `export` when using the command window on Windows).
 
@@ -123,22 +123,9 @@ Then use the `cd` command to navigate to the directory where you have extracted 
 
 ## Ubuntu Pro
 
-While Ubuntu 18.04 LTS went end-of-life in May 2023, an [Ubuntu Pro](https://ubuntu.com/pro) subscription can be used to get security updates for a further 5 years. This is free for personal use for up to 5 machines and the process is documented in a [Tutorial](https://ubuntu.com/pro/tutorial). Before you run the `sudo apt update && sudo apt upgrade` commands, you should first
-```
-sudo apt-mark hold gpg-agent
-```
+While Ubuntu 18.04 LTS went end-of-life in May 2023, an [Ubuntu Pro](https://ubuntu.com/pro) subscription can be used to get security updates for a further 5 years. This is free for personal use for up to 5 machines and the process is documented in a [Tutorial](https://ubuntu.com/pro/tutorial).
 
-After rebooting, you may get the error "gpg-preset-passphrase: caching passphrase failed: Not supported". Here you will need to re-install gpg-agent manually, in a similar way to how it is originally installed in the [install-mosrs](install-mosrs.sh) script:
-```
-sudo apt-get remove -q -y --auto-remove --purge gpg-agent
-curl -L -s -S https://www.gnupg.org/ftp/gcrypt/gnupg/gnupg-2.0.31.tar.bz2 | tar -xj
-cd gnupg-2.0.31/
-./configure CFLAGS="-fcommon"
-make
-sudo make install
-```
-
-When you reboot your VM you may also get the error "Vagrant was unable to mount VirtualBox shared folders". This can be fixed by [re-installing the VirtualBox guest additions](https://www.virtualbox.org/manual/ch04.html#additions-linux), which can be done via the command-line by
+When you reboot your VM you may get the error "Vagrant was unable to mount VirtualBox shared folders". This can be fixed by [re-installing the VirtualBox guest additions](https://www.virtualbox.org/manual/ch04.html#additions-linux), which can be done via the command-line by
 ```
 sudo apt install -y virtualbox-guest-additions-iso
 ```
@@ -202,7 +189,11 @@ Note that, if the plugin does update your Guest Additions then you will need to 
 
 ## Amazon AWS
 
-It is possible to run using Vagrant on an Amazon AWS EC2 virtual machine. To do this you will need to install the [`vagrant-aws`](https://github.com/mitchellh/vagrant-aws) plugin. You do not need VirtualBox. You should ensure that you are using a recent version of Vagrant to enable the AWS plugin to work, and you will first need to run the command
+It is possible to run using Vagrant on an Amazon AWS EC2 virtual machine. To do this you will need to install the [`vagrant-aws`](https://github.com/geckoboard/vagrant-aws) plugin via
+```
+vagrant plugin install vagrant-gecko-aws --entry-point vagrant-aws
+```
+You do not need VirtualBox. You should ensure that you are using a recent version of Vagrant to enable the AWS plugin to work, and you will first need to run the command
 ```
 vagrant box add dummy https://github.com/mitchellh/vagrant-aws/raw/master/dummy.box
 ```
@@ -244,7 +235,7 @@ On the [AWS console](https://aws.amazon.com/) you should change your region to t
 
 From here you should click the **All services** drop-down menu, and then click **EC2** to enter the EC2 Dashboard.
 
-There are many different types of EC2 VMs (e.g. Ubuntu, Amazon Linux etc.), which are identified by their unique **ami-** identifier. This identifier is also unique to a particular region. The setting for Ubuntu 18.04 LTS in the London (eu-west-2) region has already been set in the `aws.ami` setting in the provided Vagrantfile. If you wish to use a different region you will need to search for the correct _ami-_ identifier from the **Launch instance** option within the EC2 Dashboard and then set this in the Vagrantfile accordingly.
+There are many different types of EC2 VMs (e.g. Ubuntu, Amazon Linux etc.), which are identified by their unique **ami-** identifier. This identifier is also unique to a particular region. The setting for Ubuntu 18.04 LTS or Ubuntu 22.04 LTS in the London (eu-west-2) region has already been set in the `aws.ami` setting in the provided Vagrantfiles, but you may need to first subscribe to use these images. If you wish to use a different region you will need to search for the correct _ami-_ identifier from the **Launch instance** option within the EC2 Dashboard and then set this in the Vagrantfile accordingly.
 
 ### Create your key pair
 

@@ -48,5 +48,6 @@ fi
 if $set_default; then
   echo Setting the default Rose version to $ROSE_VERSION
   rm -f /opt/rose
-  ln -sf /opt/rose-$ROSE_VERSION /opt/rose
+  ln -sf rose-$ROSE_VERSION /opt/rose
+  ln -sf rose-$ROSE_VERSION /opt/rose-2019.01
 fi
