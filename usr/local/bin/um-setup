@@ -38,10 +38,10 @@ function process_args {
           if [ -n "$1" ]; then
             cylc_version="$1"
           else
-            cylc_version='8'
+            ereport "Cylc version not provided"
           fi
           if [ "$cylc_version" -ne "7" ]&&[ "$cylc_version" -ne "8" ]; then
-              ereport "Cylc version for GCOM must be 7 or 8"
+              ereport "Cylc version for GCOM must be 7 or 8, provided $cylc_version"
           fi
           ;;
       -g) shift
