@@ -9,9 +9,10 @@
 
 function usage {
   # Print command line options
-  echo 'Usage: um-setup [-g gcom_path] [-s shumlib_path]'
+  echo 'Usage: um-setup [-g gcom_path] [-s shumlib_path] [-c GCOM Cylc version]'
   echo
   echo 'Options:'
+  echo '  -c [7/8]   Cylc version to use (7 or 8) for GCOM install (default=8)'
   echo '  -g path    GCOM source location (working copy or repository location)'
   echo '  -h         Show this help and exit'
   echo '  -s path    Shumlib source location (working copy or repository location)'
@@ -26,13 +27,23 @@ function ereport {
 
 function process_args {
   # Parse and process the command line arguments
-  if [ $# -gt 4 ]; then
+  if [ $# -gt 6 ]; then
     ereport "Too many arguments"
     exit 1
   fi
 
   while [ $# -ge 1 ] ; do
     case "$1" in
+      -c) shift
+          if [ -n "$1" ]; then
+            cylc_version="$1"
+          else
+            ereport "Cylc version not provided"
+          fi
+          if [ "$cylc_version" -ne "7" ]&&[ "$cylc_version" -ne "8" ]; then
+              ereport "Cylc version for GCOM must be 7 or 8, provided $cylc_version"
+          fi
+          ;;
       -g) shift
           if [ -n "$1" ]; then
             gcom_src=$1
@@ -110,6 +121,7 @@ function create_keyword {
 
 process_args $@
 
+cylc_version=${cylc_version:-'8'}
 gcom_src=${gcom_src:-'fcm:gcom.x/trunk@head'}
 shumlib_src=${shumlib_src:-'fcm:shumlib.x/trunk@head'}
 
@@ -188,7 +200,18 @@ echo "Installing GCOM from: $gcom_src"
 cd $tmpdir/wc
 echo "Running rose stem to build GCOM..."
 
-rose stem --quiet --group=all --name=gcom_install --new --no-gcontrol -- --no-detach
+# explicitly set Cylc version
+# must set to Cylc 7 at the end of the GCOM install for Shumlib
+if [ "$cylc_version" -eq "7" ]; then
+    export CYLC_VERSION=7
+    rose stem --quiet --group=all --name=gcom_install --new --no-gcontrol -- --no-detach
+elif [ "$cylc_version" -eq "8" ]; then
+    export CYLC_VERSION=8
+    rose stem --quiet --group=all --workflow-name=gcom_install --no-run-name
+    cylc play --quiet --no-detach gcom_install
+    export CYLC_VERSION=7
+fi
+
 if [ $? -ne 0 ]; then
   echo "Problem running GCOM rose stem suite."
   echo "Check suite logs and output at $HOME/cylc-run/gcom_install"
