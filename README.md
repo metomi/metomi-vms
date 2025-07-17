@@ -60,10 +60,10 @@ Run the command `vagrant up` to launch the VM.
 A separate window should open containing a lightweight Linux desktop environment ([LXDE](http://lxde.org/)) with a terminal already opened.
 
 Both Cylc 7 and Cylc 8 are installed ([see the migration guide](https://cylc.github.io/cylc-doc/stable/html/7-to-8/index.html)).
-Cylc 7 is currently the default.
-To use Cylc 8, run the following command before running any Cylc or Rose commands:
+Cylc 8 is the default.
+To use Cylc 7, run the following command before running any Cylc or Rose commands:
 ```
-export CYLC_VERSION=8
+export CYLC_VERSION=7
 ```
 
 If your VM includes support for the Met Office Science Repository Service then you will be prompted for your password (and also your user name the first time you use the VM).

@@ -66,7 +66,8 @@ jobs:
                           fcm test-battery t/fcm-make && \
                           rosie hello && \
                           gpg-agent --version && \
-                          which at"
+                          echo Test cylc review ... && wget --spider http://localhost/cylc-review >/dev/null 2>&1 && \
+                          echo All tests succeeded"
 
       - name: Test fcm conflicts (ignore errors)
         run: |
