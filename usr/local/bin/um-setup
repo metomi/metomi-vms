@@ -201,7 +201,8 @@ cd $tmpdir/wc
 echo "Running rose stem to build GCOM..."
 
 # explicitly set Cylc version
-# must set to Cylc 8 at the end of the GCOM install for Shumlib as this is now the default version
+# must set to Cylc 8 at the end of the GCOM install for Shumlib if using Cylc 7 for this,
+# as 8 is now the default version
 if [ "$cylc_version" -eq "7" ]; then
     export CYLC_VERSION=7
     rose stem --quiet --group=all --name=gcom_install --new --no-gcontrol -- --no-detach
