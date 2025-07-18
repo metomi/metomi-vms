@@ -10,12 +10,15 @@ jobs:
       matrix:
         os: ['ubuntu-1804-headless', 'ubuntu-2204-headless', 'centos-8']
     name: ${{ matrix.os }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Install pre requisites
         run: |
           sudo apt-get update
-          sudo apt install virtualbox vagrant
+          sudo apt install virtualbox
+          wget -O - https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(grep -oP '(?<=UBUNTU_CODENAME=).*' /etc/os-release || lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+          sudo apt update && sudo apt install vagrant
  
       - name: Open up network interfaces for VM
         run: |
@@ -63,7 +66,8 @@ jobs:
                           fcm test-battery t/fcm-make && \
                           rosie hello && \
                           gpg-agent --version && \
-                          which at"
+                          echo Test cylc review ... && wget --spider http://localhost/cylc-review >/dev/null 2>&1 && \
+                          echo All tests succeeded"
 
       - name: Test fcm conflicts (ignore errors)
         run: |

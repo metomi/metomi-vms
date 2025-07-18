@@ -44,7 +44,7 @@ mamba install -v -y --override-channels --channel=conda-forge \
   cylc-uiserver-base \
   cylc-rose \
   metomi-rose
-mamba env export -f "${PACKDIR}/${LABEL}.yml"
+mamba env export > "${PACKDIR}/${LABEL}.yml"
 echo "[INFO] Packing conda environment"
 dest=/opt/cylc-8
 rm -f ${PACKDIR}/cylc-8.tgz
