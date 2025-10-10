@@ -94,7 +94,7 @@ function get_source_tree {
     ref=${array[1]}
 
     git clone -q $src $tmpdir/wc || { echo "Failed to clone $src"; exit 1; }
-    git -C {$tmpdir/wc} checkout $ref || { echo "Failed to checkout $ref in $tmpdir/wc"; exit 1; }
+    git -C $tmpdir/wc checkout $ref || { echo "Failed to checkout $ref in $tmpdir/wc"; exit 1; }
   elif [[ $src =~ ^fcm:|^svn:|^file:|^http:|^https: ]]; then
     # A URL of some kind
     # Check the location is valid and get the Last Changed Rev
