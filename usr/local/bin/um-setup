@@ -76,7 +76,7 @@ function get_source_tree {
   src=$1
   tmpdir=$2
 
-  if [[ $src = *.git ]]; then
+  if [[ $src = *".git"* ]]; then
     # A git url
 
     # Split the source into url and git ref
