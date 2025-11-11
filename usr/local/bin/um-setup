@@ -141,7 +141,7 @@ function create_keyword {
 process_args $@
 
 cylc_version=${cylc_version:-'8'}
-gcom_src=${gcom_src:-'fcm:gcom.x/trunk@head'}
+gcom_src=${gcom_src:-'git@github.com:MetOffice/gcom.git'}
 shumlib_src=${shumlib_src:-'git@github.com:MetOffice/shumlib.git'}
 
 echo "Preparing the VM for running the Unified Model"
