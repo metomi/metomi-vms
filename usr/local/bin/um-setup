@@ -78,6 +78,10 @@ function get_source_tree {
 
   if [[ $src = *".git"* ]]; then
     # A git url
+    # Expected format <git_url>@<git_ref>
+    # eg. git@github.com:UserName/RepoName.git@main
+    # will get the main branch of that repository
+    # The git_ref is optional - omitting will default to head of the default branch
 
     # Split the source into url and git ref
     delimiter=".git@"
