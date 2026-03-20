@@ -1,5 +1,5 @@
 #!/bin/bash
-set -u
+set -eu
 
 meta_path=/home/vagrant/etc/rose-meta
 meta_file=$meta_path/rose-meta.conf
@@ -8,93 +8,114 @@ mkdir -p $meta_path
 cd $meta_path
 if [[ ! -r $meta_file ]]; then
     cat >> $meta_file <<EOF
-ANCIL=https://code.metoffice.gov.uk/svn/ancil/main/trunk/rose-meta
-JULES=https://code.metoffice.gov.uk/svn/jules/main/trunk/rose-meta
-LFRIC-A=https://metomi/svn/lfric.xm/LFRic/trunk/applications/io_demo/rose-meta
-LFRIC-B=https://metomi/svn/lfric.xm/LFRic/trunk/applications/simple_diffusion/rose-meta
-LFRIC-C=https://metomi/svn/lfric.xm/LFRic/trunk/applications/skeleton/rose-meta
-LFRIC-D=https://metomi/svn/lfric.xm/LFRic/trunk/components/coupling/rose-meta
-LFRIC-E=https://metomi/svn/lfric.xm/LFRic/trunk/components/driver/rose-meta
-LFRIC-F=https://metomi/svn/lfric.xm/LFRic/trunk/components/inventory/rose-meta
-LFRIC-G=https://metomi/svn/lfric.xm/LFRic/trunk/components/lfric-xios/rose-meta
-LFRIC-H=https://metomi/svn/lfric.xm/LFRic/trunk/components/science/rose-meta
-LFRIC-I=https://metomi/svn/lfric.xm/LFRic/trunk/mesh_tools/rose-meta
-LFRIC-J=https://metomi/svn/lfric_apps.xm/main/trunk/applications/adjoint_tests/rose-meta
-LFRIC-K=https://metomi/svn/lfric_apps.xm/main/trunk/applications/gravity_wave/rose-meta
-LFRIC-L=https://metomi/svn/lfric_apps.xm/main/trunk/applications/gungho_model/rose-meta
-LFRIC-M=https://metomi/svn/lfric_apps.xm/main/trunk/applications/jedi_lfric_tests/rose-meta
-LFRIC-N=https://metomi/svn/lfric_apps.xm/main/trunk/applications/jules/rose-meta
-LFRIC-O=https://metomi/svn/lfric_apps.xm/main/trunk/applications/lfric2lfric/rose-meta
-LFRIC-P=https://metomi/svn/lfric_apps.xm/main/trunk/applications/lfric_atm/rose-meta
-LFRIC-Q=https://metomi/svn/lfric_apps.xm/main/trunk/applications/lfric_coupled/rose-meta
-LFRIC-R=https://metomi/svn/lfric_apps.xm/main/trunk/applications/linear_model/rose-meta
-LFRIC-S=https://metomi/svn/lfric_apps.xm/main/trunk/applications/ngarch/rose-meta
-LFRIC-T=https://metomi/svn/lfric_apps.xm/main/trunk/applications/shallow_water/rose-meta
-LFRIC-U=https://metomi/svn/lfric_apps.xm/main/trunk/applications/solver/rose-meta
-LFRIC-V=https://metomi/svn/lfric_apps.xm/main/trunk/applications/transport/rose-meta
-LFRIC-W=https://metomi/svn/lfric_apps.xm/main/trunk/interfaces/jules_interface/rose-meta
-LFRIC-X=https://metomi/svn/lfric_apps.xm/main/trunk/interfaces/coupled_interface/rose-meta
-LFRIC-Y=https://metomi/svn/lfric_apps.xm/main/trunk/interfaces/jedi_lfric_interface/rose-meta
-LFRIC-Z=https://metomi/svn/lfric_apps.xm/main/trunk/interfaces/physics_schemes_interface/rose-meta
-LFRIC-1=https://metomi/svn/lfric_apps.xm/main/trunk/interfaces/socrates_interface/rose-meta
-LFRIC-2=https://metomi/svn/lfric_apps.xm/main/trunk/science/adjoint/rose-meta
-LFRIC-3=https://metomi/svn/lfric_apps.xm/main/trunk/science/gungho/rose-meta
-LFRIC-4=https://metomi/svn/lfric_apps.xm/main/trunk/science/linear/rose-meta
-MOCI=https://code.metoffice.gov.uk/svn/moci/main/trunk/rose-meta
-OPS=https://code.metoffice.gov.uk/svn/ops/main/trunk/rose-meta
-ROSES-U=https://code.metoffice.gov.uk/svn/roses-u/R/O/S/I/E/trunk/rose-meta
-UM=https://code.metoffice.gov.uk/svn/um/meta/trunk
-VAR=https://code.metoffice.gov.uk/svn/var/main/trunk/rose-meta
-VER=https://code.metoffice.gov.uk/svn/ver/main/trunk/rose-meta
+https://code.metoffice.gov.uk/svn/ancil/main/trunk/rose-meta
+https://code.metoffice.gov.uk/svn/ops/main/trunk/rose-meta
+https://code.metoffice.gov.uk/svn/roses-u/R/O/S/I/E/trunk/rose-meta
+https://code.metoffice.gov.uk/svn/var/main/trunk/rose-meta
+https://code.metoffice.gov.uk/svn/ver/main/trunk/rose-meta
+git:MetOffice/jules main rose-meta
+git:MetOffice/lfric_core main rose-meta
+git:MetOffice/lfric_apps main rose-meta
+git:MetOffice/moci main rose-meta
+git:MetOffice/um_meta main .
 EOF
-    echo [info] Setup $meta_file as follows:
+    echo [INFO] Setup $meta_file as follows:
     cat $meta_file
 fi
-echo [info] To change what metadata is installed edit: $meta_file
+echo [INFO] To change what metadata is installed edit: $meta_file
 
-# Check SRS access is working
-svn info --non-interactive https://code.metoffice.gov.uk/svn/test >/dev/null 2>&1
-if [[ $? != 0 ]]; then
+# Check repository access is working
+if ! svn info --non-interactive https://code.metoffice.gov.uk/svn/test >/dev/null 2>&1
+then
     echo "[ERROR] Unable to access Met Office Science Repository Service"
     echo "Please ensure you have cached your password before running this command"
     exit 1
 fi
+if ! gh auth status >/dev/null 2>&1
+then
+    echo "[ERROR] Unable to access github"
+    echo "Please ensure you have run \"gh auth login\" before running this command"
+    exit 1
+fi
 
-# Checkout a working copy for each metadata configuration directory
 NAMES=
-for PROJECT in $(rose config -f $meta_file -k); do
-    echo [info] Installing / updating metadata for $PROJECT ...
-    URL=$(rose config -f $meta_file $PROJECT)
-    svn info --non-interactive $URL >/dev/null 2>&1
-    if [[ $? != 0 ]]; then
-        echo "[WARN] Unable to access $URL, skipping $PROJECT ..."
+while read URL BRANCH DIR; do
+    if [[ ${URL} =~ ^git: ]]; then
+        GIT_SOURCE=${URL#git:}
+        GIT_CLONE=".git-clones/${URL##*/}"
+        if [[ -d "${GIT_CLONE}" ]]; then
+            git -C ${GIT_CLONE} pull -q
+            echo "[INFO] ${PWD}/${GIT_CLONE}: updated."
+        else
+            gh repo clone ${GIT_SOURCE} ${GIT_CLONE} -- -q --depth=1 --branch=${BRANCH}
+            echo "[INFO] ${PWD}/${GIT_CLONE}: created."
+        fi
+        LIST="$(find ${GIT_CLONE}/${DIR} -mindepth 1 -maxdepth 1 -not -path "*/.git" \( -type l -xtype d -o -type d \) -printf '%f\n')"
+        for NAME in ${LIST}
+        do
+            if grep -q "^${NAME}$" <<<"$(echo -e "${NAMES}")"; then
+                echo "[WARN] ${URL} ${DIR} ${NAME}: already in use." >&2
+                continue
+            fi
+            NAMES="${NAMES}${NAME}\n"
+            if [[ -L "${NAME}" ]]; then
+                if [[ $(readlink ${NAME}) != "${GIT_CLONE}/${DIR}/${NAME}" ]]; then
+                    rm "${NAME}"
+                    echo "[INFO] ${PWD}/${NAME}: deleted (wrong symlink)."
+                fi
+            elif [[ -e "${NAME}" ]]; then
+                rm -rf "${NAME}"
+                echo "[INFO] ${PWD}/${NAME}: deleted (symlink expected)."
+            fi
+            if [[ -L "${NAME}" ]]; then
+                echo "[INFO] ${PWD}/${NAME}: checked."
+            else
+                ln -s "${GIT_CLONE}/${DIR}/${NAME}" "${NAME}" 
+                echo "[INFO] ${PWD}/${NAME}: created."
+            fi
+        done
     else
-        for NAME in $(svn ls --non-interactive $URL | sed 's#/$##'); do
+        # This "svn ls" command must be on its own. This allows the function to
+        # die if the command fails, e.g. on network outage.
+        LIST="$(svn ls "${URL}")"
+        for NAME in \
+            $(sed '/^\./d; /[^\/]$/d; s/\/$//' <<<"$(echo -e "${LIST}")")
+        do
+            if grep -q "^${NAME}$" <<<"$(echo -e "${NAMES}")"; then
+                echo "[WARN] ${URL}/${NAME}/: already in use." >&2
+                continue
+            fi
             NAMES="${NAMES}${NAME}\n"
             if [[ -d "${NAME}" ]]; then
-                OLD_URL=$(svn info "${NAME}" | awk -F': ' '$1 == "URL" {print $2}')
-                if [[ "${OLD_URL}" != "${URL}/${NAME}" ]]; then
+                if [[ -d "${NAME}/.svn" ]]; then
+                    OLD_URL=$(svn info "${NAME}" | awk -F': ' '$1 == "URL" {print $2}')
+                    if [[ "${OLD_URL}" != "${URL}/${NAME}" ]]; then
+                        rm -rf "${NAME}"
+                        echo "[INFO] ${PWD}/${NAME}: deleted (svn URL changed)."
+                    fi
+                else
                     rm -rf "${NAME}"
-                    echo "  ${NAME}: deleted (URL changed)"
+                    echo "[INFO] ${PWD}/${NAME}: deleted (repo type changed)."
                 fi
             fi
             if [[ -d "${NAME}" ]]; then
-                echo "  $NAME: updated"
-                svn update --non-interactive -q "$NAME"
+                svn update --non-interactive -q "${NAME}"
+                echo "[INFO] ${PWD}/${NAME}: updated."
             else
-                echo "  $NAME: created"
-                svn checkout --non-interactive -q "$URL/$NAME"
+                svn checkout --non-interactive -q "${URL}/${NAME}" "${NAME}"
+                echo "[INFO] ${PWD}/${NAME}: created."
             fi
         done
     fi
-done
+done <"${meta_file}"
+
 # Remove unknown directories
 for NAME in $(ls); do
     if [[ -d "${NAME}" ]] && ! grep -q "^${NAME}$" <<<"$(echo -e "${NAMES}")"
     then
         rm -rf "${NAME}"
-        echo "[info] ${NAME}: deleted"
+        echo "[INFO] ${PWD}/${NAME}: deleted."
     fi
 done
 
-echo [info] Done.
+echo [INFO] Done.

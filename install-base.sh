@@ -122,6 +122,7 @@ if [[ $dist == ubuntu ]]; then
   apt-get install -q -y pcregrep || error
   apt-get install -q -y lxterminal || error # rose edit is configured to use this
   apt-get install -q -y tidy || error
+  apt-get install -q -y gh || error
   if [[ $release != 2204 ]]; then
     apt-get install -q -y python-requests || error
     pip install mock pytest-tap || error # used by test-battery
