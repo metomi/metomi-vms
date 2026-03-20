@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: False
       matrix:
-        os: ['ubuntu-1804-headless', 'ubuntu-2204-headless', 'centos-8']
+        os: ['ubuntu-2204-headless', 'centos-8']
     name: ${{ matrix.os }}
     runs-on: ubuntu-24.04
     steps:
@@ -19,6 +19,12 @@ jobs:
           wget -O - https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
           echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(grep -oP '(?<=UBUNTU_CODENAME=).*' /etc/os-release || lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
           sudo apt update && sudo apt install vagrant
+
+      - name: Virtualbox fix
+        # https://askubuntu.com/questions/1553345/suddenly-ubuntu-24-04-virtualbox-wont-run-a-vm-cant-enable-the-amd-v-ext
+        # https://github.com/VirtualBox/virtualbox/issues/81
+        run: |
+          sudo rmmod kvm_amd || true
  
       - name: Open up network interfaces for VM
         run: |
