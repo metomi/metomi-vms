@@ -76,7 +76,30 @@ function get_source_tree {
   src=$1
   tmpdir=$2
 
-  if [[ $src =~ ^fcm:|^svn:|^file:|^http:|^https: ]]; then
+  if [[ $src = *".git"* ]]; then
+    # A git url
+    # Expected format <git_url>@<git_ref>
+    # eg. git@github.com:UserName/RepoName.git@main
+    # will get the main branch of that repository
+    # The git_ref is optional - omitting will default to head of the default branch
+
+    # Split the source into url and git ref
+    delimiter=".git@"
+    s=$src$delimiter
+    array=();
+    while [[ $s ]]; do
+      array+=( "${s%%"$delimiter"*}" );
+      s=${s#*"$delimiter"};
+    done;
+    src=${array[0]}
+    if [[ $src != *.git ]]; then
+      src=$src.git
+    fi
+    ref=${array[1]}
+
+    git clone -q $src $tmpdir/wc || { echo "Failed to clone $src"; exit 1; }
+    git -C $tmpdir/wc checkout $ref || { echo "Failed to checkout $ref in $tmpdir/wc"; exit 1; }
+  elif [[ $src =~ ^fcm:|^svn:|^file:|^http:|^https: ]]; then
     # A URL of some kind
     # Check the location is valid and get the Last Changed Rev
     rev=$(fcm info $src | awk '/Last Changed Rev/ {print $NF}')
@@ -122,8 +145,8 @@ function create_keyword {
 process_args $@
 
 cylc_version=${cylc_version:-'8'}
-gcom_src=${gcom_src:-'fcm:gcom.x/trunk@head'}
-shumlib_src=${shumlib_src:-'fcm:shumlib.x/trunk@head'}
+gcom_src=${gcom_src:-'git@github.com:MetOffice/gcom.git'}
+shumlib_src=${shumlib_src:-'git@github.com:MetOffice/shumlib.git'}
 
 echo "Preparing the VM for running the Unified Model"
 echo
@@ -157,6 +180,7 @@ create_keyword 'shumlib.offline' "file://$HOME/source/shumlib/offline"
 
 echo "Local FCM keywords created."
 echo
+
 echo 'Adding rose-ana settings to ~/.metomi/rose.conf for KGO auto-generation...'
 conf_file="$HOME/.metomi/rose.conf"
 
@@ -198,19 +222,15 @@ get_source_tree "$gcom_src" "$tmpdir"        # Sets global $vn
 echo "Installing GCOM from: $gcom_src"
 
 cd $tmpdir/wc
+export CYLC_VERSION=8
 echo "Running rose stem to build GCOM..."
-
-# explicitly set Cylc version
-# must set to Cylc 8 at the end of the GCOM install for Shumlib if using Cylc 7 for this,
-# as 8 is now the default version
-if [ "$cylc_version" -eq "7" ]; then
-    export CYLC_VERSION=7
-    rose stem --quiet --group=all --name=gcom_install --new --no-gcontrol -- --no-detach
-    export CYLC_VERSION=8
-elif [ "$cylc_version" -eq "8" ]; then
-    export CYLC_VERSION=8
-    rose stem --quiet --group=all --workflow-name=gcom_install --no-run-name
-    cylc play --quiet --no-detach gcom_install
+if [ -d .git ]; then
+    echo "Launching rose-stem via cylc vip as git"
+    # cylc vip -z g=all --workflow-name=gcom_install --no-run-name
+else
+    echo "Launching with rose stem as fcm"
+    # rose stem --quiet --group=all --workflow-name=gcom_install --no-run-name
+    # cylc play --quiet --no-detach gcom_install
 fi
 
 if [ $? -ne 0 ]; then
@@ -289,7 +309,7 @@ for shum_omp in true false; do
 
 
   # Remove any previous builds
-  make -f make/${vm_config}.mk clean > /dev/null 2>&1 
+  make -f make/${vm_config}.mk clean > /dev/null 2>&1
 
   # Build the library
   echo
