@@ -4,13 +4,12 @@ if [[ $dist == ubuntu ]]; then
   apt-get install -q -y lxde xinput || error
   apt-get remove -q -y --auto-remove --purge xscreensaver xscreensaver-data gnome-keyring || error
   apt-get remove -q -y --auto-remove --purge gnome-screensaver lxlock light-locker network-manager-gnome gnome-online-accounts || error
-  # Set language
-  update-locale LANG=en_GB.utf8 || {
-    # have an error updating the locale - need to generate first
-    locale-gen "en_GB.utf8" || error
-    dpkg-reconfigure --frontend=noninteractive locales || error
-    update-locale LANG=en_GB.utf8 || error
-  }
+
+  # set language
+  apt-get install -q -y locales || error 
+  locale-gen "gen_GB.UTF-8" || error 
+  update-locale LANG=en_GB.UTF-8 || error
+
   # Set UK keyboard
   perl -pi -e 's/XKBLAYOUT="us"/XKBLAYOUT="gb"/;' /etc/default/keyboard
   # Create a desktop shortcut
