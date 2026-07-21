@@ -7,7 +7,7 @@ if [[ $dist == ubuntu ]]; then
 
   # set language
   apt-get install -q -y locales || error 
-  locale-gen "gen_GB.UTF-8" || error 
+  locale-gen "en_GB.UTF-8" || error 
   update-locale LANG=en_GB.UTF-8 || error
 
   # Set UK keyboard
