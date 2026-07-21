@@ -209,8 +209,7 @@ if [ "$cylc_version" -eq "7" ]; then
     export CYLC_VERSION=8
 elif [ "$cylc_version" -eq "8" ]; then
     export CYLC_VERSION=8
-    rose stem --quiet --group=all --workflow-name=gcom_install --no-run-name
-    cylc play --quiet --no-detach gcom_install
+    cylc vip -z g=all -n gcom_install --quiet --no-detach --no-run-name ./rose-stem
 fi
 
 if [ $? -ne 0 ]; then

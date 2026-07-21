@@ -20,10 +20,12 @@ if [[ ! -d ${MINIFORGE_DIR} ]]; then
   bash ${ROOTDIR}/Miniforge.sh -p ${MINIFORGE_DIR} -b
   rm ${ROOTDIR}/Miniforge.sh
   . "${MINIFORGE_DIR}/etc/profile.d/conda.sh"
-  mamba install -q -y conda-pack
 else
   . "${MINIFORGE_DIR}/etc/profile.d/conda.sh"
 fi
+
+# make sure base has setuptools<82
+mamba install -v -y --override-channels --channel=conda-forge "setuptools<82"
 
 # Log all subsequent output
 exec > >(tee -a "${PACKDIR}/cylc-8_$(date +%FT%H:%M).log") 2>&1
@@ -43,12 +45,14 @@ mamba install -v -y --override-channels --channel=conda-forge \
   cylc-flow \
   cylc-uiserver-base \
   cylc-rose \
-  metomi-rose
+  metomi-rose \
+  conda-pack \
+  "setuptools<82"
 mamba env export > "${PACKDIR}/${LABEL}.yml"
 echo "[INFO] Packing conda environment"
 dest=/opt/cylc-8
 rm -f ${PACKDIR}/cylc-8.tgz
-conda pack -q --dest-prefix=${dest} -o "${PACKDIR}/cylc-8.tgz"
+conda-pack -q --dest-prefix=${dest} -o "${PACKDIR}/cylc-8.tgz"
 if [[ -e ${dest} ]]; then
   echo "[INFO] Removing existing Cylc 8 installation"
   rm -rf ${dest}
