@@ -35,11 +35,12 @@ mamba env remove -n "${conda_env}" 2>/dev/null || true
 echo "[INFO] Creating full build using latest versions for Cylc 8 ..."
 mamba create -v -y -n "${conda_env}"
 conda activate "${conda_env}"
-# Include numpy & netcdf for use by rose ana
+# Include numpy, netcdf and setuptools for use by rose ana
 mamba install -v -y --override-channels --channel=conda-forge \
   jupyterlab \
   "numpy=1" \
   "netCDF4=1" \
+  "setuptools=82.0.0" \
   cylc-flow \
   cylc-uiserver-base \
   cylc-rose \
