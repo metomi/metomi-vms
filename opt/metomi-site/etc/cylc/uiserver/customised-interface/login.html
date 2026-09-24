@@ -1,0 +1,21 @@
+{% extends "templates/login.html" %}
+
+{% block announcement %}
+{% endblock %}
+
+{% block login_terms %}
+<div>
+    <br>
+    <p>
+      <b>Welcome to Cylc Hub!</b>
+    </p>
+
+    <p>
+      Please login using the account "vagrant" (no password required).
+    </p>
+
+    <p>
+      Workflow log files can be viewed in <a target="_blank" href="/services/cylc-review/suites?user=vagrant">Cylc Review</a>.
+    </p>
+</div>
+{% endblock %}

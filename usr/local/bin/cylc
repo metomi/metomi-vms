@@ -59,22 +59,11 @@ if [[ ${0##*/} =~ ^ros ]]; then
             else
                 CYLC_HOME="${ROSE_HOME}"
             fi
-        elif [[ ${1:-} == "edit" || ${1:-} == "config-edit" || \
-                ${0##*/} == "rosie" ]]; then
-            # Cylc 8: Use Rose 2019.01 to run "rose config-edit" or "rosie"
-            CYLC_HOME="${ROSE_HOME_ROOT}/rose-2019.01"
         fi
     elif [[ -z "${CYLC_ENV_NAME}" ]]; then
         # If CYLC_HOME was set externally, use ROSE_HOME if it is set
         CYLC_HOME="${ROSE_HOME:-$CYLC_HOME}"
     fi
-fi
-
-# Legacy support for cylc review
-if [[ ${0##*/} == "cylc" && ${1:-} == "review" && \
-      ! ${CYLC_ENV_NAME:-} =~ ^cylc-7 ]]; then
-    # Cylc 8: Use Cylc 7 to run "review"
-    CYLC_HOME="${CYLC_HOME_ROOT}/cylc-7"
 fi
 
 if [[ ! -x "${CYLC_HOME}/bin/${0##*/}" ]]; then
@@ -83,8 +72,9 @@ if [[ ! -x "${CYLC_HOME}/bin/${0##*/}" ]]; then
 fi
 
 # Set PATH when running cylc hub so that configurable-http-proxy can find node
-if [[ ${0##*/} == "cylc" && ${1:-} == "hub" ]]; then
-    PATH=${CYLC_HOME}/bin:${PATH}
+# and when running cylc graph so that it can find Graphviz
+if [[ ${0##*/} == "cylc" && ${1:-} =~ ^(graph|hub)$ ]]; then
+    PATH=${PATH}:${CYLC_HOME}/bin
 fi
 
 # Run the executable from the selected installation.

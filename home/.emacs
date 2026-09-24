@@ -1,10 +1,5 @@
 (add-to-list 'load-path "~/.emacs.d/lisp/")
-
 (require 'cylc-mode)
-(setq auto-mode-alist (append auto-mode-alist 
-		      (list '("\\.rc$" . cylc-mode))))
-(global-font-lock-mode t)
-
 (require 'rose-conf-mode)
 
 ;; Extra settings not related to Rose / Cylc

@@ -8,9 +8,9 @@ jobs:
     strategy:
       fail-fast: False
       matrix:
-        os: ['ubuntu-2204-headless', 'centos-8']
+        os: ['ubuntu-2204-headless', 'ubuntu-2604-headless']
     name: ${{ matrix.os }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: Install pre requisites
         run: |
@@ -47,12 +47,6 @@ jobs:
       - name: Show Vagrant version
         run: vagrant --version
 
-#      - name: Free up space
-#        run: |
-#          df -h
-#          sudo rm -rf /usr/share/dotnet /usr/local/lib/android
-#          df -h
-
       - name: Run vagrant up
         run: |
           export VAGRANT_VAGRANTFILE=Vagrantfile.${{ matrix.os }}
@@ -64,16 +58,23 @@ jobs:
           vagrant ssh -c "grep 'errors occurred during installation' /var/log/install.log || true"
           vagrant ssh -c "grep -q 'No errors detected' /var/log/install.log && \
                           cylc version --long && \
-                          CYLC_VERSION=8 cylc version --long && \
                           rose version && \
-                          CYLC_VERSION=8 rose version && \
                           fcm version && \
                           svn --version && \
                           fcm test-battery t/fcm-make && \
-                          rosie hello && \
                           gpg-agent --version && \
-                          echo Test cylc review ... && wget --spider http://localhost/cylc-review >/dev/null 2>&1 && \
-                          echo All tests succeeded"
+                          echo Core tests succeeded"
+          if [[ ${{ matrix.os }} =~ ubuntu-2204 ]]; then
+            vagrant ssh -c "CYLC_VERSION=7 cylc version --long && \
+                            CYLC_VERSION=7 rose version && \
+                            rosie hello && \
+                            echo Test cylc review ... && wget --spider http://localhost/cylc-review >/dev/null 2>&1 && \
+                            echo Ubuntu 22.04 tests succeeded"
+          else
+            vagrant ssh -c "echo Test cylc review ... && wget --spider http://localhost/services/cylc-review/suites?user=vagrant >/dev/null 2>&1 && \
+                            echo Ubuntu 26.04 tests succeeded"
+          fi
+        shell: bash
 
       - name: Test fcm conflicts (ignore errors)
         run: |

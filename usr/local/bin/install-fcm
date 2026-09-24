@@ -34,10 +34,6 @@ else
   echo Installing FCM version $FCM_VERSION
   # Get FCM from github
   curl -L -s -S https://github.com/metomi/fcm/archive/$FCM_VERSION.tar.gz | tar -xz -C /opt
-  # Configure FCM diff and merge viewers
-  if [[ -r /opt/metomi-site/etc/fcm/external.cfg ]]; then
-    ln -sf /opt/metomi-site/etc/fcm/external.cfg /opt/fcm-$FCM_VERSION/etc/fcm/external.cfg
-  fi
   # Set up FCM keywords
   if [[ -r /opt/metomi-site/etc/fcm/keyword.cfg ]]; then
     ln -sf /opt/metomi-site/etc/fcm/keyword.cfg /opt/fcm-$FCM_VERSION/etc/fcm/keyword.cfg

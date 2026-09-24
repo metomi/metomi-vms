@@ -1,5 +1,5 @@
 [Desktop Entry]
-Name=Documentation
+Name=Browser
 Exec=xdg-open http://localhost/
 Type=Application
 Icon=browser

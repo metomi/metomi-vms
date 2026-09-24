@@ -38,10 +38,10 @@ conda activate "${conda_env}"
 # Include numpy & netcdf for use by rose ana
 mamba install -v -y --override-channels --channel=conda-forge \
   jupyterlab \
-  "numpy=1" \
-  "netCDF4=1" \
+  numpy \
+  netCDF4 \
   cylc-flow \
-  cylc-uiserver-base \
+  cylc-uiserver \
   cylc-rose \
   metomi-rose
 mamba env export > "${PACKDIR}/${LABEL}.yml"

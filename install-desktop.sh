@@ -15,12 +15,6 @@ if [[ $dist == ubuntu ]]; then
   perl -pi -e 's/XKBLAYOUT="us"/XKBLAYOUT="gb"/;' /etc/default/keyboard
   # Create a desktop shortcut
   sudo -u $(logname) cp /usr/share/applications/lxterminal.desktop /home/vagrant/Desktop
-elif [[ $dist == redhat ]]; then
-  yum install -y @lxde-desktop @base-x || error
-  yum remove -y gnome-keyring xscreensaver-base || error
-  systemctl set-default graphical.target || error
-  # Set UK keyboard
-  localectl set-x11-keymap gb || error
 fi
 # Enable auto login
 if [[ $dist == ubuntu ]]; then
@@ -28,19 +22,12 @@ if [[ $dist == ubuntu ]]; then
   echo "user-session=LXDE" >> /usr/share/lightdm/lightdm.conf.d/lxde.conf
   echo "autologin-user=vagrant" >> /usr/share/lightdm/lightdm.conf.d/lxde.conf
   echo "autologin-user-timeout=0" >> /usr/share/lightdm/lightdm.conf.d/lxde.conf
-else
-  perl -pi -e 's/^.*autologin=.*$/autologin=vagrant/;' /etc/lxdm/lxdm.conf
 fi
-# Create a desktop shortcut to the local documentation
-sudo -u $(logname) dos2unix -n /vagrant/home/Desktop/docs.desktop /home/vagrant/Desktop/docs.desktop
+# Create a desktop shortcut for local browser (docs / JupyterHub)
+sudo -u $(logname) dos2unix -n /vagrant/home/Desktop/browser.desktop /home/vagrant/Desktop/browser.desktop
 # Open a terminal on startup
 sudo -u $(logname) mkdir -p /home/vagrant/.config/autostart
 sudo -u $(logname) cp /usr/share/applications/lxterminal.desktop /home/vagrant/.config/autostart
-# Configure middle button emulation
-if [[ $dist == ubuntu && $release == 1804 ]]; then
-  sudo -u $(logname) bash -c 'echo "[Desktop Entry]" >/home/vagrant/.config/autostart/xinput.desktop'
-  sudo -u $(logname) bash -c 'echo "Exec=xinput set-prop 11 \"libinput Middle Emulation Enabled\" 1" >>/home/vagrant/.config/autostart/xinput.desktop'
-fi
 # Prevent prompt from clipit on first use
 sudo -u $(logname) mkdir -p /home/vagrant/.config/clipit
 sudo -u $(logname) bash -c 'echo "[rc]" >/home/vagrant/.config/clipit/clipitrc'
@@ -50,8 +37,6 @@ if [[ $dist == ubuntu ]]; then
   sudo -u $(logname) mkdir -p /home/vagrant/.config/pcmanfm/LXDE
   sudo -u $(logname) bash -c 'echo "[*]" >/home/vagrant/.config/pcmanfm/LXDE/desktop-items-0.conf'
   sudo -u $(logname) bash -c 'echo "desktop_bg=#2f4266" >>/home/vagrant/.config/pcmanfm/LXDE/desktop-items-0.conf'
-fi
-if [[ $dist == ubuntu && $release == 2204 ]]; then
   sudo -u $(logname) mkdir -p /home/vagrant/.config/libfm
   sudo -u $(logname) bash -c 'echo "[config]" >/home/vagrant/.config/libfm/libfm.conf'
   sudo -u $(logname) bash -c 'echo "quick_exec=1" >>/home/vagrant/.config/libfm/libfm.conf'

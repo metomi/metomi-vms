@@ -1,0 +1,16 @@
+[Unit]
+Description=JupyterHub
+After=syslog.target network.target
+
+[Service]
+User=vagrant
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+Environment="METOMI_SITE=/data/local/fcm/metomi-site"
+Environment="JUPYTERHUB_LOG=/home/vagrant/.cylc/jupyterhub.log"
+ExecStartPre=/bin/bash -c "mkdir -p /home/vagrant/.cylc/uiserver"
+ExecStart=/bin/bash -c "cylc hub &>> $JUPYTERHUB_LOG"
+ExecStop=/bin/kill -2 $MAINPID
+KillSignal=SIGTERM
+
+[Install]
+WantedBy=multi-user.target
